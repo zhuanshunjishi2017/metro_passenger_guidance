@@ -1,5 +1,5 @@
 # dot files
-.vscode/
+/.vscode/
 /.settings
 /.eide/log
 /.eide.usr.ctx.json
@@ -9,7 +9,7 @@
 /bin
 /obj
 /out
-Objects/
+/Objects/
 
 # eide template
 *.ept
