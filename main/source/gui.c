@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 lv_obj_t *display1;
-
+void display(void);
 void display(void)
 {
 	display1 = lv_obj_create(NULL);
