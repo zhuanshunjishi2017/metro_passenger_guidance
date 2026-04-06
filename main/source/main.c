@@ -3,8 +3,12 @@
 #include "lv_port_indev_template.h"
 
 void gpio_init(void);
+void display0_init(lv_obj_t *);
+void canvas_init(lv_obj_t *);
 
 lv_obj_t *label;
+lv_obj_t* display0;
+lv_obj_t* canvas;
 
 int main(void)
 {
@@ -18,12 +22,18 @@ int main(void)
 	lv_port_indev_init();
 
 	display();
-
+    
+    //display&canvas
+    display0 = lv_obj_create(NULL);
+    display_init(display0);
+    canvas = lv_canvas_create(display0);
+    canvas_init(canvas);
+        
+    //rtc_time
     lv_obj_t * btn;
-    btn = lv_btn_create(lv_scr_act());
+    btn = lv_btn_create(display0);
     lv_obj_set_size(btn,200,50);
     lv_obj_center(btn);
-
 
     label = lv_label_create(btn);
     lv_label_set_text(label, "");
