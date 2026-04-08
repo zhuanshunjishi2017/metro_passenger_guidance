@@ -2,6 +2,7 @@
 #include "lv_port_disp_template.h"
 #include "lv_port_indev_template.h"
 #include <stdio.h>
+#include "gui.h"
 
 void btn1_cb(lv_event_t *e);
 void btn2_cb(lv_event_t *e);
@@ -34,7 +35,7 @@ void twocolumns(lv_obj_t* display0,lv_obj_t* label_left,lv_obj_t* label_top)
 	lv_label_set_text(label_left, "");
 	label_top = lv_label_create(display0);
 	lv_obj_set_style_bg_color(label_top, lv_color_hex(0xd2dbe7), 0);
-	lv_obj_set_style_bg_opa(label_top, LV_OPA_COVER, 0);
+	lv_obj_set_style_bg_opa(label_top, LV_OPA_COVER,0);
 	lv_obj_set_pos(label_top, 0, 0);
 	lv_obj_set_size(label_top, 1024,55);
 	lv_label_set_text(label_top, "");
@@ -95,7 +96,7 @@ void metro_logo(lv_obj_t* display0)
 	lb_t1 = lv_label_create(display0);
 	lv_obj_set_pos(lb_t1,160,16);
 	lv_obj_set_size(lb_t1,87,23);
-	lv_label_set_text(lb_t1,"Ёк©м╣╪йс");
+	lv_label_set_text(lb_t1,"О©╫к©м╣О©╫О©╫О©╫");
 }
 void btn1_cb(lv_event_t *e)
 {
