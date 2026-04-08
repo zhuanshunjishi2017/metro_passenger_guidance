@@ -420,26 +420,20 @@
               <FilePath>.\main\source\rtc_time.c</FilePath>
             </File>
             <File>
-<<<<<<< HEAD
-=======
               <FileName>heiti_14.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main\source\heiti_14.c</FilePath>
             </File>
             <File>
->>>>>>> c739319d4c792866ba441a2f923c8e51a25d18cb
               <FileName>maps.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main\source\maps.c</FilePath>
             </File>
-<<<<<<< HEAD
-=======
             <File>
               <FileName>displaycanvas.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main\source\displaycanvas.c</FilePath>
             </File>
->>>>>>> c739319d4c792866ba441a2f923c8e51a25d18cb
           </Files>
         </Group>
         <Group>
