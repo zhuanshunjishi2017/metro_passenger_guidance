@@ -5,16 +5,10 @@
 
 
 void gpio_init(void);
-void display0_init(lv_obj_t *);
-void canvas_init(lv_obj_t *);
+// void display0_init(lv_obj_t *);
 
-lv_obj_t *label;
 lv_obj_t* display0;
-lv_obj_t* display1;
-lv_obj_t* display2;
 lv_obj_t* canvas;
-
-
 
 int main(void)
 {
@@ -31,23 +25,12 @@ int main(void)
 
     //display&canvas
     display0 = lv_obj_create(NULL);
-    display_init(display0);
+    //display_init(display0);
     canvas = lv_canvas_create(display0);
     canvas_init(canvas);
-        
-    //rtc_time
-    lv_obj_t * btn;
-    btn = lv_btn_create(display0);
-    lv_obj_set_size(btn,200,50);
-    lv_obj_center(btn);
 
-    label = lv_label_create(btn);
-    lv_label_set_text(label, "");
-    lv_obj_center(label); 
-    lv_label_set_text(label,"start to configure RTC time\n\r");
-
-    my_rtc_setup();
-    char time_buf[32];
+    lv_scr_load(display0);
+    
     while(1)
 	{
         lv_timer_handler();
