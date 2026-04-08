@@ -337,7 +337,7 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls>--diag_suppress=68,111,188,223,546,1295</MiscControls>
+              <MiscControls>--diag_suppress=68,111,188,223,546,1295  --no-multibyte-chars</MiscControls>
               <Define>HXTAL_VALUE=8000000,</Define>
               <Undefine></Undefine>
               <IncludePath>.\GD32H7xx_standard_peripheral\Include;.\GD32H7xx;.\GD32H7xx\CMSIS;.\Drivers;.\FATFS;.\lvgl;.\lvgl\src;.\lvgl\examples\porting;.\lvgl\demos\benchmark;.\lvgl\demos\stress;.\main\include;.\</IncludePath>
@@ -420,10 +420,26 @@
               <FilePath>.\main\source\rtc_time.c</FilePath>
             </File>
             <File>
+<<<<<<< HEAD
+=======
+              <FileName>heiti_14.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\main\source\heiti_14.c</FilePath>
+            </File>
+            <File>
+>>>>>>> c739319d4c792866ba441a2f923c8e51a25d18cb
               <FileName>maps.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main\source\maps.c</FilePath>
             </File>
+<<<<<<< HEAD
+=======
+            <File>
+              <FileName>displaycanvas.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\main\source\displaycanvas.c</FilePath>
+            </File>
+>>>>>>> c739319d4c792866ba441a2f923c8e51a25d18cb
           </Files>
         </Group>
         <Group>

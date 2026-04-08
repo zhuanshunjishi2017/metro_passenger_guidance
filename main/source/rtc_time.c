@@ -18,7 +18,6 @@ void rtc_pre_config(void);
 void get_rtc_time_string(char *buf, size_t len);
 
 
-
 void get_rtc_time_string(char *buf, size_t len) 
 {
     rtc_parameter_struct rtc_time;
@@ -33,9 +32,6 @@ void get_rtc_time_string(char *buf, size_t len)
              rtc_time.minute,
              rtc_time.second);
 }
-
-
-
 
 /*!
     \brief      main function
@@ -109,9 +105,9 @@ void rtc_setup(void)
     rtc_initpara.factor_asyn = prescaler_a;
     rtc_initpara.factor_syn = prescaler_s;
     rtc_initpara.year = DEC2BCD(26);
-    rtc_initpara.day_of_week = RTC_SATURDAY;
+    rtc_initpara.day_of_week = RTC_THURSDAY;
     rtc_initpara.month = RTC_APR;
-    rtc_initpara.date = DEC2BCD(30);
+    rtc_initpara.date = DEC2BCD(2);
     rtc_initpara.display_format = RTC_24HOUR;
     rtc_initpara.am_pm = RTC_AM;
     rtc_initpara.hour = DEC2BCD(8);

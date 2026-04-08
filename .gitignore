@@ -10,7 +10,9 @@
 /obj
 /out
 /Objects/
+/imagesource/
 
 # eide template
 *.ept
 *.eide-template
+*.ggb
