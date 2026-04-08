@@ -14,6 +14,14 @@ extern lv_obj_t* display1;
 extern lv_obj_t* display2;
 extern lv_obj_t* canvas;
 extern lv_obj_t* logo;
+extern lv_obj_t* lb_t1;
+extern lv_obj_t* map_blue;
+extern lv_obj_t* map_blue;
+extern lv_obj_t* map_white;
+extern lv_obj_t* line_blue;
+extern lv_obj_t* line_white;
+extern lv_obj_t* bell_blue;
+extern lv_obj_t* bell_white;
 static int flag;
 
 void twocolumns(lv_obj_t* display0,lv_obj_t* label_left,lv_obj_t* label_top)
@@ -66,11 +74,28 @@ void creat_top_ta(lv_obj_t* display0,lv_obj_t* ta,lv_obj_t* kb)
 	lv_obj_add_event_cb(canvas, kb_hide_cb, LV_EVENT_CLICKED, kb);
 	lv_obj_add_event_cb(kb, keyBoard_event_cb, LV_EVENT_ALL, ta);
 }
-void metro_logo(lv_obj_t* lb_top)
+void metro_logo(lv_obj_t* display0)
 {
-	logo = lv_img_create(lb_top);
+	logo = lv_img_create(display0);
 	lv_img_set_src(logo, "0:/logo.bin");
-	lv_obj_set_pos(logo,2,2);
+	lv_obj_set_pos(logo,0,2);
+
+	map_blue = lv_img_create(display0);
+	lv_img_set_src(map_blue, "0:/map_blue.bin");
+	lv_obj_set_pos(map_blue,16,77);
+	
+	line_white = lv_img_create(display0);
+	lv_img_set_src(line_white, "0:/line_white.bin");
+	lv_obj_set_pos(line_white,16,153);
+	
+	bell_white = lv_img_create(display0);
+	lv_img_set_src(bell_white, "0:/bell_white.bin");
+	lv_obj_set_pos(bell_white,16,230);
+	
+	lb_t1 = lv_label_create(display0);
+	lv_obj_set_pos(lb_t1,160,16);
+	lv_obj_set_size(lb_t1,87,23);
+	lv_label_set_text(lb_t1,"³Ë¿Íµ¼ÊÓ");
 }
 void btn1_cb(lv_event_t *e)
 {
