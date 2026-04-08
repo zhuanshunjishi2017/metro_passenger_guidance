@@ -3,20 +3,21 @@
 #include "lv_port_indev_template.h"
 #include "lvgl.h"
 #include <string.h>
-
-
-#define CANVAS_X 60
-#define CANVAS_Y 55
-#define CANVAS_W 964
-#define CANVAS_H 545
-#define BUF_SIZE LV_CANVAS_BUF_SIZE_TRUE_COLOR(CANVAS_W,CANVAS_H)
+#include "gui.h"
 
 
 void *canvas_buf;//缓冲区
+
+
 void pressing_canvas(lv_event_t *e);
 void canvas_init(lv_obj_t *);
+void buttons_init(lv_obj_t *);
+void adjust_magnify(lv_event_t * );
 
-extern lv_coord_t origin_x, origin_y;
+lv_obj_t *btn_plus , *btn_minus;
+lv_obj_t *lines_container;
+
+extern lv_coord_t origin_x, origin_y, magnify_size;
 
 void canvas_init(lv_obj_t *canvas)
 {
@@ -34,8 +35,43 @@ void canvas_init(lv_obj_t *canvas)
     lv_obj_add_event_cb(canvas, pressing_canvas, LV_EVENT_PRESSING, NULL);
     lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
 
-    create_metro_map(canvas);
+    create_metro_map();
 }
+
+void buttons_init(lv_obj_t *canvas)
+{
+    lv_style_t btn_style;//创建样式
+
+    lv_style_set_bg_color(&btn_style, lv_color_hex(COLOR_LIGHT_GRAY));
+    lv_style_set_border_color(&btn_style, lv_color_hex(COLOR_MID_GRAY));
+    lv_style_set_radius(&btn_style, BUTTON_RADIUS);
+    
+    lv_obj_t * label_plus, *label_minus;
+
+
+    btn_plus = lv_btn_create(canvas);
+    lv_obj_set_pos(btn_plus , BUTTON_X, BUTTON_Y);
+    lv_obj_set_size(btn_plus, BUTTON_LEN, BUTTON_LEN);
+
+    label_plus = lv_label_create(btn_plus);
+    lv_label_set_text(label_plus, "+");
+    lv_obj_center(label_plus);
+
+
+    btn_minus = lv_btn_create(canvas);
+    lv_obj_set_pos(btn_minus , BUTTON_X , BUTTON_Y + BUTTON_LEN + 10);
+    lv_obj_set_size(btn_minus, BUTTON_LEN, BUTTON_LEN);
+
+    label_minus = lv_label_create(btn_minus);
+    lv_label_set_text(label_minus, "-");
+    lv_obj_center(label_minus);
+
+    lv_obj_add_event_cb(btn_plus, adjust_magnify, LV_EVENT_PRESSED, PLUS);
+    lv_obj_add_event_cb(btn_minus, adjust_magnify, LV_EVENT_PRESSED, MINUS);
+
+
+}
+
 
 void pressing_canvas(lv_event_t *e)
 {
@@ -44,17 +80,22 @@ void pressing_canvas(lv_event_t *e)
 
     lv_point_t vect;
     lv_indev_get_vect(indev, &vect);
-/* 
-    lv_coord_t x = lv_obj_get_x(obj) + vect.x;
-    lv_coord_t y = lv_obj_get_y(obj) + vect.y;
-    lv_obj_set_pos(obj, x, y);
- */
+
     origin_x += vect.x;
     origin_y += vect.y;
 
-    //通过直接访问内存将画布重新填充为白色
-    memset(canvas_buf, 255, BUF_SIZE);
+    create_metro_map();
 
-    create_metro_map(obj);
+}
 
+void adjust_magnify(lv_event_t * e)
+{
+    int state = lv_event_get_user_data(e);
+
+    magnify_size += state * STEP;
+
+    if (magnify_size < 15) magnify_size = 15;
+    if (magnify_size > 150) magnify_size = 150;
+
+    create_metro_map();
 }

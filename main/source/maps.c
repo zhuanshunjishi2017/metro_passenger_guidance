@@ -4,8 +4,12 @@
 #include "lvgl.h"
 #include <stdint.h>
 #include "metro_line.h"
+#include "gui.h"
 
 void pressing_canvas(lv_event_t *e);
+extern void *canvas_buf;
+lv_obj_t* canvas;
+
 
 static lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin)
 {
@@ -108,10 +112,10 @@ static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color)
     lv_canvas_draw_text(canvas, text_x, text_y, TEXT_MAX, &label_dsc, s->name); //站点名
 }
 
-void create_metro_map(lv_obj_t* canvas) 
+void create_metro_map(void) 
 {
-    //lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
-
+    //通过直接访问内存将画布重新填充为白色
+    memset(canvas_buf, 255, BUF_SIZE);
     for (int i = 3; i >= 0; i--) 
         draw_metro_line(canvas, &metro_lines[i]);
 }

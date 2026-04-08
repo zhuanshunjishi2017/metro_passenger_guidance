@@ -2,6 +2,7 @@
 #include "lv_port_disp_template.h"
 #include "lv_port_indev_template.h"
 #include <stdio.h>
+#include "gui.h"
 
 void btn1_cb(lv_event_t *e);
 void btn2_cb(lv_event_t *e);

@@ -7,7 +7,8 @@
 void gpio_init(void);
 // void display0_init(lv_obj_t *);
 
-lv_obj_t* display0;
+lv_obj_t* display0, *display1, *display2;
+
 lv_obj_t* canvas;
 
 int main(void)
