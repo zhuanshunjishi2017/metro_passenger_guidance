@@ -5,9 +5,14 @@
 void gpio_init(void);
 void display0_init(lv_obj_t *);
 void canvas_init(lv_obj_t *);
+void create_metro_map(lv_obj_t* );
+void twocolumns(lv_obj_t* );
+void create_buttons(lv_obj_t* ,lv_obj_t* ,lv_obj_t* ,lv_obj_t*);
 
 lv_obj_t *label;
 lv_obj_t* display0;
+lv_obj_t* display1;
+lv_obj_t* display2;
 lv_obj_t* canvas;
 
 int main(void)
@@ -21,19 +26,21 @@ int main(void)
 	lv_port_disp_init();
 	lv_port_indev_init();
 
-	display();
-    
     //display&canvas
     display0 = lv_obj_create(NULL);
-    display_init(display0);
+    display0_init(display0);
+    display1 = lv_obj_create(NULL);
+    display2 = lv_obj_create(NULL);
+    lv_scr_load(display0);
+    
     canvas = lv_canvas_create(display0);
     canvas_init(canvas);
         
     //rtc_time
     lv_obj_t * btn;
     btn = lv_btn_create(display0);
-    lv_obj_set_size(btn,200,50);
-    lv_obj_center(btn);
+    lv_obj_set_size(btn,268,23);
+    lv_obj_set_pos(btn,754,13);
 
     label = lv_label_create(btn);
     lv_label_set_text(label, "");
@@ -41,6 +48,18 @@ int main(void)
     lv_label_set_text(label,"start to configure RTC time\n\r");
 
     my_rtc_setup();
+
+    //maps
+    create_metro_map(canvas);
+    //canvas上的组件
+    twocolumns(canvas);
+    lv_obj_t* btn1;
+    lv_obj_t* btn2;
+    lv_obj_t* btn3;
+    create_buttons(canvas,btn1,btn2,btn3);
+    lv_obj_t *top_ta;
+    lv_obj_t *kb;
+
     char time_buf[32];
     while(1)
 	{
