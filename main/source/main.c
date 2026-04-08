@@ -5,10 +5,27 @@
 
 
 void gpio_init(void);
+void my_rtc_setup(void);
+void canvas_init(lv_obj_t *);
+void twocolumns(lv_obj_t* display0,lv_obj_t*,lv_obj_t*);
+void create_buttons(lv_obj_t* display0,lv_obj_t* btn1,lv_obj_t* btn2,lv_obj_t* btn3);
+void creat_top_ta(lv_obj_t* display0,lv_obj_t* ta,lv_obj_t* kb);
+void metro_logo(lv_obj_t* lb_top);
+
 // void display0_init(lv_obj_t *);
 
 lv_obj_t* display0;
+lv_obj_t* display1;
+lv_obj_t* display2;
 lv_obj_t* canvas;
+lv_obj_t* lb_left;
+lv_obj_t* lb_top;
+lv_obj_t* btn1;
+lv_obj_t* btn2;
+lv_obj_t* btn3;
+lv_obj_t* ta;
+lv_obj_t* kb;
+lv_obj_t * logo;
 
 int main(void)
 {
@@ -17,7 +34,7 @@ int main(void)
 	rcu_periph_clock_enable(RCU_GPIOA);
 	gpio_init();
 
-    my_rtc_setup();
+  my_rtc_setup();
 	
 	lv_init();
 	lv_port_disp_init();
@@ -25,12 +42,17 @@ int main(void)
 
     //display&canvas
     display0 = lv_obj_create(NULL);
-    //display_init(display0);
+    display1 = lv_obj_create(NULL);
+    display2 = lv_obj_create(NULL);
     canvas = lv_canvas_create(display0);
     canvas_init(canvas);
-
     lv_scr_load(display0);
     
+    //display0_gui
+    twocolumns(display0,lb_left,lb_top);
+    create_buttons(display0,btn1,btn2,btn3);
+    creat_top_ta(display0,ta,kb);
+    metro_logo(lb_top);
     while(1)
 	{
         lv_timer_handler();
