@@ -27,7 +27,7 @@ void twocolumns(lv_obj_t* display0,lv_obj_t* label_left,lv_obj_t* label_top)
 	lv_label_set_text(label_left, "");
 	label_top = lv_label_create(display0);
 	lv_obj_set_style_bg_color(label_top, lv_color_hex(0xd2dbe7), 0);
-	lv_obj_set_style_bg_opa(label_top, LV_OPA_COVER, 0);
+	lv_obj_set_style_bg_opa(label_top, LV_OPA_COVER,0);
 	lv_obj_set_pos(label_top, 0, 0);
 	lv_obj_set_size(label_top, 1024,55);
 	lv_label_set_text(label_top, "");
@@ -72,6 +72,7 @@ void metro_logo(lv_obj_t* lb_top)
 	logo = lv_img_create(lb_top);
 	lv_img_set_src(logo, "0:/logo.bin");
 	lv_obj_set_pos(logo,2,2);
+	
 }
 void btn1_cb(lv_event_t *e)
 {

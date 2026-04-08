@@ -24,8 +24,6 @@
 #define BUTTON_X    954 - CANVAS_X
 #define BUTTON_Y    476 - CANVAS_Y
 
-#define PLUS  1
-#define MINUS -1
 #define STEP  5 //缩放的步长
 
 
@@ -39,7 +37,6 @@ extern lv_obj_t* display0;
 extern lv_obj_t* display1;
 extern lv_obj_t* display2;
 static int flag;
-
 
 
 #endif

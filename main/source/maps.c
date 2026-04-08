@@ -8,7 +8,12 @@
 
 void pressing_canvas(lv_event_t *e);
 extern void *canvas_buf;
-lv_obj_t* canvas;
+
+int8_t plus = 1;
+int8_t minus = -1;
+
+extern lv_obj_t * canvas;
+
 
 
 static lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin)
