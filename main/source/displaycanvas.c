@@ -10,8 +10,11 @@
 extern int8_t plus, minus;
 extern MetroLine metro_lines[4];
 
+extern int8_t is_showing;
 
 void *canvas_buf;//缓冲区
+
+int8_t para_numbers[5] = {0,1,2,3,4};//妥协之举，传参只能传地址
 
 
 void pressing_canvas(lv_event_t *e);
@@ -21,7 +24,7 @@ void adjust_magnify(lv_event_t * );
 
 void lines_selector_init(lv_obj_t * , MetroLine *);
 
-void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , int8_t count , MetroLine *line);
+void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , MetroLine *line);
 
 
 lv_obj_t *btn_plus , *btn_minus;
@@ -112,13 +115,14 @@ void lines_selector_init(lv_obj_t *canvas, MetroLine *lines)
     lv_style_init(&line_style);
     for (int i = 0; i < 4;i++)
     {
-        lines_btn_init(line_btns + i, line_labels[i], canvas, i+1, lines + i);
+        lines_btn_init(line_btns + i, line_labels[i], canvas, lines + i);
     }
 
 }
-void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , int8_t count , MetroLine *line)
+void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas ,  MetroLine *line)
 {
     char * str, longstr[10];
+    int8_t count = line->line_number;
     sprintf(str, "%d", count);
     
     btn = lv_btn_create(canvas);
@@ -159,6 +163,16 @@ void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , int8_t
 
 }
 
+
+void line_selector_cb(lv_event_t * e)
+{
+    int8_t *para_number = lv_event_get_user_data(e);
+
+    if (*para_number == is_showing) is_showing = 0;
+    else is_showing = *para_number;
+
+    create_metro_map();
+}
 
 void pressing_canvas(lv_event_t *e)
 {

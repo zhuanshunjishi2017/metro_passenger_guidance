@@ -35,7 +35,7 @@ typedef struct {
     const char* name_pinyin;
     lv_coord_t geo_x;
     lv_coord_t geo_y;
-    int8_t is_transfer;        //是否为换乘站
+    int8_t is_transfer;        //是否为换乘站,标记为-1说明已经出现过
     int8_t horizon_offset;   //标签水平偏移量，右为正
     int8_t vertical_offset;  //标签垂直偏移量，下为正
     int8_t is_draw_point;      //是否为端点
@@ -47,6 +47,7 @@ typedef struct {
     uint16_t count;
     uint32_t line_color;
     uint8_t draw_point_count;
+    uint8_t line_number;
 } MetroLine; // 线路结构体
 
 

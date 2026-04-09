@@ -20,6 +20,8 @@ lv_coord_t origin_y = -30;
 int8_t plus = 1;
 int8_t minus = -1;
 
+int8_t is_showing = 0;//正在显示的线路，0为全部
+
 
 static lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin)
 {
