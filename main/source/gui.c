@@ -10,6 +10,7 @@ void btn3_cb(lv_event_t *e);
 void kb_show_cb(lv_event_t *e);
 void kb_hide_cb(lv_event_t *e);
 void keyBoard_event_cb(lv_event_t *e);
+void screen_load_event_cb(lv_event_t *e);
 extern const lv_font_t heiti_14;
 extern const lv_font_t heiti_16;
 extern const lv_font_t heiti_20;
@@ -18,6 +19,7 @@ extern lv_obj_t* display0;
 extern lv_obj_t* display1;
 extern lv_obj_t* display2;
 extern lv_obj_t* canvas;
+extern lv_obj_t* timetable1,*timetable2,*timetable3;
 lv_obj_t* label_left,*label_top;
 lv_obj_t* lb_t1;
 lv_obj_t* btn1,*btn2,*btn3;
@@ -29,7 +31,26 @@ lv_obj_t* bell_blue,*bell_white;
 lv_obj_t* map_lb,*bell_lb,*line_lb;
 
 static int flag;
-
+static char time_buf[32];
+void timetable_init(void)
+{
+	timetable1 = lv_label_create(display0);
+	lv_obj_set_pos(timetable1,800,18);
+	lv_obj_set_size(timetable1,200,24);
+	timetable2 = lv_label_create(display1);
+	lv_obj_set_pos(timetable2,800,18);
+	lv_obj_set_size(timetable2,200,24);
+	timetable3 = lv_label_create(display2);
+	lv_obj_set_pos(timetable3,800,18);
+	lv_obj_set_size(timetable3,200,24);
+}
+void time_set(void)
+{
+	get_rtc_time_string(time_buf, sizeof(time_buf));
+	lv_label_set_text(timetable1, time_buf);
+	lv_label_set_text(timetable2, time_buf);
+	lv_label_set_text(timetable3, time_buf);
+}
 void twocolumns(lv_obj_t* display0)
 {
 	label_left = lv_label_create(display0);
@@ -177,8 +198,12 @@ void display_set(lv_obj_t* display,int judge)
     create_buttons(display,judge);
     creat_top_ta(display);
     metro_logo(display,judge);
+	lv_obj_add_event_cb(display, screen_load_event_cb, LV_EVENT_SCREEN_LOAD_START, kb);
 }
-
+void screen_load_event_cb(lv_event_t *e)
+{
+	lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+}
 void btn1_cb(lv_event_t *e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
