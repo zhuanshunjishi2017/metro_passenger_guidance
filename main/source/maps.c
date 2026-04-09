@@ -8,12 +8,17 @@
 
 void pressing_canvas(lv_event_t *e);
 extern void *canvas_buf;
+extern lv_obj_t * canvas;
+
+extern MetroLine metro_lines[4];
+
+uint16_t magnify_size = 30;
+
+lv_coord_t origin_x = -30;
+lv_coord_t origin_y = -30;
 
 int8_t plus = 1;
 int8_t minus = -1;
-
-extern lv_obj_t * canvas;
-
 
 
 static lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin)
@@ -121,8 +126,26 @@ void create_metro_map(void)
 {
     //通过直接访问内存将画布重新填充为白色
     memset(canvas_buf, 255, BUF_SIZE);
+    //lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
+    
     for (int i = 3; i >= 0; i--) 
         draw_metro_line(canvas, &metro_lines[i]);
+    draw_line_container(canvas);
+    
 }
 
+void draw_line_container(lv_obj_t * canvas)
+{
+    lv_draw_rect_dsc_t rect_dsc;
+    lv_draw_rect_dsc_init(&rect_dsc);
 
+    rect_dsc.bg_color = lv_color_white();
+    rect_dsc.outline_width = 1;
+    rect_dsc.bg_opa = LV_OPA_COVER;
+
+    rect_dsc.outline_color = lv_color_hex(COLOR_MID_GRAY);
+    rect_dsc.radius = 4;
+
+    lv_canvas_draw_rect(canvas, REC_X, REC_Y, REC_W, REC_H, &rect_dsc);
+   
+}

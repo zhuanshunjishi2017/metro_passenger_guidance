@@ -23,6 +23,10 @@
 #define BUTTON_LEN  35
 #define BUTTON_X    954 - CANVAS_X
 #define BUTTON_Y    476 - CANVAS_Y
+#define REC_X       896 - CANVAS_X
+#define REC_Y       74  - CANVAS_Y
+#define REC_W       102
+#define REC_H       143
 
 #define STEP  5 //缩放的步长
 
