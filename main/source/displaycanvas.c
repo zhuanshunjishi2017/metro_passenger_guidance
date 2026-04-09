@@ -3,10 +3,12 @@
 #include "lv_port_indev_template.h"
 #include "lvgl.h"
 #include <string.h>
+#include <stdio.h>
 #include "gui.h"
+#include "metro_line.h"
 
 extern int8_t plus, minus;
-
+extern MetroLine metro_lines[4];
 
 
 void *canvas_buf;//缓冲区
@@ -17,12 +19,20 @@ void canvas_init(lv_obj_t *);
 void buttons_init(lv_obj_t *);
 void adjust_magnify(lv_event_t * );
 
+void lines_selector_init(lv_obj_t * , MetroLine *);
+
+void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , int8_t count , MetroLine *line);
+
+
 lv_obj_t *btn_plus , *btn_minus;
 lv_obj_t *lines_container;
-lv_style_t btn_style;//创建样式
+lv_style_t btn_style, rec_style, selector_style, line_style;//创建样式
 lv_obj_t * label_plus, *label_minus;
+lv_obj_t line_btns[4];
+lv_obj_t line_labels[4][2];
 
 extern lv_coord_t origin_x, origin_y, magnify_size;
+extern lv_font_t heiti_16;
 
 void canvas_init(lv_obj_t *canvas)
 {
@@ -42,6 +52,8 @@ void canvas_init(lv_obj_t *canvas)
 
     buttons_init(canvas);
 
+    lines_selector_init(canvas, metro_lines);
+
     create_metro_map();
 }
 
@@ -53,9 +65,9 @@ void buttons_init(lv_obj_t *canvas)
 
     lv_style_set_bg_color(&btn_style, lv_color_hex(COLOR_LIGHT_GRAY));
     lv_style_set_border_color(&btn_style, lv_color_hex(COLOR_MID_GRAY));
+    lv_style_set_border_width(&btn_style, 1);
     lv_style_set_radius(&btn_style, BUTTON_RADIUS);
     lv_style_set_opa(&btn_style, LV_OPA_COVER);
-
 
 
     btn_plus = lv_btn_create(canvas);
@@ -67,8 +79,6 @@ void buttons_init(lv_obj_t *canvas)
     lv_label_set_text(label_plus, "+");
     lv_obj_center(label_plus);
     lv_obj_set_style_text_color(label_plus, lv_color_black(),0);
-
-
 
     btn_minus = lv_btn_create(canvas);
     lv_obj_set_pos(btn_minus , BUTTON_X , BUTTON_Y + BUTTON_LEN + 10);
@@ -84,7 +94,68 @@ void buttons_init(lv_obj_t *canvas)
 
     lv_obj_add_event_cb(btn_plus, adjust_magnify, LV_EVENT_PRESSED, &plus);
     lv_obj_add_event_cb(btn_minus, adjust_magnify, LV_EVENT_PRESSED, &minus);
+}
 
+void lines_selector_init(lv_obj_t *canvas, MetroLine *lines)
+{
+
+    lv_style_init(&selector_style);
+
+    lv_style_set_bg_color(&selector_style, lv_color_white());
+    //lv_style_set_border_color(&selector_style, lv_color_hex(COLOR_MID_GRAY));
+    lv_style_set_border_width(&selector_style, 0);
+    lv_style_set_radius(&selector_style, BUTTON_RADIUS);
+    lv_style_set_opa(&selector_style, LV_OPA_COVER);
+    lv_style_set_shadow_opa(&selector_style, LV_OPA_0);
+
+
+    lv_style_init(&line_style);
+    for (int i = 0; i < 4;i++)
+    {
+        lines_btn_init(line_btns + i, line_labels[i], canvas, i+1, lines + i);
+    }
+
+}
+void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , int8_t count , MetroLine *line)
+{
+    char * str, longstr[10];
+    sprintf(str, "%d", count);
+    
+    btn = lv_btn_create(canvas);
+
+    lv_obj_set_pos(btn, REC_X + 10 , REC_Y + 10 + 33 *(count -1));
+    lv_obj_set_size(btn, 84 , 24);
+
+    lv_obj_add_style(btn, &selector_style, 0);
+
+    labels = lv_label_create(btn);
+    lv_obj_set_pos(labels, -20 ,-11);
+    lv_obj_set_size(labels, 24, 24);
+
+    lv_obj_set_style_text_font(labels, &heiti_16, 0);
+    lv_obj_set_style_text_color(labels, lv_color_white(), 0);
+    lv_obj_set_style_bg_color(labels, lv_color_hex(line->line_color), 0);
+    lv_obj_set_style_bg_opa(labels, LV_OPA_COVER, 0);
+    lv_obj_set_style_radius(labels, 4, 0);
+    lv_obj_set_style_text_align(labels, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_style_pad_top(labels, 4, 0);
+    
+    
+    lv_label_set_text(labels, str);
+
+    lv_obj_t * label2 = labels + 1;
+
+    label2 = lv_label_create(btn);
+    
+    lv_obj_set_pos(label2, 14 ,-8);
+    lv_obj_set_size(label2, 48, 18);
+    lv_obj_set_style_text_font(label2, &heiti_16, 0);
+    lv_obj_set_style_text_color(label2, lv_color_black(), 0);
+    lv_obj_set_style_text_align(label2, LV_TEXT_ALIGN_LEFT, 0);
+
+
+    snprintf(longstr, sizeof(longstr), "%d号线",count);
+    lv_label_set_text(label2, longstr);
 
 }
 
