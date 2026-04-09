@@ -10,11 +10,13 @@ void create_buttons(lv_obj_t*,int);
 void creat_top_ta(lv_obj_t*);
 void metro_logo(lv_obj_t*,int);
 void display_set(lv_obj_t*,int);
+void timetable_init(void);
+void time_set(void);
 // void display0_init(lv_obj_t *);
 
 lv_obj_t* display0,*display1,*display2;
 lv_obj_t* canvas;
-
+lv_obj_t* timetable1,*timetable2,*timetable3;
 int main(void)
 {
 	sys_init();
@@ -36,12 +38,15 @@ int main(void)
   canvas_init(canvas);
   lv_scr_load(display0);
     
-    //display0,1,2_gui
+  //display0,1,2_gui
   display_set(display0,0);
   display_set(display1,1);
   display_set(display2,2);
+  timetable_init();
   while(1)
 	{
+        time_set();
+
         lv_timer_handler();
         delay_us(40000);//刷新率25Hz
 	}
