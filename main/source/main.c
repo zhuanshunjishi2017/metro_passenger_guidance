@@ -42,6 +42,7 @@ int main(void)
   display_set(display0,0);
   display_set(display1,1);
   display_set(display2,2);
+  
   timetable_init();
   while(1)
 	{

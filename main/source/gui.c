@@ -31,22 +31,29 @@ lv_obj_t* bell_blue,*bell_white;
 lv_obj_t* map_lb,*bell_lb,*line_lb;
 
 static int flag;
-static char time_buf[32];
+static char time_buf[48];
 void timetable_init(void)
 {
 	timetable1 = lv_label_create(display0);
-	lv_obj_set_pos(timetable1,800,18);
-	lv_obj_set_size(timetable1,200,24);
+	lv_obj_set_pos(timetable1,710,20);
+	lv_obj_set_size(timetable1,280,24);
+	lv_obj_set_style_text_font(timetable1,&heiti_20,LV_PART_MAIN);
+
 	timetable2 = lv_label_create(display1);
-	lv_obj_set_pos(timetable2,800,18);
-	lv_obj_set_size(timetable2,200,24);
+	lv_obj_set_pos(timetable2,710,20);
+	lv_obj_set_size(timetable2,280,24);
+	lv_obj_set_style_text_font(timetable2,&heiti_20,LV_PART_MAIN);
+
 	timetable3 = lv_label_create(display2);
-	lv_obj_set_pos(timetable3,800,18);
-	lv_obj_set_size(timetable3,200,24);
+	lv_obj_set_pos(timetable3,710,20);
+	lv_obj_set_size(timetable3,280,24);
+	lv_obj_set_style_text_font(timetable3,&heiti_20,LV_PART_MAIN);
+
 }
 void time_set(void)
 {
 	get_rtc_time_string(time_buf, sizeof(time_buf));
+
 	lv_label_set_text(timetable1, time_buf);
 	lv_label_set_text(timetable2, time_buf);
 	lv_label_set_text(timetable3, time_buf);
@@ -149,7 +156,7 @@ void metro_logo(lv_obj_t* display0,int judge)
 {
 	logo = lv_img_create(display0);
 	lv_img_set_src(logo, "0:/logo.bin");
-	lv_obj_set_pos(logo,0,2);
+	lv_obj_set_pos(logo,1,4);
 	
 	map_blue = lv_img_create(display0);
 	lv_img_set_src(map_blue, "0:/map_blue.bin");
@@ -179,7 +186,7 @@ void metro_logo(lv_obj_t* display0,int judge)
 	lv_obj_add_flag(bell_white, LV_OBJ_FLAG_HIDDEN);
 
 	lb_t1 = lv_label_create(display0);
-	lv_obj_set_pos(lb_t1,160,16);
+	lv_obj_set_pos(lb_t1,160,18);
 	lv_obj_set_size(lb_t1,87,23);
 	lv_label_set_text(lb_t1,"乘客导视");
 	lv_obj_set_style_text_font(lb_t1,&heiti_20,LV_PART_MAIN);

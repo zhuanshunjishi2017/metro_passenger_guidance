@@ -24,10 +24,40 @@ void get_rtc_time_string(char *buf, size_t len)
 
     rtc_current_time_get(&rtc_time);
 
-    snprintf(buf, len, "20%0.2x-%0.2x-%0.2x %0.2x:%0.2x:%0.2x",
+    char weekday_str[6];
+
+    switch (rtc_time.day_of_week)
+    {
+        case RTC_MONDAY:
+            strcpy(weekday_str, "周一");
+            break;
+        case RTC_TUESDAY:
+            strcpy(weekday_str, "周二");
+            break;
+        case RTC_WEDNESDAY:
+            strcpy(weekday_str, "周三");
+            break;        
+        case RTC_THURSDAY:
+            strcpy(weekday_str, "周四");
+            break;
+        case RTC_FRIDAY:
+            strcpy(weekday_str, "周五");
+            break;
+        case RTC_SATURDAY:
+            strcpy(weekday_str, "周六");
+            break;
+        case RTC_SUNDAY:
+            strcpy(weekday_str, "周日");
+            break;
+        default:
+            break;
+    }
+
+    snprintf(buf, len, "20%0.2x年%0.2x月%0.2x日 %s %0.2x:%0.2x:%0.2x",
             rtc_time.year,
              rtc_time.month,
              rtc_time.date,
+             weekday_str,
              rtc_time.hour,
              rtc_time.minute,
              rtc_time.second);

@@ -11,9 +11,9 @@
 #define SCREEN_H 600  // 屏幕分辨率
 
 #define GEO_X_MIN 0
-#define GEO_X_MAX 45
+#define GEO_X_MAX 38
 #define GEO_Y_MIN 0
-#define GEO_Y_MAX 35  // GeoGebra 坐标范围
+#define GEO_Y_MAX 33 // GeoGebra 坐标范围
 #define PAD_X 12
 #define PAD_Y 40  // 屏幕边距
 #define STATION_RADIUS 5 //半径

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 24 px
  * Bpp: 2
- * Opts: --bpp 2 --size 24 --no-compress --stride 1 --align 1 --font FangZhengHeiTi-GBK-1.ttf --symbols 径河三店码头潭公园东吴大道五环额湾竹叶海舵落口古田一路二四汉西宗关太平洋硚崇仁利济北友谊循礼门智阳黄浦街七徐州新村丹水池荣堤角滕子岗滠城天机场航空总部宋家巨龙盘宏图常青金银花长港火车站范湖王墩年中山江积玉桥螃蟹岬小龟洪广南宝通寺埠屯虎泉杨光谷珞雄华科技学佳武融秀藏佛祖岭柏林庙临嶂蔡甸凤凰农知音集贤孟铺永安堂十里钟拦复兴首义昌梅苑区楚鱼嘴亭岳铁罗和工业春沌风司体育心客运陶双商务云飞菱香惠赵条庄后市民之乘导视地线提醒搜索结果月日周六号历史记录清收方向设为起点终末班在此输入以检换时刻表第即将到还有预计添加本当前不营段分共完成距离列进间秒忽略确定指行下的数置规划暂无我取消已删除!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ --format lvgl -o heiti_24.c
+ * Opts: --bpp 2 --size 24 --no-compress --stride 1 --align 1 --font FangZhengHeiTi-GBK-1.ttf --symbols 径河三店码头潭公园东吴大道五环额湾竹叶海舵落口古田一路二四汉西宗关太平洋硚崇仁利济北友谊循礼门智阳黄浦街七徐州新村丹水池荣堤角滕子岗滠城天机场航空总部宋家巨龙盘宏图常青金银花长港火车站范湖王墩年中山江积玉桥螃蟹岬小龟洪广南宝通寺埠屯虎泉杨光谷珞雄华科技学佳武融秀藏佛祖岭柏林庙临嶂蔡甸凤凰农知音集贤孟铺永安堂十里钟拦复兴首义昌梅苑区楚鱼嘴亭岳铁罗和工业春沌风司体育心客运陶双商务云飞菱香惠赵条庄后市民之乘导视地线提醒搜索结果月日周六号历史记录清收方向设为起点终末班在此输入以检换时刻表第即将到还有预计添加本当前不营段分共完成距离列进间秒忽略确定指行下的数置规划暂无我取消已删除!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~  --format lvgl -o heiti_24.c
  ******************************************************************************/
 
 #ifdef __has_include
@@ -32,6 +32,8 @@
 
 /*Store the image of the glyphs*/
 static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
+    /* U+0020 " " */
+
     /* U+0021 "!" */
     0xfb, 0xef, 0xbe, 0xfb, 0xdf, 0x6d, 0xb6, 0xc7,
     0x1c, 0x70, 0x5, 0x3e, 0xf8,
@@ -5944,6 +5946,7 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
 
 static const lv_font_fmt_txt_glyph_dsc_t glyph_dsc[] = {
     {.bitmap_index = 0, .adv_w = 0, .box_w = 0, .box_h = 0, .ofs_x = 0, .ofs_y = 0} /* id = 0 reserved */,
+    {.bitmap_index = 0, .adv_w = 107, .box_w = 0, .box_h = 0, .ofs_x = 0, .ofs_y = 0},
     {.bitmap_index = 0, .adv_w = 107, .box_w = 3, .box_h = 17, .ofs_x = 2, .ofs_y = 0},
     {.bitmap_index = 13, .adv_w = 135, .box_w = 6, .box_h = 7, .ofs_x = 1, .ofs_y = 10},
     {.bitmap_index = 24, .adv_w = 213, .box_w = 13, .box_h = 17, .ofs_x = 0, .ofs_y = 0},
@@ -6375,11 +6378,11 @@ static const uint16_t unicode_list_1[] = {
 static const lv_font_fmt_txt_cmap_t cmaps[] =
 {
     {
-        .range_start = 33, .range_length = 94, .glyph_id_start = 1,
+        .range_start = 32, .range_length = 95, .glyph_id_start = 1,
         .unicode_list = NULL, .glyph_id_ofs_list = NULL, .list_length = 0, .type = LV_FONT_FMT_TXT_CMAP_FORMAT0_TINY
     },
     {
-        .range_start = 19968, .range_length = 20896, .glyph_id_start = 95,
+        .range_start = 19968, .range_length = 20896, .glyph_id_start = 96,
         .unicode_list = unicode_list_1, .glyph_id_ofs_list = NULL, .list_length = 288, .type = LV_FONT_FMT_TXT_CMAP_SPARSE_TINY
     }
 };

@@ -14,7 +14,7 @@ extern int8_t is_showing;
 
 void *canvas_buf;//缓冲区
 
-int8_t para_numbers[5] = {0,1,2,3,4};//妥协之举，传参只能传地址
+int8_t para_numbers[5] = {0,1,2,3,4};  //妥协之举，传参只能传地址
 
 
 void pressing_canvas(lv_event_t *e);
@@ -188,6 +188,17 @@ void pressing_canvas(lv_event_t *e)
     origin_x += vect.x;
     origin_y += vect.y;
 
+    //设置边界
+
+    if (origin_x > CANVAS_W/2) origin_x = CANVAS_W/2;
+    if (origin_y > CANVAS_H/2) origin_y = CANVAS_H/2;
+
+    if (origin_x < CANVAS_W/2 - GEO_X_MAX * magnify_size) 
+        origin_x = CANVAS_W/2 - GEO_X_MAX * magnify_size;
+    if (origin_y < CANVAS_H/2 - GEO_Y_MAX * magnify_size) 
+        origin_y = CANVAS_H/2 - GEO_Y_MAX * magnify_size;
+
+
     create_metro_map();
 
 }
@@ -199,9 +210,9 @@ void adjust_magnify(lv_event_t * e)
     uint16_t pre_size = magnify_size;
     magnify_size += (uint16_t)((*state) * STEP);
 
-    if (magnify_size < 15) 
+    if (magnify_size < 20) 
     {
-        magnify_size = 15;
+        magnify_size = 20;
         return;
     }
     if (magnify_size > 150) 
