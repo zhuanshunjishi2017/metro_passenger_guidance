@@ -23,6 +23,7 @@ void buttons_init(lv_obj_t *);
 void adjust_magnify(lv_event_t * );
 
 void lines_selector_init(lv_obj_t * , MetroLine *);
+void line_selector_cb(lv_event_t * e);
 
 void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , MetroLine *line);
 
@@ -160,6 +161,8 @@ void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas ,  Metro
 
     snprintf(longstr, sizeof(longstr), "%d号线",count);
     lv_label_set_text(label2, longstr);
+
+    lv_obj_add_event_cb(btn, line_selector_cb, LV_EVENT_PRESSED, para_numbers + count);
 
 }
 

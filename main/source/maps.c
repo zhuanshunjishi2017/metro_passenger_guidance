@@ -29,7 +29,7 @@ static lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin)
     return res;
 }
 
-static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line) 
+static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t state) 
 {
     lv_draw_line_dsc_t dsc;
 
@@ -51,6 +51,26 @@ static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line)
         {
             pts[j].x = geo_to_screen(line->stations[i].geo_x, origin_x);
             pts[j].y = geo_to_screen(line->stations[i].geo_y, origin_y);
+            //处理中南路和洪山广场这一段并行线
+            if (line->line_number == 2 && ((line->stations[i].id == 21)||(line->stations[i].id == 22)))
+            {
+                pts[j].x += 2;
+                pts[j].y += 2;
+            }
+            else if (line->line_number == 4 && (line->stations[i].id == 25))
+            {
+                j++;
+                pts[j].x = pts[j-1].x - 1;
+                pts[j].y = pts[j-1].y - 1;
+            }
+            else if (line->line_number == 4 && (line->stations[i].id == 26))
+            {
+                pts[j].x -= 1;
+                pts[j].y -= 1;
+                j++;
+                pts[j].x = pts[j-1].x + 1;
+                pts[j].y = pts[j-1].y + 1;
+            }
             j++;
         }
     }
@@ -58,13 +78,13 @@ static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line)
     lv_canvas_draw_line(canvas, pts, line->draw_point_count, &dsc);
     //绘制车站
     for (int i = 0; i < line->count; i++)
-        draw_station(canvas, line->stations + i, lv_color_hex(line->line_color));
+        draw_station(canvas, line->stations + i, lv_color_hex(line->line_color), state);
 }
 
-static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color) 
+static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color, int8_t state)
 {
     //已经画过的就不画了
-    if (!s->horizon_offset && !s->vertical_offset) return;
+    if (!state && s->is_transfer == 1) return;
 
     //设置站点样式
     lv_draw_rect_dsc_t rect_dsc;
@@ -78,12 +98,11 @@ static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color)
     if (s->is_transfer) {
         rect_dsc.outline_color = lv_color_black();
         radius = TRANSFER_STATION_RADIUS;
-        rect_dsc.radius = TRANSFER_STATION_RADIUS;
     } else {
         radius = STATION_RADIUS;
-        rect_dsc.radius = STATION_RADIUS;
         rect_dsc.outline_color = color;
     }
+    rect_dsc.radius = radius;
 
     //绘制站点
     lv_coord_t x = geo_to_screen(s->geo_x, origin_x);
@@ -130,12 +149,24 @@ void create_metro_map(void)
     memset(canvas_buf, 255, BUF_SIZE);
     //lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
     
-    for (int i = 3; i >= 0; i--) 
-        draw_metro_line(canvas, &metro_lines[i]);
+    for (int i = 0; i < 4; i++) 
+        draw_metro_line(canvas, &metro_lines[i], NORMAL_STATE);
+    if (is_showing)
+    {
+        draw_transparent_rect(canvas, lv_color_white());
+        for (int i = 0; i < 4; i++)
+        {
+            if (is_showing == metro_lines[i].line_number)
+            {
+                draw_metro_line(canvas, &metro_lines[i], HIGHLIGHT_STATE);
+            }
+        }
+    }
     draw_line_container(canvas);
     
 }
 
+//绘制盛放按钮的区域
 void draw_line_container(lv_obj_t * canvas)
 {
     lv_draw_rect_dsc_t rect_dsc;
@@ -150,4 +181,19 @@ void draw_line_container(lv_obj_t * canvas)
 
     lv_canvas_draw_rect(canvas, REC_X, REC_Y, REC_W, REC_H, &rect_dsc);
    
+}
+
+//绘制半透明遮罩
+void draw_transparent_rect(lv_obj_t * canvas, lv_color_t color)
+{
+    lv_draw_rect_dsc_t rect_dsc;
+    lv_draw_rect_dsc_init(&rect_dsc);
+
+    rect_dsc.bg_color = color;
+    rect_dsc.outline_width = 0;
+    rect_dsc.bg_opa = LV_OPA_80;
+
+    rect_dsc.radius = 0;
+
+    lv_canvas_draw_rect(canvas,0 ,0, CANVAS_W ,CANVAS_H ,&rect_dsc); 
 }
