@@ -139,14 +139,8 @@ void creat_top_ta(lv_obj_t* display0)
 	lv_obj_set_size(ta,266,34);
 	lv_obj_set_style_radius(ta,4,LV_PART_MAIN);
 
-	if(kb == NULL) 
-	{
-        kb = lv_keyboard_create(display0);
-        lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
-    } else {
-        // 如果 kb 已存在，确保它属于当前的 display0 (防止父对象错乱)
-        lv_obj_set_parent(kb, display0);
-    }
+	kb = lv_keyboard_create(display0);
+    lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_add_event_cb(ta, kb_show_cb, LV_EVENT_CLICKED, kb);
 	lv_obj_add_event_cb(display0, kb_hide_cb, LV_EVENT_CLICKED, kb);
 	lv_obj_add_event_cb(kb, keyBoard_event_cb, LV_EVENT_ALL, ta);
@@ -216,7 +210,7 @@ void display_set(lv_obj_t* display,int judge)
     create_buttons(display,judge);
     creat_top_ta(display);
     metro_logo(display,judge);
-	lv_obj_add_event_cb(display, screen_load_event_cb, LV_EVENT_SCREEN_LOAD_START, kb);
+	lv_obj_add_event_cb(display, screen_load_event_cb, LV_EVENT_ALL, kb);
 }
 
 
@@ -225,9 +219,9 @@ void screen_load_event_cb(lv_event_t *e)
 {
 	// 获取用户数据传入的键盘对象
     lv_obj_t * kb = (lv_obj_t *)lv_event_get_user_data(e);
-    
+    lv_event_code_t code = lv_event_get_code(e);
     // 强制隐藏
-    if(kb) {
+    if(code == LV_EVENT_SCREEN_LOAD_START) {
         lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
     }
 }
@@ -264,6 +258,7 @@ void kb_show_cb(lv_event_t *e)
 	lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
 	lv_keyboard_set_textarea(kb,ta);
 	lv_obj_clear_flag(kb,LV_OBJ_FLAG_HIDDEN);
+	lv_obj_move_foreground(kb);
 }
 void kb_hide_cb(lv_event_t *e)
 {
