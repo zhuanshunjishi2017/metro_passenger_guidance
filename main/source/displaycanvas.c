@@ -11,6 +11,7 @@ extern int8_t plus, minus;
 extern MetroLine metro_lines[4];
 
 extern int8_t is_showing;
+extern lv_obj_t * kb;
 
 void *canvas_buf;//缓冲区
 
@@ -21,6 +22,8 @@ void pressing_canvas(lv_event_t *e);
 void canvas_init(lv_obj_t *);
 void buttons_init(lv_obj_t *);
 void adjust_magnify(lv_event_t * );
+void clicked_canvas(lv_event_t *e);
+
 
 void lines_selector_init(lv_obj_t * , MetroLine *);
 void line_selector_cb(lv_event_t * e);
@@ -52,6 +55,9 @@ void canvas_init(lv_obj_t *canvas)
     lv_obj_add_flag(canvas, LV_OBJ_FLAG_CLICKABLE);
 
     lv_obj_add_event_cb(canvas, pressing_canvas, LV_EVENT_PRESSING, NULL);
+    lv_obj_add_event_cb(canvas,clicked_canvas, LV_EVENT_PRESSED, NULL);
+
+
     lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
 
     buttons_init(canvas);
@@ -215,9 +221,9 @@ void adjust_magnify(lv_event_t * e)
         magnify_size = 20;
         return;
     }
-    if (magnify_size > 150) 
+    if (magnify_size > 100) 
     {    
-        magnify_size = 150;
+        magnify_size = 100;
         return;
     }
     //以画布中心为原点 计算偏移量
@@ -232,4 +238,10 @@ void adjust_magnify(lv_event_t * e)
     origin_y = CANVAS_H/2 + dist_y;
 
     create_metro_map();
+}
+
+void clicked_canvas(lv_event_t *e)
+{
+	lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
 }

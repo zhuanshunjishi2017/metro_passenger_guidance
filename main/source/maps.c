@@ -21,6 +21,7 @@ int8_t plus = 1;
 int8_t minus = -1;
 
 int8_t is_showing = 0;//正在显示的线路，0为全部
+int8_t station_clicked = 0; //是否存在被点击的车站
 
 
 static lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin)
@@ -151,6 +152,7 @@ void create_metro_map(void)
     
     for (int i = 0; i < 4; i++) 
         draw_metro_line(canvas, &metro_lines[i], NORMAL_STATE);
+    
     if (is_showing)
     {
         draw_transparent_rect(canvas, lv_color_white());
