@@ -44,11 +44,15 @@ int main(void)
   kb = lv_keyboard_create(lv_layer_top());
   lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
   lv_obj_add_event_cb(kb, keyBoard_event_cb, LV_EVENT_ALL, NULL);
+  
   display_set(display0,0);
   display_set(display1,1);
   display_set(display2,2);
+
   //display1_gui
   ui_init();
+  prompt_no_inf();
+  ta_init();
   
   timetable_init();
   while(1)

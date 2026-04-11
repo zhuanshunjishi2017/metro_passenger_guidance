@@ -175,10 +175,11 @@ void metro_logo(lv_obj_t* display0,int judge)
 		break;
 	}
 }
-void transparent_init(lv_obj_t* display)
+void transparent_init(lv_obj_t* display)  //生成隐藏的覆盖整个canvas的label
 {
 	lv_obj_t* transparent = create_simple_label(display,60,55,964,545,"",NULL);
-	lv_obj_set_style_opa(transparent, LV_OPA_TRANSP, 0);
+	lv_obj_set_style_bg_opa(transparent, LV_OPA_50, 0);
+	lv_obj_set_style_bg_color(transparent,lv_color_hex(COLOR_MID_GRAY),LV_PART_MAIN);
 	lv_obj_add_flag(transparent,LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_move_foreground(transparent);
 	lv_obj_add_event_cb(transparent, kb_hide_cb, LV_EVENT_ALL, kb);   //键盘隐藏回调创建
@@ -192,7 +193,7 @@ void display_set(lv_obj_t* display,int judge)
 	lv_obj_add_event_cb(display, screen_load_event_cb, LV_EVENT_ALL, kb);
 }
 
-void screen_load_event_cb(lv_event_t *e)
+void screen_load_event_cb(lv_event_t *e) //切换界面后立即隐去kb（如果有）
 {
 	// 获取用户数据传入的键盘对象
     lv_obj_t * kb = (lv_obj_t *)lv_event_get_user_data(e);
@@ -227,10 +228,7 @@ void kb_show_cb(lv_event_t *e)
 {
 	lv_obj_t *ta = lv_event_get_target(e);
 	lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
-	lv_keyboard_set_textarea(kb,ta);
-	lv_obj_clear_flag(kb,LV_OBJ_FLAG_HIDDEN);
-	transparent_init(lv_scr_act());
-	lv_obj_move_foreground(kb);
+	kb_show(kb,ta);
 }
 void kb_hide_cb(lv_event_t *e)
 {
@@ -239,8 +237,7 @@ void kb_hide_cb(lv_event_t *e)
 	lv_obj_t * transparent = lv_event_get_target(e);     
 	if(code == LV_EVENT_CLICKED)
 	{
-		lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_del(transparent);
+		kb_hide(kb,transparent);
 	}
 }		
 void keyBoard_event_cb(lv_event_t *e)
@@ -264,7 +261,6 @@ void keyBoard_event_cb(lv_event_t *e)
 		}
 	}
 }
-
 
 /**
  * @brief 通用 Label 创建工具实现
@@ -296,4 +292,23 @@ lv_obj_t* create_simple_btn(lv_obj_t* parent, int x, int y, int w, int h, lv_col
     lv_obj_set_style_bg_color(btn, bg_color, LV_PART_MAIN);
     
     return btn; // 直接返回对象
+}
+
+/**
+ * @brief 键盘的弹出与隐去
+ * 将kb与隐藏的transparent标签绑定
+ * 实现弹出键盘同时生成transparent标签，隐去键盘同时删除transparent标签
+ * 代替lv_obj_clear_flag，lv_obj_add_flag
+ */
+void kb_show(lv_obj_t* kb,lv_obj_t* ta)
+{
+	lv_keyboard_set_textarea(kb,ta);
+	lv_obj_clear_flag(kb,LV_OBJ_FLAG_HIDDEN);
+	transparent_init(lv_scr_act());
+	lv_obj_move_foreground(kb);
+}
+void kb_hide(lv_obj_t* kb,lv_obj_t* transparent)
+{
+	lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_del(transparent);
 }

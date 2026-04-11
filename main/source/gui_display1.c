@@ -1,11 +1,94 @@
-
 #include "gui.h"
+void start_ta_kb_show_cb(lv_event_t *e);
+void end_ta_kb_show_cb(lv_event_t *e);
+void start_ta_kb_hide_cb(lv_event_t *e);
+void end_ta_kb_hide_cb(lv_event_t *e);
 
 lv_obj_t* main_lb1,*main_lb2;
 lv_obj_t* start_lb,*end_lb;
 lv_obj_t* station_lb,*route_lb;
-
+lv_obj_t* start_ta,*end_ta;
+lv_obj_t* btn4,*btn4_lb;
+static lv_point_t line_points[] = {{352,55},{352,599}};
 void ui_init(void)
 {
-    
+    main_lb1 = create_simple_label(display1,100,86,96,27,"路线规划",&heiti_24);
+    main_lb2 = create_simple_label(display1,397,86,96,27,"我的收藏",&heiti_24);
+    start_lb = create_simple_label(display1,100,136,40,23,"起点",&heiti_20);
+    end_lb = create_simple_label(display1,100,226,40,23,"终点",&heiti_20);
+    station_lb = create_simple_label(display1,398,149,40,23,"车站",&heiti_20);
+    route_lb = create_simple_label(display1,704,149,40,23,"线路",&heiti_20);
+
+    lv_obj_set_style_text_color(start_lb, lv_color_hex(COLOR_DARK_BLUE), 0);
+    lv_obj_set_style_text_color(end_lb, lv_color_hex(COLOR_DARK_BLUE), 0);
+    lv_obj_set_style_text_color(station_lb, lv_color_hex(COLOR_DARK_BLUE), 0);
+    lv_obj_set_style_text_color(route_lb, lv_color_hex(COLOR_DARK_BLUE), 0);
+
+    btn4 = create_simple_btn(display1,100,336,212,38, lv_color_hex(COLOR_DARK_BLUE));
+    btn4_lb = lv_label_create(btn4);
+	lv_obj_set_flex_align(btn4, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+	lv_label_set_text(btn4_lb,"确定");
+	lv_obj_set_style_text_font(btn4_lb,&heiti_16,LV_PART_MAIN);
+	lv_obj_set_style_bg_color(btn4_lb, lv_color_hex(0xffffff), 0);
+
+    lv_obj_t * line1 = lv_line_create(display1);
+    lv_line_set_points(line1, line_points, 2);
+    lv_obj_set_style_line_width(line1, 2, LV_PART_MAIN);
+    lv_obj_set_style_line_color(line1, lv_color_hex(COLOR_MID_GRAY), LV_PART_MAIN);
+    lv_obj_clear_flag(display1, LV_OBJ_FLAG_SCROLLABLE);
+}
+void prompt_no_inf(void)
+{
+    lv_obj_t* station_prompt = create_simple_label(display1,396,205,140,23,"暂无收藏车站!",&heiti_20);
+    lv_obj_t* route_prompt = create_simple_label(display1,704,205,140,23,"暂无收藏线路!",&heiti_20);
+}
+void ta_init(void)
+{
+    start_ta = lv_textarea_create(display1);
+	lv_obj_set_pos(start_ta,101,167);
+	lv_obj_set_size(start_ta,211,40);
+	lv_obj_set_style_radius(start_ta,4,LV_PART_MAIN);
+    lv_obj_add_event_cb(start_ta, start_ta_kb_show_cb, LV_EVENT_CLICKED, kb);
+    end_ta = lv_textarea_create(display1);
+	lv_obj_set_pos(end_ta,101,255);
+	lv_obj_set_size(end_ta,211,40);
+	lv_obj_set_style_radius(end_ta,4,LV_PART_MAIN);
+    lv_obj_add_event_cb(end_ta, end_ta_kb_show_cb, LV_EVENT_CLICKED, kb);
+}
+
+void start_ta_kb_show_cb(lv_event_t *e)
+{
+    lv_obj_t *ta = lv_event_get_target(e);
+	lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
+	kb_show(kb,ta);
+    lv_obj_move_foreground(ta);
+    lv_obj_move_foreground(start_lb);
+}
+void end_ta_kb_show_cb(lv_event_t *e)
+{
+    lv_obj_t *ta = lv_event_get_target(e);
+	lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
+	kb_show(kb,ta);
+    lv_obj_move_foreground(ta);
+    lv_obj_move_foreground(end_lb);
+}
+void start_ta_kb_hide_cb(lv_event_t *e)
+{
+    lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
+	lv_event_code_t code = lv_event_get_code(e);
+	lv_obj_t * transparent = lv_event_get_target(e);     
+	if(code == LV_EVENT_CLICKED)
+	{
+		kb_hide(kb,transparent);
+	}
+}
+void end_ta_kb_hide_cb(lv_event_t *e)
+{
+    lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
+	lv_event_code_t code = lv_event_get_code(e);
+	lv_obj_t * transparent = lv_event_get_target(e);     
+	if(code == LV_EVENT_CLICKED)
+	{
+		kb_hide(kb,transparent);
+	}
 }

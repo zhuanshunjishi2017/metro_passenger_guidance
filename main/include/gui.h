@@ -61,5 +61,15 @@ lv_obj_t* create_simple_label(lv_obj_t* parent, int x, int y, int w, int h,
  */
 lv_obj_t* create_simple_btn(lv_obj_t* parent, int x, int y, int w, int h, lv_color_t bg_color);
 
+/**
+ * @brief 键盘的弹出与隐去
+ * 将kb与隐藏的transparent标签绑定
+ * 实现弹出键盘同时生成transparent标签，隐去键盘同时删除transparent标签
+ * 代替lv_obj_clear_flag，lv_obj_add_flag
+ */
+void kb_show(lv_obj_t* kb,lv_obj_t* ta);
+void kb_hide(lv_obj_t* kb,lv_obj_t* transparent);
+void transparent_init(lv_obj_t* display);  //包含键盘隐藏回调函数创建
 
 #endif
+
