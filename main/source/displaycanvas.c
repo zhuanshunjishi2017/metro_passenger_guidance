@@ -39,7 +39,6 @@ lv_obj_t line_btns[4];
 lv_obj_t line_labels[4][2];
 
 extern lv_coord_t origin_x, origin_y, magnify_size;
-extern lv_font_t heiti_16;
 
 void canvas_init(lv_obj_t *canvas)
 {

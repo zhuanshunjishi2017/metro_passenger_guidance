@@ -1,7 +1,3 @@
-#include "drivers.h"
-#include "lv_port_disp_template.h"
-#include "lv_port_indev_template.h"
-#include <stdio.h>
 #include "gui.h"
 
 void btn1_cb(lv_event_t *e);
@@ -11,26 +7,18 @@ void kb_show_cb(lv_event_t *e);
 void kb_hide_cb(lv_event_t *e);
 void keyBoard_event_cb(lv_event_t *e);
 void screen_load_event_cb(lv_event_t *e);
-extern const lv_font_t heiti_14;
-extern const lv_font_t heiti_16;
-extern const lv_font_t heiti_20;
-extern const lv_font_t heiti_24;
-extern lv_obj_t* display0;
-extern lv_obj_t* display1;
-extern lv_obj_t* display2;
-extern lv_obj_t* canvas;
-extern lv_obj_t* timetable1,*timetable2,*timetable3;
+
 lv_obj_t* label_left,*label_top;
 lv_obj_t* lb_t1;
-lv_obj_t* btn1,*btn2,*btn3;
-lv_obj_t* ta,*kb;
+lv_obj_t* btn1,*btn2,*btn3,*btn_search;
+lv_obj_t* ta;
 lv_obj_t* logo;
 lv_obj_t* map_blue,*map_white;
 lv_obj_t* line_blue,*line_white;
 lv_obj_t* bell_blue,*bell_white;
-lv_obj_t* map_lb,*bell_lb,*line_lb;
+lv_obj_t* map_lb,*bell_lb,*line_lb,*search_lb;
 
-static int flag;
+
 static char time_buf[48];
 void timetable_init(void)
 {
@@ -38,40 +26,31 @@ void timetable_init(void)
 	lv_obj_set_pos(timetable1,710,20);
 	lv_obj_set_size(timetable1,280,24);
 	lv_obj_set_style_text_font(timetable1,&heiti_20,LV_PART_MAIN);
-
 	timetable2 = lv_label_create(display1);
 	lv_obj_set_pos(timetable2,710,20);
 	lv_obj_set_size(timetable2,280,24);
 	lv_obj_set_style_text_font(timetable2,&heiti_20,LV_PART_MAIN);
-
 	timetable3 = lv_label_create(display2);
 	lv_obj_set_pos(timetable3,710,20);
 	lv_obj_set_size(timetable3,280,24);
 	lv_obj_set_style_text_font(timetable3,&heiti_20,LV_PART_MAIN);
-
 }
 void time_set(void)
 {
 	get_rtc_time_string(time_buf, sizeof(time_buf));
-
 	lv_label_set_text(timetable1, time_buf);
 	lv_label_set_text(timetable2, time_buf);
 	lv_label_set_text(timetable3, time_buf);
 }
 void twocolumns(lv_obj_t* display0)
 {
-	label_left = lv_label_create(display0);
+	label_left = create_simple_label(display0,0,55,60,545,"",NULL);
 	lv_obj_set_style_bg_color(label_left, lv_color_hex(0x1a51), 0);
 	lv_obj_set_style_bg_opa(label_left, LV_OPA_COVER, 0);
-	lv_obj_set_pos(label_left, 0, 55);
-	lv_obj_set_size(label_left, 60,545);
-	lv_label_set_text(label_left, "");
-	label_top = lv_label_create(display0);
+
+	label_top = create_simple_label(display0,0,0,1024,55,"",NULL);
 	lv_obj_set_style_bg_color(label_top, lv_color_hex(0xd2dbe7), 0);
 	lv_obj_set_style_bg_opa(label_top, LV_OPA_COVER,0);
-	lv_obj_set_pos(label_top, 0, 0);
-	lv_obj_set_size(label_top, 1024,55);
-	lv_label_set_text(label_top, "");
 }
 void create_buttons(lv_obj_t* display0,int judge)
 {
@@ -80,34 +59,28 @@ void create_buttons(lv_obj_t* display0,int judge)
 	lv_obj_set_size(btn1, 50, 66);
 	lv_obj_set_style_radius(btn1,4,LV_PART_MAIN);
 	lv_obj_add_event_cb(btn1,btn1_cb,LV_EVENT_ALL,NULL);
-	map_lb = lv_label_create(display0);
-	lv_obj_set_pos(map_lb,13,107);
-	lv_obj_set_size(map_lb,33,19);
-	lv_label_set_text(map_lb,"地图");
-	lv_obj_set_style_text_font(map_lb,&heiti_16,LV_PART_MAIN);
+	map_lb = create_simple_label(display0,13,107,33,19,"地图",&heiti_16);
 
 	btn2 = lv_btn_create(display0);
 	lv_obj_set_pos(btn2, 6, 144);
 	lv_obj_set_size(btn2, 50, 66);
 	lv_obj_set_style_radius(btn2,4,LV_PART_MAIN);
 	lv_obj_add_event_cb(btn2,btn2_cb,LV_EVENT_ALL,NULL);
-	line_lb = lv_label_create(display0);
-	lv_obj_set_pos(line_lb,13,186);
-	lv_obj_set_size(line_lb,33,19);
-	lv_label_set_text(line_lb,"线路");
-	lv_obj_set_style_text_font(line_lb,&heiti_16,LV_PART_MAIN);
-
+	line_lb = create_simple_label(display0,13,186,33,19,"线路",&heiti_16);
 
 	btn3 = lv_btn_create(display0);
 	lv_obj_set_pos(btn3, 6, 222);
 	lv_obj_set_size(btn3, 50, 66);
 	lv_obj_set_style_radius(btn3,4,LV_PART_MAIN);
 	lv_obj_add_event_cb(btn3,btn3_cb,LV_EVENT_ALL,NULL);
-	bell_lb = lv_label_create(display0);
-	lv_obj_set_pos(bell_lb,13,261);
-	lv_obj_set_size(bell_lb,33,19);
-	lv_label_set_text(bell_lb,"提醒");
-	lv_obj_set_style_text_font(bell_lb,&heiti_16,LV_PART_MAIN);
+	bell_lb = create_simple_label(display0,13,261,33,19,"提醒",&heiti_16);
+
+	btn_search = create_simple_btn(display0,544,10,73,35,lv_color_hex(0x3f6ead));
+	search_lb = lv_label_create(btn_search);
+	lv_obj_set_flex_align(btn_search, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+	lv_label_set_text(search_lb,"搜索");
+	lv_obj_set_style_text_font(search_lb,&heiti_20,LV_PART_MAIN);
+	lv_obj_set_style_bg_color(search_lb, lv_color_hex(0xffffff), 0);
 
 	switch (judge)
 	{
@@ -145,12 +118,7 @@ void creat_top_ta(lv_obj_t* display0)
 	lv_obj_set_pos(ta,264,12);
 	lv_obj_set_size(ta,266,34);
 	lv_obj_set_style_radius(ta,4,LV_PART_MAIN);
-
-	kb = lv_keyboard_create(display0);
-    lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
-	lv_obj_add_event_cb(ta, kb_show_cb, LV_EVENT_CLICKED, kb);
-	lv_obj_add_event_cb(display0, kb_hide_cb, LV_EVENT_CLICKED, kb);
-	lv_obj_add_event_cb(kb, keyBoard_event_cb, LV_EVENT_ALL, ta);
+	lv_obj_add_event_cb(ta, kb_show_cb, LV_EVENT_CLICKED, kb);  //键盘弹出回调创建
 }
 void metro_logo(lv_obj_t* display0,int judge)
 {
@@ -185,11 +153,7 @@ void metro_logo(lv_obj_t* display0,int judge)
 	lv_obj_set_pos(bell_white,16,230);
 	lv_obj_add_flag(bell_white, LV_OBJ_FLAG_HIDDEN);
 
-	lb_t1 = lv_label_create(display0);
-	lv_obj_set_pos(lb_t1,160,18);
-	lv_obj_set_size(lb_t1,87,23);
-	lv_label_set_text(lb_t1,"乘客导视");
-	lv_obj_set_style_text_font(lb_t1,&heiti_20,LV_PART_MAIN);
+	lb_t1 = create_simple_label(display0,160,18,87,23,"乘客导视",&heiti_20);
 	lv_obj_set_style_text_color(lb_t1,lv_color_hex(0x194888), 0);
 
 	switch (judge)
@@ -211,6 +175,15 @@ void metro_logo(lv_obj_t* display0,int judge)
 		break;
 	}
 }
+void transparent_init(lv_obj_t* display)  //生成隐藏的覆盖整个canvas的label
+{
+	lv_obj_t* transparent = create_simple_label(display,60,55,964,545,"",NULL);
+	lv_obj_set_style_bg_opa(transparent, LV_OPA_50, 0);
+	lv_obj_set_style_bg_color(transparent,lv_color_hex(COLOR_MID_GRAY),LV_PART_MAIN);
+	lv_obj_add_flag(transparent,LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_move_foreground(transparent);
+	lv_obj_add_event_cb(transparent, kb_hide_cb, LV_EVENT_ALL, kb);   //键盘隐藏回调创建
+}
 void display_set(lv_obj_t* display,int judge)
 {
 	twocolumns(display);
@@ -220,9 +193,7 @@ void display_set(lv_obj_t* display,int judge)
 	lv_obj_add_event_cb(display, screen_load_event_cb, LV_EVENT_ALL, kb);
 }
 
-
-
-void screen_load_event_cb(lv_event_t *e)
+void screen_load_event_cb(lv_event_t *e) //切换界面后立即隐去kb（如果有）
 {
 	// 获取用户数据传入的键盘对象
     lv_obj_t * kb = (lv_obj_t *)lv_event_get_user_data(e);
@@ -237,40 +208,37 @@ void btn1_cb(lv_event_t *e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
 	if(code == LV_EVENT_PRESSED)
-	{
 		lv_scr_load(display0);
-	}
 }
 
 void btn2_cb(lv_event_t *e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
 	if(code == LV_EVENT_PRESSED)
-	{
 		lv_scr_load(display1);
-	}
 }
 
 void btn3_cb(lv_event_t *e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
 	if(code == LV_EVENT_PRESSED)
-	{
 		lv_scr_load(display2);
-	}
 }
 void kb_show_cb(lv_event_t *e)
 {
 	lv_obj_t *ta = lv_event_get_target(e);
 	lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
-	lv_keyboard_set_textarea(kb,ta);
-	lv_obj_clear_flag(kb,LV_OBJ_FLAG_HIDDEN);
-	lv_obj_move_foreground(kb);
+	kb_show(kb,ta);
 }
 void kb_hide_cb(lv_event_t *e)
 {
 	lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
-	lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+	lv_event_code_t code = lv_event_get_code(e);
+	lv_obj_t * transparent = lv_event_get_target(e);     
+	if(code == LV_EVENT_CLICKED)
+	{
+		kb_hide(kb,transparent);
+	}
 }		
 void keyBoard_event_cb(lv_event_t *e)
 {
@@ -292,4 +260,55 @@ void keyBoard_event_cb(lv_event_t *e)
 			lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
 		}
 	}
+}
+
+/**
+ * @brief 通用 Label 创建工具实现
+ */
+lv_obj_t* create_simple_label(lv_obj_t* parent, int x, int y, int w, int h, 
+                              const char* text, const lv_font_t* font)
+{
+    lv_obj_t* lb = lv_label_create(parent);
+    lv_obj_set_pos(lb, x, y);
+    lv_obj_set_size(lb, w, h);
+    lv_label_set_text(lb, text);
+    
+    // 设置字体
+	if(text != NULL)
+    	lv_obj_set_style_text_font(lb, font, LV_PART_MAIN);
+    
+    return lb; // 直接返回对象
+}
+
+/**
+ * @brief 通用按钮创建工具实现
+ */
+lv_obj_t* create_simple_btn(lv_obj_t* parent, int x, int y, int w, int h, lv_color_t bg_color)
+{
+    lv_obj_t* btn = lv_btn_create(parent);
+    lv_obj_set_pos(btn, x, y);
+    lv_obj_set_size(btn, w, h);
+    lv_obj_set_style_radius(btn, BUTTON_RADIUS, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(btn, bg_color, LV_PART_MAIN);
+    
+    return btn; // 直接返回对象
+}
+
+/**
+ * @brief 键盘的弹出与隐去
+ * 将kb与隐藏的transparent标签绑定
+ * 实现弹出键盘同时生成transparent标签，隐去键盘同时删除transparent标签
+ * 代替lv_obj_clear_flag，lv_obj_add_flag
+ */
+void kb_show(lv_obj_t* kb,lv_obj_t* ta)
+{
+	lv_keyboard_set_textarea(kb,ta);
+	lv_obj_clear_flag(kb,LV_OBJ_FLAG_HIDDEN);
+	transparent_init(lv_scr_act());
+	lv_obj_move_foreground(kb);
+}
+void kb_hide(lv_obj_t* kb,lv_obj_t* transparent)
+{
+	lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_del(transparent);
 }
