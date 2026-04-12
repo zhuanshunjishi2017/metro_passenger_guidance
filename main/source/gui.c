@@ -19,6 +19,7 @@ lv_obj_t* bell_blue,*bell_white;
 lv_obj_t* map_lb,*bell_lb,*line_lb,*search_lb;
 
 
+
 static char time_buf[48];
 void timetable_init(void)
 {
@@ -115,9 +116,14 @@ void create_buttons(lv_obj_t* display0,int judge)
 void creat_top_ta(lv_obj_t* display0)
 {
 	ta = lv_textarea_create(display0);
-	lv_obj_set_pos(ta,264,12);
+	lv_obj_set_pos(ta,264,8);
 	lv_obj_set_size(ta,266,34);
 	lv_obj_set_style_radius(ta,4,LV_PART_MAIN);
+	lv_textarea_set_one_line(ta, true);          // 强制单行
+    lv_obj_set_scrollbar_mode(ta, LV_SCROLLBAR_MODE_OFF); // 关掉滚动条
+	lv_textarea_set_placeholder_text(ta, "在此输入站点以检索");
+	lv_obj_set_style_text_color(ta,lv_color_hex(COLOR_MID_GRAY),LV_PART_TEXTAREA_PLACEHOLDER);
+	lv_obj_set_style_text_font(ta,&heiti_16, LV_PART_TEXTAREA_PLACEHOLDER);  //显示提示占位符
 	lv_obj_add_event_cb(ta, kb_show_cb, LV_EVENT_CLICKED, kb);  //键盘弹出回调创建
 }
 void metro_logo(lv_obj_t* display0,int judge)
@@ -177,12 +183,12 @@ void metro_logo(lv_obj_t* display0,int judge)
 }
 void transparent_init(lv_obj_t* display)  //生成隐藏的覆盖整个canvas的label
 {
-	lv_obj_t* transparent = create_simple_label(display,60,55,964,545,"",NULL);
+	lv_obj_t* transparent = create_simple_label(display,0,0,1024,600,"",NULL);
 	lv_obj_set_style_bg_opa(transparent, LV_OPA_50, 0);
 	lv_obj_set_style_bg_color(transparent,lv_color_hex(COLOR_MID_GRAY),LV_PART_MAIN);
 	lv_obj_add_flag(transparent,LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_move_foreground(transparent);
-	lv_obj_add_event_cb(transparent, kb_hide_cb, LV_EVENT_ALL, kb);   //键盘隐藏回调创建
+	lv_obj_add_event_cb(transparent, kb_hide_cb, LV_EVENT_ALL,NULL);   //键盘隐藏回调创建
 }
 void display_set(lv_obj_t* display,int judge)
 {
@@ -229,12 +235,12 @@ void kb_show_cb(lv_event_t *e)
 	lv_obj_t *ta = lv_event_get_target(e);
 	lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
 	kb_show(kb,ta);
+	lv_obj_move_foreground(ta);
 }
 void kb_hide_cb(lv_event_t *e)
 {
-	lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
 	lv_event_code_t code = lv_event_get_code(e);
-	lv_obj_t * transparent = lv_event_get_target(e);     
+	lv_obj_t * transparent = lv_event_get_target(e);
 	if(code == LV_EVENT_CLICKED)
 	{
 		kb_hide(kb,transparent);
@@ -303,8 +309,11 @@ lv_obj_t* create_simple_btn(lv_obj_t* parent, int x, int y, int w, int h, lv_col
 void kb_show(lv_obj_t* kb,lv_obj_t* ta)
 {
 	lv_keyboard_set_textarea(kb,ta);
+	if (lv_obj_has_flag(kb,LV_OBJ_FLAG_HIDDEN))
+	{
+		transparent_init(lv_scr_act());  
+	}
 	lv_obj_clear_flag(kb,LV_OBJ_FLAG_HIDDEN);
-	transparent_init(lv_scr_act());
 	lv_obj_move_foreground(kb);
 }
 void kb_hide(lv_obj_t* kb,lv_obj_t* transparent)

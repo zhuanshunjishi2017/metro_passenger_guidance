@@ -49,11 +49,15 @@ void ta_init(void)
 	lv_obj_set_size(start_ta,211,40);
 	lv_obj_set_style_radius(start_ta,4,LV_PART_MAIN);
     lv_obj_add_event_cb(start_ta, start_ta_kb_show_cb, LV_EVENT_CLICKED, kb);
+    lv_textarea_set_one_line(start_ta, true);          // 强制单行
+    lv_obj_set_scrollbar_mode(start_ta, LV_SCROLLBAR_MODE_OFF); // 关掉滚动条
     end_ta = lv_textarea_create(display1);
 	lv_obj_set_pos(end_ta,101,255);
 	lv_obj_set_size(end_ta,211,40);
 	lv_obj_set_style_radius(end_ta,4,LV_PART_MAIN);
     lv_obj_add_event_cb(end_ta, end_ta_kb_show_cb, LV_EVENT_CLICKED, kb);
+    lv_textarea_set_one_line(end_ta, true);          // 强制单行
+    lv_obj_set_scrollbar_mode(end_ta, LV_SCROLLBAR_MODE_OFF); // 关掉滚动条
 }
 
 void start_ta_kb_show_cb(lv_event_t *e)
