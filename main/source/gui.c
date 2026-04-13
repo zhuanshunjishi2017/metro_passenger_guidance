@@ -8,17 +8,17 @@ void kb_hide_cb(lv_event_t *e);
 void keyBoard_event_cb(lv_event_t *e);
 void screen_load_event_cb(lv_event_t *e);
 
+
 lv_obj_t* label_left,*label_top;
 lv_obj_t* lb_t1;
 lv_obj_t* btn1,*btn2,*btn3,*btn_search;
-lv_obj_t* ta;
+lv_obj_t* ta,*ta_lb1,*ta_lb2;
 lv_obj_t* logo;
 lv_obj_t* map_blue,*map_white;
 lv_obj_t* line_blue,*line_white;
 lv_obj_t* bell_blue,*bell_white;
 lv_obj_t* map_lb,*bell_lb,*line_lb,*search_lb;
-
-
+lv_obj_t* transparent = NULL;
 
 static char time_buf[48];
 void timetable_init(void)
@@ -181,25 +181,56 @@ void metro_logo(lv_obj_t* display0,int judge)
 		break;
 	}
 }
-void transparent_init(lv_obj_t* display)  //生成隐藏的覆盖整个canvas的label
-{
-	lv_obj_t* transparent = create_simple_label(display,0,0,1024,600,"",NULL);
-	lv_obj_set_style_bg_opa(transparent, LV_OPA_50, 0);
-	lv_obj_set_style_bg_color(transparent,lv_color_hex(COLOR_MID_GRAY),LV_PART_MAIN);
-	lv_obj_add_flag(transparent,LV_OBJ_FLAG_CLICKABLE);
-	lv_obj_move_foreground(transparent);
-	lv_obj_add_event_cb(transparent, kb_hide_cb, LV_EVENT_ALL,NULL);   //键盘隐藏回调创建
-}
-void display_set(lv_obj_t* display,int judge)
+void display_set(lv_obj_t* display,int judge)  //设置主界面
 {
 	twocolumns(display);
     create_buttons(display,judge);
     creat_top_ta(display);
     metro_logo(display,judge);
-	lv_obj_add_event_cb(display, screen_load_event_cb, LV_EVENT_ALL, kb);
+	lv_obj_add_event_cb(display, screen_load_event_cb, LV_EVENT_ALL, kb);  //界面转换回调函数
+}
+void transparent_init(lv_obj_t* display)  //生成隐藏的覆盖整个canvas的label
+{
+	transparent = create_simple_label(display,0,0,1024,600,"",NULL);
+	lv_obj_set_style_bg_opa(transparent, LV_OPA_50, 0);
+	lv_obj_set_style_bg_color(transparent,lv_color_hex(COLOR_MID_GRAY),LV_PART_MAIN);
+	lv_obj_add_flag(transparent,LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_move_foreground(transparent);
+	lv_obj_add_event_cb(transparent, kb_hide_cb, LV_EVENT_ALL,NULL);   //键盘隐藏回调创建
+	lv_obj_add_event_cb(kb, keyBoard_event_cb, LV_EVENT_ALL, NULL);   //键盘输入回调创建
+}
+void top_ta_record_lb_init(lv_obj_t* display)  //初始化历史记录框
+{
+	ta_lb1 = create_simple_label(display,239,55,400,210,"",NULL);
+	lv_obj_set_style_bg_color(ta_lb1,lv_color_hex(0xffffff),LV_PART_MAIN);
+	lv_obj_set_style_bg_opa(ta_lb1, LV_OPA_100, 0);
+	lv_obj_set_style_radius(ta_lb1,4,LV_PART_MAIN);
+	lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_move_foreground(ta_lb1);
+	lv_obj_t* ta_lb1_lb1 = create_simple_label(ta_lb1,16,16,80,23,"历史记录",&heiti_20);
+	lv_obj_set_style_text_color(ta_lb1_lb1,lv_color_hex(COLOR_DARK_BLUE), 0);
+
+}
+void top_ta_result_lb_init(lv_obj_t* display)
+{
+	ta_lb2 = create_simple_label(display,239,55,400,210,"",NULL);
+	lv_obj_set_style_bg_color(ta_lb2,lv_color_hex(0xffffff),LV_PART_MAIN);
+	lv_obj_set_style_bg_opa(ta_lb2, LV_OPA_100, 0);
+	lv_obj_set_style_radius(ta_lb2,4,LV_PART_MAIN);
+	lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_move_foreground(ta_lb2);
+	lv_obj_t* ta_lb2_lb1 = create_simple_label(ta_lb2,16,16,80,23,"搜索结果",&heiti_20);
+	lv_obj_set_style_text_color(ta_lb2_lb1,lv_color_hex(COLOR_DARK_BLUE), 0);
 }
 
-void screen_load_event_cb(lv_event_t *e) //切换界面后立即隐去kb（如果有）
+
+
+/**
+ * 回调函数
+ */
+void screen_load_event_cb(lv_event_t *e)  //切换界面后立即隐去kb（如果有）
 {
 	// 获取用户数据传入的键盘对象
     lv_obj_t * kb = (lv_obj_t *)lv_event_get_user_data(e);
@@ -209,21 +240,18 @@ void screen_load_event_cb(lv_event_t *e) //切换界面后立即隐去kb（如�
         lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
     }
 }
-
 void btn1_cb(lv_event_t *e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
 	if(code == LV_EVENT_PRESSED)
 		lv_scr_load(display0);
 }
-
 void btn2_cb(lv_event_t *e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
 	if(code == LV_EVENT_PRESSED)
 		lv_scr_load(display1);
 }
-
 void btn3_cb(lv_event_t *e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
@@ -236,6 +264,7 @@ void kb_show_cb(lv_event_t *e)
 	lv_obj_t *kb = (lv_obj_t *)lv_event_get_user_data(e);
 	kb_show(kb,ta);
 	lv_obj_move_foreground(ta);
+	lv_obj_clear_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);  //生成历史记录框
 }
 void kb_hide_cb(lv_event_t *e)
 {
@@ -243,30 +272,37 @@ void kb_hide_cb(lv_event_t *e)
 	lv_obj_t * transparent = lv_event_get_target(e);
 	if(code == LV_EVENT_CLICKED)
 	{
-		kb_hide(kb,transparent);
+		kb_hide(kb);
+		lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
+		if(!lv_obj_has_flag(ta_lb2,LV_OBJ_FLAG_HIDDEN))
+		{
+			lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+		}
 	}
 }		
 void keyBoard_event_cb(lv_event_t *e)
 {
-	lv_obj_t *ta = (lv_obj_t *)lv_event_get_user_data(e);
-	lv_event_code_t code = lv_event_get_code(e);     
-    lv_obj_t *kb = lv_event_get_target(e);       
+	lv_event_code_t code = lv_event_get_code(e);           
     uint32_t id = 0;
     const char *text;
 	if (code == LV_EVENT_VALUE_CHANGED)
 	{
+		lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
 		id = lv_btnmatrix_get_selected_btn(kb);
 		text = lv_keyboard_get_btn_text(kb, id);
 		if (strcmp(text, LV_SYMBOL_OK) == 0)
 		{
-			const char *ta_text = lv_textarea_get_text(ta);
-			if(ta_text == NULL) ta_text = "";
+			// const char *ta_text = lv_textarea_get_text(ta);
+			// if(ta_text == NULL) ta_text = "";
 			//...
-			lv_textarea_set_text(ta, "");
-			lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+			// lv_textarea_set_text(ta, "");
+			kb_hide(kb);
+			lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
 		}
 	}
 }
+
 
 /**
  * @brief 通用 Label 创建工具实现
@@ -316,8 +352,8 @@ void kb_show(lv_obj_t* kb,lv_obj_t* ta)
 	lv_obj_clear_flag(kb,LV_OBJ_FLAG_HIDDEN);
 	lv_obj_move_foreground(kb);
 }
-void kb_hide(lv_obj_t* kb,lv_obj_t* transparent)
+void kb_hide(lv_obj_t* kb)
 {
 	lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_del(transparent);
+    lv_obj_add_flag(transparent, LV_OBJ_FLAG_HIDDEN);
 }

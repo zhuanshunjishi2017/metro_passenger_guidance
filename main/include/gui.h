@@ -40,8 +40,9 @@ extern lv_obj_t* display0;
 extern lv_obj_t* display1;
 extern lv_obj_t* display2;
 extern lv_obj_t* canvas;
-extern lv_obj_t* kb;
+extern lv_obj_t* kb,*ta;
 extern lv_obj_t* timetable1,*timetable2,*timetable3;
+extern lv_obj_t* transparent;
 
 // ==========================================
 // 工具函数声明
@@ -68,7 +69,7 @@ lv_obj_t* create_simple_btn(lv_obj_t* parent, int x, int y, int w, int h, lv_col
  * 代替lv_obj_clear_flag，lv_obj_add_flag
  */
 void kb_show(lv_obj_t* kb,lv_obj_t* ta);
-void kb_hide(lv_obj_t* kb,lv_obj_t* transparent);
+void kb_hide(lv_obj_t* kb);
 void transparent_init(lv_obj_t* display);  //包含键盘隐藏回调函数创建
 
 #endif

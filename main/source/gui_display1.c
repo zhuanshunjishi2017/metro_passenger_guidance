@@ -83,7 +83,7 @@ void start_ta_kb_hide_cb(lv_event_t *e)
 	lv_obj_t * transparent = lv_event_get_target(e);     
 	if(code == LV_EVENT_CLICKED)
 	{
-		kb_hide(kb,transparent);
+		kb_hide(kb);
 	}
 }
 void end_ta_kb_hide_cb(lv_event_t *e)
@@ -93,6 +93,6 @@ void end_ta_kb_hide_cb(lv_event_t *e)
 	lv_obj_t * transparent = lv_event_get_target(e);     
 	if(code == LV_EVENT_CLICKED)
 	{
-		kb_hide(kb,transparent);
+		kb_hide(kb);
 	}
 }

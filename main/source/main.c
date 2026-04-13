@@ -1,18 +1,17 @@
 #include "drivers.h"
 #include "lv_port_disp_template.h"
 #include "lv_port_indev_template.h"
-
+#include "gui.h"
 void gpio_init(void);
 void my_rtc_setup(void);
-void canvas_init(lv_obj_t *);
-void twocolumns(lv_obj_t*);
-void create_buttons(lv_obj_t*,int);
-void creat_top_ta(lv_obj_t*);
 void keyBoard_event_cb(lv_event_t *e);
 void metro_logo(lv_obj_t*,int);
 void display_set(lv_obj_t*,int);
 void timetable_init(void);
 void time_set(void);
+void top_ta_record_lb_init(lv_obj_t*);
+void top_ta_result_lb_init(lv_obj_t*);
+
 // void display0_init(lv_obj_t *);
 
 lv_obj_t* display0,*display1,*display2;
@@ -43,11 +42,12 @@ int main(void)
   //display0_gui
   kb = lv_keyboard_create(lv_layer_top());
   lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
-  lv_obj_add_event_cb(kb, keyBoard_event_cb, LV_EVENT_ALL, NULL);
   
   display_set(display0,0);
   display_set(display1,1);
   display_set(display2,2);
+  top_ta_record_lb_init(lv_layer_top());
+  top_ta_result_lb_init(lv_layer_top());
 
   //display1_gui
   ui_init();
