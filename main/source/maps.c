@@ -9,7 +9,7 @@
 void pressing_canvas(lv_event_t *e);
 extern void *canvas_buf;
 extern lv_obj_t * canvas;
-
+extern lv_obj_t * location_image;
 extern MetroLine metro_lines[4];
 
 uint16_t magnify_size = 30;
@@ -21,10 +21,12 @@ int8_t plus = 1;
 int8_t minus = -1;
 
 int8_t is_showing = 0;//正在显示的线路，0为全部
-int8_t station_clicked = 0; //是否存在被点击的车站
+int8_t is_station_clicked = 0; //是否存在被点击的车站
+
+Station station_clicked;
 
 
-static lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin)
+lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin)
 {
     lv_coord_t res = pos * magnify_size + origin;
     return res;
@@ -164,6 +166,14 @@ void create_metro_map(void)
             }
         }
     }
+    if (is_station_clicked)
+    {
+        lv_coord_t x = geo_to_screen(station_clicked.geo_x ,origin_x);
+        lv_coord_t y = geo_to_screen(station_clicked.geo_y ,origin_y);
+        
+        lv_obj_set_pos(location_image, x - 38, y - 75);
+
+    } 
     draw_line_container(canvas);
     
 }

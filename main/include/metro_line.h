@@ -26,6 +26,8 @@
 #define NORMAL_STATE 0
 #define HIGHLIGHT_STATE 1
 
+#define TOUCH_RANGE 15
+
 
 #define COLOR_LINE1    0x0066A4  // 1号线 蓝色
 #define COLOR_LINE2    0xE99CC0  // 2号线 粉色
@@ -57,7 +59,7 @@ typedef struct {
 
 extern const lv_font_t heiti_14;
 
-static lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin);
+lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin);
 static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t state);
 static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color, int8_t state);
 void create_metro_map(void);

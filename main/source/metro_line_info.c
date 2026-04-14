@@ -147,4 +147,3 @@ const MetroLine metro_lines[4] = {
     {line_3, 24, COLOR_LINE3, 8 , 3},
     {line_4, 37, COLOR_LINE4, 14, 4},
 };
-

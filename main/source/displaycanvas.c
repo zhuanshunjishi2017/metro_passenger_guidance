@@ -13,6 +13,9 @@ extern MetroLine metro_lines[4];
 extern int8_t is_showing;
 extern lv_obj_t * kb;
 
+extern int8_t is_station_clicked;
+extern Station station_clicked;
+
 void *canvas_buf;//缓冲区
 
 int8_t para_numbers[5] = {0,1,2,3,4};  //妥协之举，传参只能传地址
@@ -23,6 +26,7 @@ void canvas_init(lv_obj_t *);
 void buttons_init(lv_obj_t *);
 void adjust_magnify(lv_event_t * );
 void clicked_canvas(lv_event_t *e);
+void location_pic_init(lv_obj_t *);
 
 
 void lines_selector_init(lv_obj_t * , MetroLine *);
@@ -37,6 +41,7 @@ lv_style_t btn_style, rec_style, selector_style, line_style;//创建样式
 lv_obj_t * label_plus, *label_minus;
 lv_obj_t line_btns[4];
 lv_obj_t line_labels[4][2];
+lv_obj_t * location_image;
 
 extern lv_coord_t origin_x, origin_y, magnify_size;
 
@@ -54,16 +59,25 @@ void canvas_init(lv_obj_t *canvas)
     lv_obj_add_flag(canvas, LV_OBJ_FLAG_CLICKABLE);
 
     lv_obj_add_event_cb(canvas, pressing_canvas, LV_EVENT_PRESSING, NULL);
-    lv_obj_add_event_cb(canvas,clicked_canvas, LV_EVENT_PRESSED, NULL);
+    lv_obj_add_event_cb(canvas,clicked_canvas, LV_EVENT_CLICKED, metro_lines);
 
 
     lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
 
     buttons_init(canvas);
 
+    location_pic_init(canvas);
+
     lines_selector_init(canvas, metro_lines);
 
     create_metro_map();
+}
+void location_pic_init(lv_obj_t *canvas)
+{
+    location_image = lv_img_create(canvas);
+	lv_img_set_src(location_image, "0:/location.bin");
+    lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
+
 }
 
 void buttons_init(lv_obj_t *canvas)
@@ -125,6 +139,8 @@ void lines_selector_init(lv_obj_t *canvas, MetroLine *lines)
     }
 
 }
+
+//绘制按钮
 void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas ,  MetroLine *line)
 {
     char * str, longstr[10];
@@ -195,13 +211,13 @@ void pressing_canvas(lv_event_t *e)
 
     //设置边界
 
-    if (origin_x > CANVAS_W/2) origin_x = CANVAS_W/2;
-    if (origin_y > CANVAS_H/2) origin_y = CANVAS_H/2;
+    if (origin_x > CANVAS_W/3) origin_x = CANVAS_W/3;
+    if (origin_y > CANVAS_H/3) origin_y = CANVAS_H/3;
 
-    if (origin_x < CANVAS_W/2 - GEO_X_MAX * magnify_size) 
-        origin_x = CANVAS_W/2 - GEO_X_MAX * magnify_size;
-    if (origin_y < CANVAS_H/2 - GEO_Y_MAX * magnify_size) 
-        origin_y = CANVAS_H/2 - GEO_Y_MAX * magnify_size;
+    if (origin_x < CANVAS_W/3*2 - GEO_X_MAX * magnify_size) 
+        origin_x = CANVAS_W/3*2 - GEO_X_MAX * magnify_size;
+    if (origin_y < CANVAS_H/3*2 - GEO_Y_MAX * magnify_size) 
+        origin_y = CANVAS_H/3*2 - GEO_Y_MAX * magnify_size;
 
 
     create_metro_map();
@@ -228,6 +244,7 @@ void adjust_magnify(lv_event_t * e)
     //以画布中心为原点 计算偏移量
     lv_coord_t dist_x = origin_x - CANVAS_W/2;
     lv_coord_t dist_y = origin_y - CANVAS_H/2;
+    
 
     dist_x = (lv_coord_t)((float)magnify_size/pre_size * dist_x);
     dist_y = (lv_coord_t)((float)magnify_size/pre_size * dist_y);
@@ -239,8 +256,45 @@ void adjust_magnify(lv_event_t * e)
     create_metro_map();
 }
 
+
+//按下画布显示车站
 void clicked_canvas(lv_event_t *e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+    lv_indev_t * indev = lv_indev_get_act();//获取输入设备
+    MetroLine *lines = lv_event_get_user_data(e);
+    
+    lv_point_t pos;
+    lv_indev_get_point(indev, &pos);
+    pos.x -= CANVAS_X;
+    pos.y -= CANVAS_Y;
+
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < lines[i].count; j++)
+        {
+            lv_coord_t x = geo_to_screen(lines[i].stations[j].geo_x ,origin_x);
+            lv_coord_t y = geo_to_screen(lines[i].stations[j].geo_y ,origin_y);
+            if ((pos.x - x < TOUCH_RANGE && pos.x - x > -TOUCH_RANGE) && 
+                (pos.y - y < TOUCH_RANGE && pos.y - y > -TOUCH_RANGE))
+            {
+                lv_obj_set_pos(location_image, x - 38, y - 75);
+                station_clicked.geo_x = lines[i].stations[j].geo_x;
+                station_clicked.geo_y = lines[i].stations[j].geo_y;
+                if (!is_station_clicked)
+                {
+                    lv_obj_clear_flag(location_image, LV_OBJ_FLAG_HIDDEN);
+                    is_station_clicked = 1;
+                }
+                return;
+            }        
+        }
+    }
+    if (is_station_clicked)
+    {
+        lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
+        is_station_clicked = 0;
+        return;
+    }
 }
+
