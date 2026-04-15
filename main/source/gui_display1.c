@@ -61,7 +61,7 @@ void display11_init(void)
     lv_obj_set_style_text_color(station_lb, lv_color_hex(COLOR_DARK_BLUE), 0);
     lv_obj_set_style_text_color(route_lb, lv_color_hex(COLOR_DARK_BLUE), 0);
     lv_obj_t* station_prompt = create_simple_label(display11, 42, 150, 140, 23,"暂无收藏车站!",&heiti_20);
-    lv_obj_t* route_prompt = create_simple_label(display11, 350, 150, 140, 23,"暂无收藏线路!",&heiti_20);
+    lv_obj_t* route_prompt = create_simple_label(display11, 350, 150, 140, 23,"暂无收藏线路!",&heiti_20);\
     lv_obj_move_foreground(display11);
 }
 void display12_init(void)
@@ -73,7 +73,7 @@ void display12_init(void)
     lv_obj_set_style_border_width(display12, 0, 0);
     display12_lb1 = create_simple_label(display12,20,18,80,23,"搜索结果",&heiti_20);
     lv_obj_set_style_text_color(display12_lb1,lv_color_hex(COLOR_DARK_BLUE), 0);
-    // lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
 }
 
 
@@ -90,13 +90,7 @@ void start_ta_kb_show_cb(lv_event_t *e)
         lv_obj_set_style_bg_opa(transparent, 0, 0);
         lv_obj_move_foreground(ta);
         lv_obj_move_foreground(start_lb);
-        lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
     }
-    if (code == LV_EVENT_VALUE_CHANGED)
-	{
-        lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(display12, LV_OBJ_FLAG_HIDDEN);
-	}
 }
 void end_ta_kb_show_cb(lv_event_t *e)
 {
@@ -110,9 +104,4 @@ void end_ta_kb_show_cb(lv_event_t *e)
         lv_obj_move_foreground(ta);
         lv_obj_move_foreground(end_lb);
     }
-    if (code == LV_EVENT_VALUE_CHANGED)
-	{
-        lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(display12, LV_OBJ_FLAG_HIDDEN);
-	}
 }

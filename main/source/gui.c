@@ -20,7 +20,7 @@ lv_obj_t* bell_blue,*bell_white;
 lv_obj_t* map_lb,*bell_lb,*line_lb,*search_lb;
 lv_obj_t* transparent = NULL;
 extern lv_obj_t* start_ta,*end_ta;
-
+extern lv_obj_t* display11,*display12;
 static char time_buf[48];
 void timetable_init(void)
 {
@@ -243,8 +243,11 @@ void screen_load_event_cb(lv_event_t *e)  //切换界面后立即隐去kb（如�
 	{
 		lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
 		creat_top_ta(lv_scr_act());
+
 		lv_textarea_set_text(start_ta, "");
-		lv_textarea_set_text(end_ta, "");  //界面2在切换后置空
+		lv_textarea_set_text(end_ta, "");  
+		lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);  //切换界面后重置输入框和搜索结果显示状态
 	}
 }
 void btn1_cb(lv_event_t *e)
@@ -308,6 +311,13 @@ void keyBoard_event_cb(lv_event_t *e)
 	{
 		id = lv_btnmatrix_get_selected_btn(kb);
 		text = lv_keyboard_get_btn_text(kb, id);
+		lv_obj_t * current_ta = lv_keyboard_get_textarea(kb);
+		if ((current_ta == start_ta || current_ta == end_ta) && strcmp(text, LV_SYMBOL_OK) != 0)
+		{
+			lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_clear_flag(display12, LV_OBJ_FLAG_HIDDEN);
+		}
+		
 		if (strcmp(text, LV_SYMBOL_OK) == 0)
 		{
 			lv_obj_t * current_ta = lv_keyboard_get_textarea(kb);
@@ -321,6 +331,12 @@ void keyBoard_event_cb(lv_event_t *e)
 				lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
 				lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
 			}
+			if (current_ta == start_ta || current_ta == end_ta)
+			{
+				lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
+				lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
+			}
+			
 		}
 	}
 }
