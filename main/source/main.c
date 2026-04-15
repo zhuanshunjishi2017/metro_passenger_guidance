@@ -18,6 +18,7 @@ lv_obj_t* display0,*display1,*display2;
 lv_obj_t* canvas;
 lv_obj_t* kb;
 lv_obj_t* timetable1,*timetable2,*timetable3;
+extern lv_obj_t* display11;
 int main(void)
 {
 	sys_init();
@@ -51,8 +52,10 @@ int main(void)
 
   //display1_gui
   ui_init();
-  prompt_no_inf();
   ta_init();
+  display12_init();
+  display11_init();
+  lv_obj_move_foreground(display11);
   
   timetable_init();
   while(1)
