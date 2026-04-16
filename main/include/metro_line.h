@@ -35,15 +35,16 @@
 #define COLOR_LINE4    0xBAD200  // 4号线 绿色
 
 typedef struct {
-    const int8_t id;
-    const char* name;
-    const char* name_pinyin;
+    int8_t id;
+    char* name;
+    char* name_pinyin;
     lv_coord_t geo_x;
     lv_coord_t geo_y;
-    int8_t is_transfer;        //是否为换乘站,标记为-1说明已经出现过
+    int8_t is_transfer;        //是否为换乘站,数字表示换乘几号线，标记为负数说明已经出现过
     int8_t horizon_offset;   //标签水平偏移量，右为正
     int8_t vertical_offset;  //标签垂直偏移量，下为正
     int8_t is_draw_point;      //是否为端点
+    int8_t line_belonged; //所属的线路
 } Station;                   // 站点结构体 两个偏移皆为0则不绘制（换乘车站）
 
 

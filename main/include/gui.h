@@ -17,19 +17,33 @@
 
 // --- 布局宏定义 ---
 #define BUTTON_RADIUS       4
-#define CANVAS_X 60
-#define CANVAS_Y 55
-#define CANVAS_W 964
-#define CANVAS_H 545
-#define BUF_SIZE    LV_CANVAS_BUF_SIZE_TRUE_COLOR(CANVAS_W,CANVAS_H)
-#define BUTTON_LEN  35
-#define BUTTON_X    954 - CANVAS_X
-#define BUTTON_Y    476 - CANVAS_Y
-#define REC_X       896 - CANVAS_X
-#define REC_Y       74  - CANVAS_Y
-#define REC_W       102
-#define REC_H       143
-#define STEP  5 //缩放的步长
+#define CANVAS_X            60
+#define CANVAS_Y            55
+#define CANVAS_W            964
+#define CANVAS_H            545
+#define BUF_SIZE            LV_CANVAS_BUF_SIZE_TRUE_COLOR(CANVAS_W,CANVAS_H)
+#define BUTTON_LEN          35
+#define BUTTON_X            954 - CANVAS_X
+#define BUTTON_Y            476 - CANVAS_Y
+#define REC_X               896 - CANVAS_X
+#define REC_Y               74  - CANVAS_Y
+#define REC_W               102
+#define REC_H               143
+#define STEP                5 //缩放的步长
+
+#define POP_WINDOW_W        290
+#define POP_WINDOW_H_TRANS  375
+#define POP_WINDOW_H_NORM   246
+#define LINE_BTN_W          267
+#define LINE_BTN_H          121
+#define BOTTOM_BTN_W        128
+#define BOTTOM_BTN_H        38
+#define TOP_BTN_W           70
+#define TOP_BTN_H           30
+#define TOP_BAR_H           46
+#define BOTTOM_BTN_Y_NORM   190
+#define BOTTOM_BTN_Y_TRANS  322
+#define BOTTOM_BTN_X        149
 
 // --- 外部变量声明 ---
 extern const lv_font_t heiti_14;

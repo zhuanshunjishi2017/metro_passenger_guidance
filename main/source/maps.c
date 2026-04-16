@@ -6,7 +6,6 @@
 #include "metro_line.h"
 #include "gui.h"
 
-void pressing_canvas(lv_event_t *e);
 extern void *canvas_buf;
 extern lv_obj_t * canvas;
 extern lv_obj_t * location_image;
@@ -87,7 +86,7 @@ static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t stat
 static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color, int8_t state)
 {
     //已经画过的就不画了
-    if (!state && s->is_transfer == 1) return;
+    if (!state && s->is_transfer > 0) return;
 
     //设置站点样式
     lv_draw_rect_dsc_t rect_dsc;
@@ -168,11 +167,7 @@ void create_metro_map(void)
     }
     if (is_station_clicked)
     {
-        lv_coord_t x = geo_to_screen(station_clicked.geo_x ,origin_x);
-        lv_coord_t y = geo_to_screen(station_clicked.geo_y ,origin_y);
-        
-        lv_obj_set_pos(location_image, x - 38, y - 75);
-
+        pop_window_move(&station_clicked);
     } 
     draw_line_container(canvas);
     
