@@ -13,6 +13,7 @@ lv_obj_t* label_left,*label_top;
 lv_obj_t* lb_t1;
 lv_obj_t* btn1,*btn2,*btn3,*btn_search;
 lv_obj_t* ta,*ta_lb1,*ta_lb2;
+lv_obj_t* ta_lb1_lb1,*ta_lb2_lb1;
 lv_obj_t* logo;
 lv_obj_t* map_blue,*map_white;
 lv_obj_t* line_blue,*line_white;
@@ -46,11 +47,11 @@ void time_set(void)
 }
 void twocolumns(lv_obj_t* display0)
 {
-	label_left = create_simple_label(display0,0,55,60,545,"",NULL);
+	create_simple_label(&label_left,display0,0,55,60,545,"",NULL);
 	lv_obj_set_style_bg_color(label_left, lv_color_hex(0x1a51), 0);
 	lv_obj_set_style_bg_opa(label_left, LV_OPA_COVER, 0);
 
-	label_top = create_simple_label(display0,0,0,1024,55,"",NULL);
+	create_simple_label(&label_top,display0,0,0,1024,55,"",NULL);
 	lv_obj_set_style_bg_color(label_top, lv_color_hex(0xd2dbe7), 0);
 	lv_obj_set_style_bg_opa(label_top, LV_OPA_COVER,0);
 }
@@ -61,23 +62,23 @@ void create_buttons(lv_obj_t* display0,int judge)
 	lv_obj_set_size(btn1, 50, 66);
 	lv_obj_set_style_radius(btn1,4,LV_PART_MAIN);
 	lv_obj_add_event_cb(btn1,btn1_cb,LV_EVENT_ALL,NULL);
-	map_lb = create_simple_label(display0,13,107,33,19,"地图",&heiti_16);
+	create_simple_label(&map_lb,display0,13,107,33,19,"地图",&heiti_16);
 
 	btn2 = lv_btn_create(display0);
 	lv_obj_set_pos(btn2, 6, 144);
 	lv_obj_set_size(btn2, 50, 66);
 	lv_obj_set_style_radius(btn2,4,LV_PART_MAIN);
 	lv_obj_add_event_cb(btn2,btn2_cb,LV_EVENT_ALL,NULL);
-	line_lb = create_simple_label(display0,13,186,33,19,"线路",&heiti_16);
+	create_simple_label(&line_lb,display0,13,186,33,19,"线路",&heiti_16);
 
 	btn3 = lv_btn_create(display0);
 	lv_obj_set_pos(btn3, 6, 222);
 	lv_obj_set_size(btn3, 50, 66);
 	lv_obj_set_style_radius(btn3,4,LV_PART_MAIN);
 	lv_obj_add_event_cb(btn3,btn3_cb,LV_EVENT_ALL,NULL);
-	bell_lb = create_simple_label(display0,13,261,33,19,"提醒",&heiti_16);
+	create_simple_label(&bell_lb,display0,13,261,33,19,"提醒",&heiti_16);
 
-	btn_search = create_simple_btn(display0,544,10,73,35,lv_color_hex(0x3f6ead));
+	create_simple_btn(&btn_search,display0,544,10,73,35,lv_color_hex(0x3f6ead));
 	search_lb = lv_label_create(btn_search);
 	lv_obj_set_flex_align(btn_search, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	lv_label_set_text(search_lb,"搜索");
@@ -160,7 +161,7 @@ void metro_logo(lv_obj_t* display0,int judge)
 	lv_obj_set_pos(bell_white,16,230);
 	lv_obj_add_flag(bell_white, LV_OBJ_FLAG_HIDDEN);
 
-	lb_t1 = create_simple_label(display0,160,18,87,23,"乘客导视",&heiti_20);
+	create_simple_label(&lb_t1,display0,160,18,87,23,"乘客导视",&heiti_20);
 	lv_obj_set_style_text_color(lb_t1,lv_color_hex(0x194888), 0);
 
 	switch (judge)
@@ -195,7 +196,7 @@ void display_set(lv_obj_t* display,int judge)  //设置主界面
 }
 void transparent_init(lv_obj_t* display,lv_color_t bg_color)  //生成隐藏的覆盖整个canvas的label
 {
-	transparent = create_simple_label(display,0,0,1024,600,"",NULL);
+	create_simple_label(&transparent,display,0,0,1024,600,"",NULL);
 	lv_obj_set_style_bg_opa(transparent, LV_OPA_50, 0);
 	lv_obj_set_style_bg_color(transparent,bg_color,LV_PART_MAIN);
 	lv_obj_add_flag(transparent,LV_OBJ_FLAG_CLICKABLE);
@@ -205,27 +206,27 @@ void transparent_init(lv_obj_t* display,lv_color_t bg_color)  //生成隐藏的�
 }
 void top_ta_record_lb_init(lv_obj_t* display)  //初始化历史记录框
 {
-	ta_lb1 = create_simple_label(display,239,55,400,210,"",NULL);
+	create_simple_label(&ta_lb1,display,239,55,400,210,"",NULL);
 	lv_obj_set_style_bg_color(ta_lb1,lv_color_hex(0xffffff),LV_PART_MAIN);
 	lv_obj_set_style_bg_opa(ta_lb1, LV_OPA_100, 0);
 	lv_obj_set_style_radius(ta_lb1,4,LV_PART_MAIN);
 	lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_move_foreground(ta_lb1);
-	lv_obj_t* ta_lb1_lb1 = create_simple_label(ta_lb1,16,16,80,23,"历史记录",&heiti_20);
+	create_simple_label(&ta_lb1_lb1,ta_lb1,16,16,80,23,"历史记录",&heiti_20);
 	lv_obj_set_style_text_color(ta_lb1_lb1,lv_color_hex(COLOR_DARK_BLUE), 0);
 
 }
 void top_ta_result_lb_init(lv_obj_t* display)
 {
-	ta_lb2 = create_simple_label(display,239,55,400,210,"",NULL);
+	create_simple_label(&ta_lb2,display,239,55,400,210,"",NULL);
 	lv_obj_set_style_bg_color(ta_lb2,lv_color_hex(0xffffff),LV_PART_MAIN);
 	lv_obj_set_style_bg_opa(ta_lb2, LV_OPA_100, 0);
 	lv_obj_set_style_radius(ta_lb2,4,LV_PART_MAIN);
 	lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_move_foreground(ta_lb2);
-	lv_obj_t* ta_lb2_lb1 = create_simple_label(ta_lb2,16,16,80,23,"搜索结果",&heiti_20);
+	create_simple_label(&ta_lb2_lb1,ta_lb2,16,16,80,23,"搜索结果",&heiti_20);
 	lv_obj_set_style_text_color(ta_lb2_lb1,lv_color_hex(COLOR_DARK_BLUE), 0);
 }
 
@@ -321,6 +322,7 @@ void keyBoard_event_cb(lv_event_t *e)
 		{
 			lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
 			lv_obj_clear_flag(display12, LV_OBJ_FLAG_HIDDEN);
+			search_result_show_label_set_text(lv_textarea_get_text(current_ta));
 		}
 		
 		if (strcmp(text, LV_SYMBOL_OK) == 0)
@@ -329,19 +331,13 @@ void keyBoard_event_cb(lv_event_t *e)
 			const char *ta_text = lv_textarea_get_text(current_ta);
 			if(ta_text == NULL) ta_text = "";
 			// ...
-			lv_textarea_set_text(current_ta, "");
 			kb_hide(kb);
 			if (current_ta == ta)
 			{
+				lv_textarea_set_text(current_ta, "");
 				lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
 				lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
 			}
-			if (current_ta == start_ta || current_ta == end_ta)
-			{
-				lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
-				lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
-			}
-			
 		}
 	}
 }
@@ -350,33 +346,30 @@ void keyBoard_event_cb(lv_event_t *e)
 /**
  * @brief 通用 Label 创建工具实现
  */
-lv_obj_t* create_simple_label(lv_obj_t* parent, int x, int y, int w, int h, 
+void create_simple_label(lv_obj_t** lb,lv_obj_t* parent, int x, int y, int w, int h, 
                               const char* text, const lv_font_t* font)
 {
-    lv_obj_t* lb = lv_label_create(parent);
-    lv_obj_set_pos(lb, x, y);
-    lv_obj_set_size(lb, w, h);
-    lv_label_set_text(lb, text);
+    *lb = lv_label_create(parent);
+    lv_obj_set_pos(*lb, x, y);
+    lv_obj_set_size(*lb, w, h);
+    lv_label_set_text(*lb, text);
     
     // 设置字体
 	if(text != NULL)
-    	lv_obj_set_style_text_font(lb, font, LV_PART_MAIN);
-    
-    return lb; // 直接返回对象
+    	lv_obj_set_style_text_font(*lb, font, LV_PART_MAIN);
 }
 
 /**
  * @brief 通用按钮创建工具实现
  */
-lv_obj_t* create_simple_btn(lv_obj_t* parent, int x, int y, int w, int h, lv_color_t bg_color)
+void create_simple_btn(lv_obj_t** btn, lv_obj_t* parent, int x, int y, int w, int h, lv_color_t bg_color)
 {
-    lv_obj_t* btn = lv_btn_create(parent);
-    lv_obj_set_pos(btn, x, y);
-    lv_obj_set_size(btn, w, h);
-    lv_obj_set_style_radius(btn, BUTTON_RADIUS, LV_PART_MAIN);
-    lv_obj_set_style_bg_color(btn, bg_color, LV_PART_MAIN);
+    *btn = lv_btn_create(parent);
+    lv_obj_set_pos(*btn, x, y);
+    lv_obj_set_size(*btn, w, h);
+    lv_obj_set_style_radius(*btn, BUTTON_RADIUS, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(*btn, bg_color, LV_PART_MAIN);
     
-    return btn; // 直接返回对象
 }
 
 /**

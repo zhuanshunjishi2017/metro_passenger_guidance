@@ -66,7 +66,7 @@ extern lv_obj_t* transparent;
  * @return 返回创建好的 lv_obj_t* 指针
  * 只用于设置坐标、尺寸、文本及文本颜色
  */
-lv_obj_t* create_simple_label(lv_obj_t* parent, int x, int y, int w, int h, 
+void create_simple_label(lv_obj_t** lb, lv_obj_t* parent, int x, int y, int w, int h, 
                               const char* text, const lv_font_t* font);
 
 /**
@@ -74,7 +74,7 @@ lv_obj_t* create_simple_label(lv_obj_t* parent, int x, int y, int w, int h,
  * @return 返回创建好的 lv_obj_t* 指针
  * 默认圆角为4
  */
-lv_obj_t* create_simple_btn(lv_obj_t* parent, int x, int y, int w, int h, lv_color_t bg_color);
+void create_simple_btn(lv_obj_t** btn, lv_obj_t* parent, int x, int y, int w, int h, lv_color_t bg_color);
 
 /**
  * @brief 键盘的弹出与隐去
