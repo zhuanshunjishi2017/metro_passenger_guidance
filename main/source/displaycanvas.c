@@ -282,14 +282,10 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
             if ((pos.x - x < TOUCH_RANGE && pos.x - x > -TOUCH_RANGE) && 
                 (pos.y - y < TOUCH_RANGE && pos.y - y > -TOUCH_RANGE))
             {
-                //lv_obj_set_pos(location_image, x - 38, y - 75);
                 station_clicked.geo_x = lines[i].stations[j].geo_x;
                 station_clicked.geo_y = lines[i].stations[j].geo_y;
                 station_clicked.line_belonged = (int8_t)(i + 1);
                 station_clicked.is_transfer = lines[i].stations[j].is_transfer;
-                //strcpy(station_clicked.name, lines[i].stations[j].name);
-                // if (!station_clicked.name)
-                //     station_clicked.name = (char *)malloc(20);
                 station_clicked.name = lines[i].stations[j].name;
 
                 pop_window_show(&station_clicked);
@@ -523,7 +519,7 @@ void pop_window_show(Station *sta)
     int8_t line_number = sta->line_belonged;
     char * sta1 = metro_lines[line_number - 1].stations[0].name;
     char * sta2 = metro_lines[line_number - 1].stations[metro_lines[line_number - 1].count - 1].name;
-    char line_str[10], sta1_str[20], sta2_str[20];
+    char line_str[10], sta1_str[24], sta2_str[24];
     snprintf(line_str, sizeof(line_str), "%d号线",line_number);
     snprintf(sta1_str, sizeof(sta1_str), "%s 方向",sta1);
     snprintf(sta2_str, sizeof(sta2_str), "%s 方向",sta2);

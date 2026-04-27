@@ -10,7 +10,7 @@ lv_obj_t* station_prompt,*route_prompt;
 lv_obj_t* btn4,*btn4_lb;
 lv_obj_t* display11,*main_lb2,*station_lb,*route_lb;
 lv_obj_t* display12,*display12_lb1;
-lv_obj_t* search_result_show_label[10];
+lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 lv_style_t search_result_show_label_style;
 static lv_point_t line_points[] = {{352,55},{352,599}};
 void ui_init(void)
@@ -57,7 +57,7 @@ void display11_init(void)
     display11 = lv_obj_create(display1);
     lv_obj_set_size(display11, 672, 545);
     lv_obj_set_pos(display11, 352, 55);
-    lv_obj_set_style_bg_opa(display11, LV_OPA_100, 0);
+    lv_obj_set_style_bg_opa(display11, LV_OPA_0, 0);
     lv_obj_set_style_border_width(display11, 0, 0);
     lv_obj_set_style_border_width(display11, 0, 0);
     lv_obj_set_style_pad_all(display11, 0, 0);
@@ -78,7 +78,7 @@ void display12_init(void)
     display12 = lv_obj_create(display1);
     lv_obj_set_size(display12, 672, 545);
     lv_obj_set_pos(display12, 352, 55);
-    lv_obj_set_style_bg_opa(display12, LV_OPA_100, 0);
+    lv_obj_set_style_bg_opa(display12, LV_OPA_0, 0);
     lv_obj_set_style_border_width(display12, 0, 0);
     lv_obj_set_style_border_width(display12, 0, 0);
     lv_obj_set_style_pad_all(display12, 0, 0);
@@ -98,11 +98,11 @@ void search_result_show_label_init(lv_obj_t* display)
     lv_style_set_pad_left(&search_result_show_label_style, 16);    // 文本右移16
     lv_style_set_pad_top(&search_result_show_label_style, 16);     // 文本下移16
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < SEARCH_LIST_LEN; i++) {
         search_result_show_label[i] = lv_label_create(display);
         lv_obj_add_style(search_result_show_label[i], &search_result_show_label_style, LV_PART_MAIN);
-        lv_obj_set_pos(search_result_show_label[i], 0, 60 + i * 55);
-        lv_obj_set_size(search_result_show_label[i], 672, 55);
+        lv_obj_set_pos(search_result_show_label[i], -1, 60 + i * 54);
+        lv_obj_set_size(search_result_show_label[i], 673, 55);
         lv_obj_add_flag(search_result_show_label[i], LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_text_font(search_result_show_label[i], &heiti_16, LV_PART_MAIN);
         lv_label_set_text(search_result_show_label[i], "");
@@ -112,7 +112,7 @@ void search_result_show_label_init(lv_obj_t* display)
 void search_result_show_label_set_text(char * text)
 {
     int index = 0;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < SEARCH_LIST_LEN; i++)
     {
         if (search_result_show_label[i] != NULL) 
         {
@@ -126,12 +126,12 @@ void search_result_show_label_set_text(char * text)
     {
         for (int j = 0; j < metro_lines[i].count; j++)
         {
-            if (strncmp(metro_lines[i].stations[j].name_pinyin, text_cstr, strlen(text_cstr)) == 0 && strlen(text_cstr) >= 3)
+            if (strncmp(metro_lines[i].stations[j].name_pinyin, text_cstr, strlen(text_cstr)) == 0) //&& strlen(text_cstr) >= 3)
             {
                 lv_obj_clear_flag(search_result_show_label[index], LV_OBJ_FLAG_HIDDEN);                
                 lv_label_set_text(search_result_show_label[index], metro_lines[i].stations[j].name);
                 index++;
-                if (index >= 10) 
+                if (index >= SEARCH_LIST_LEN) 
                 {
                     return; // 最多显示10条结果
                 }
