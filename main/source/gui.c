@@ -22,6 +22,8 @@ lv_obj_t* map_lb,*bell_lb,*line_lb,*search_lb;
 lv_obj_t* transparent = NULL;
 extern lv_obj_t* start_ta,*end_ta;
 extern lv_obj_t* display11,*display12;
+extern lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
+extern lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 static char time_buf[48];
 void timetable_init(void)
 {
@@ -254,6 +256,17 @@ void screen_load_event_cb(lv_event_t *e)  //切换界面后立即隐去kb（如�
 		lv_textarea_set_text(end_ta, "");  
 		lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);  //切换界面后重置输入框和搜索结果显示状态
+
+		for (int i = 0; i < SEARCH_LIST_LEN; i++)
+		{
+        	if (search_result_show_label[i] != NULL)
+			{
+            	lv_obj_del_async(search_result_show_label[i]);
+           	 	search_result_show_label[i] = NULL;
+				lv_obj_del_async(search_line_show_label[i]);
+				search_line_show_label[i] = NULL;
+        	}
+    	}
 	}
 }
 void btn1_cb(lv_event_t *e)

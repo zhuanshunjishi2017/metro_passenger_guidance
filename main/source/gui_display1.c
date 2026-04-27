@@ -11,7 +11,7 @@ lv_obj_t* btn4,*btn4_lb;
 lv_obj_t* display11,*main_lb2,*station_lb,*route_lb;
 lv_obj_t* display12,*display12_lb1;
 lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
-lv_style_t search_result_show_label_style;
+lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 static lv_point_t line_points[] = {{352,55},{352,599}};
 void ui_init(void)
 {
@@ -91,49 +91,76 @@ void display12_init(void)
 
 void search_result_show_label_init(lv_obj_t* display)
 {
-    lv_style_init(&search_result_show_label_style);
-    lv_style_set_bg_color(&search_result_show_label_style, lv_color_white());
-    lv_style_set_border_color(&search_result_show_label_style, lv_color_hex(COLOR_MID_GRAY));
-    lv_style_set_border_width(&search_result_show_label_style, 1);
-    lv_style_set_pad_left(&search_result_show_label_style, 16);    // 文本右移16
-    lv_style_set_pad_top(&search_result_show_label_style, 16);     // 文本下移16
+    if (search_result_show_label[0] == NULL || search_line_show_label[0] == NULL)
+    {
+        for(int i = 0; i < SEARCH_LIST_LEN; i++) {
+            search_result_show_label[i] = lv_label_create(display);
+            lv_obj_set_style_border_color(search_result_show_label[i], lv_color_hex(COLOR_MID_GRAY), 0);
+            lv_obj_set_style_border_width(search_result_show_label[i], 1, 0);
+            lv_obj_set_style_pad_left(search_result_show_label[i], 16, 0);
+            lv_obj_set_style_pad_top(search_result_show_label[i], 16, 0);
+    
+            lv_obj_set_pos(search_result_show_label[i], -1, 60 + i * 54);
+            lv_obj_set_size(search_result_show_label[i], 673, 55);
+            lv_obj_add_flag(search_result_show_label[i], LV_OBJ_FLAG_CLICKABLE);
+            lv_obj_set_style_text_font(search_result_show_label[i], &heiti_16, LV_PART_MAIN);
+            lv_label_set_text(search_result_show_label[i], "");
+            lv_obj_add_flag(search_result_show_label[i],LV_OBJ_FLAG_HIDDEN);
 
-    for(int i = 0; i < SEARCH_LIST_LEN; i++) {
-        search_result_show_label[i] = lv_label_create(display);
-        lv_obj_add_style(search_result_show_label[i], &search_result_show_label_style, LV_PART_MAIN);
-        lv_obj_set_pos(search_result_show_label[i], -1, 60 + i * 54);
-        lv_obj_set_size(search_result_show_label[i], 673, 55);
-        lv_obj_add_flag(search_result_show_label[i], LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_text_font(search_result_show_label[i], &heiti_16, LV_PART_MAIN);
-        lv_label_set_text(search_result_show_label[i], "");
-        lv_obj_add_flag(search_result_show_label[i],LV_OBJ_FLAG_HIDDEN);
+            search_line_show_label[i] = lv_label_create(display);
+            lv_obj_set_pos(search_line_show_label[i], 590, 71 + i * 54);
+            lv_obj_set_size(search_line_show_label[i], 63, 28);
+            lv_obj_set_style_radius(search_line_show_label[i],4,LV_PART_MAIN);
+            lv_obj_set_style_bg_color(search_line_show_label[i], lv_color_hex(0xffffff), 0);
+            lv_obj_set_style_bg_opa(search_line_show_label[i], LV_OPA_COVER, 0);
+            lv_obj_add_flag(search_line_show_label[i],LV_OBJ_FLAG_HIDDEN);
+            
+            lv_obj_set_style_text_align(search_line_show_label[i], LV_TEXT_ALIGN_CENTER, 0);
+            lv_obj_set_style_pad_top(search_line_show_label[i],4, 0);
+            lv_obj_set_style_text_font(search_line_show_label[i], &heiti_16, LV_PART_MAIN);
+            lv_label_set_text(search_line_show_label[i], "");
+            lv_obj_set_style_text_color(search_line_show_label[i],lv_color_hex(0xffffff), 0);
+        }
+    }
+    else
+    {
+        for(int i = 0; i < SEARCH_LIST_LEN; i++) 
+        {
+            lv_label_set_text(search_result_show_label[i], "");
+            lv_obj_add_flag(search_result_show_label[i],LV_OBJ_FLAG_HIDDEN);
+            lv_label_set_text(search_line_show_label[i], "");
+            lv_obj_set_style_bg_color(search_line_show_label[i], lv_color_hex(0xffffff), 0);
+            lv_obj_set_style_bg_opa(search_line_show_label[i], LV_OPA_COVER, 0);
+            lv_obj_add_flag(search_line_show_label[i],LV_OBJ_FLAG_HIDDEN);
+        }
     }
 }   
+
 void search_result_show_label_set_text(char * text)
 {
     int index = 0;
-    for (int i = 0; i < SEARCH_LIST_LEN; i++)
-    {
-        if (search_result_show_label[i] != NULL) 
-        {
-            lv_obj_del(search_result_show_label[i]);
-            search_result_show_label[i] = NULL;
-        }
-    }
     search_result_show_label_init(display12);
     const char* text_cstr = text; // 确保text是以'\0'结尾的字符串
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < metro_lines[i].count; j++)
         {
-            if (strncmp(metro_lines[i].stations[j].name_pinyin, text_cstr, strlen(text_cstr)) == 0) //&& strlen(text_cstr) >= 3)
+            if (strncmp(metro_lines[i].stations[j].name_pinyin, text_cstr, strlen(text_cstr)) == 0) 
             {
                 lv_obj_clear_flag(search_result_show_label[index], LV_OBJ_FLAG_HIDDEN);                
                 lv_label_set_text(search_result_show_label[index], metro_lines[i].stations[j].name);
+
+                lv_label_set_text(search_line_show_label[index], metro_lines[i].line_number == 1 ? "1号线" :
+                                            metro_lines[i].line_number == 2 ? "2号线" :
+                                            metro_lines[i].line_number == 3 ? "3号线" : "4号线");
+                lv_obj_set_style_bg_color(search_line_show_label[index], lv_color_hex(metro_lines[i].line_color), 0);
+                lv_obj_clear_flag(search_line_show_label[index], LV_OBJ_FLAG_HIDDEN);
+                lv_obj_move_foreground(search_line_show_label[index]);
+
                 index++;
                 if (index >= SEARCH_LIST_LEN) 
                 {
-                    return; // 最多显示10条结果
+                    return; // 最多显示SEARCH_LIST_LEN条结果
                 }
             }
         }
