@@ -47,11 +47,25 @@
 
 #define SEARCH_LIST_LEN     10
 
+//下面是有关车站详细信息显示界面的宏定义
+
+#define STATION_INFO_X      493 - CANVAS_X
+#define STATION_INFO_Y      55  - CANVAS_Y
+#define STATION_INFO_W      531
+#define STATION_INFO_H      CANVAS_H
+
+#define TIME_LABEL_X        24
+#define TIME_LABEL_Y        270
+#define TIME_LABEL_W        480
+#define TIME_LABEL_H        90
+
+
 // --- 外部变量声明 ---
 extern const lv_font_t heiti_14;
 extern const lv_font_t heiti_16;
 extern const lv_font_t heiti_20;
 extern const lv_font_t heiti_24;
+extern const lv_font_t heiti_32;
 extern lv_obj_t* display0;
 extern lv_obj_t* display1;
 extern lv_obj_t* display2;
@@ -59,6 +73,10 @@ extern lv_obj_t* canvas;
 extern lv_obj_t* kb,*ta;
 extern lv_obj_t* timetable1,*timetable2,*timetable3;
 extern lv_obj_t* transparent;
+
+
+
+
 
 // ==========================================
 // 工具函数声明

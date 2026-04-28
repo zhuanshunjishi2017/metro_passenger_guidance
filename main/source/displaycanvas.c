@@ -16,20 +16,19 @@ int8_t para_numbers[5] = {0,1,2,3,4};  //妥协之举，传参只能传地址
 
 lv_obj_t *btn_plus , *btn_minus;
 lv_obj_t *lines_container;
-lv_style_t btn_style, rec_style, selector_style, line_style;//创建样式
 lv_obj_t * label_plus, *label_minus;
 lv_obj_t line_btns[4];
 lv_obj_t line_labels[4][2];
-lv_obj_t * location_image;//位置的照片
-
+lv_obj_t * location_image;//位置的图标
 lv_obj_t * pop_window;//弹出的窗口
-//lv_obj_t *line_info_btn1;//线路信息
-//lv_obj_t *line_number_label, *dire_label1, *dire_label2, *time_label1, *time_label2;
+
 lv_obj_t * start_btn, *end_btn, *start_label, *end_label;
 lv_obj_t * star_btn, *star_label, *pop_top_label;
 
 LineinfoBtn line_info_btns[2] = {0};
 
+
+lv_style_t btn_style, rec_style, selector_style, line_style;//创建样式
 lv_style_t flame_style, line_info_style, blue_label_style, black_label_style;
 lv_style_t blue_button_style, white_button_style;
 
@@ -61,8 +60,12 @@ void canvas_init(lv_obj_t *canvas)
 
     pop_window_init(canvas);
 
+    station_info_init(canvas);
+
     create_metro_map();
 }
+
+
 void location_pic_init(lv_obj_t *canvas)
 {
     location_image = lv_img_create(canvas);
@@ -202,6 +205,12 @@ void canvas_cb(lv_event_t * e)
             break;
         case LV_EVENT_SHORT_CLICKED:
             clicked_canvas(indev, metro_lines);
+            if (is_station_info)
+            {
+                is_station_info = 0;
+                lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
+                create_metro_map();
+            }
             break;
         default:
             break;
@@ -213,6 +222,8 @@ void pressing_canvas(lv_indev_t * indev)
 {
     lv_point_t vect;
     lv_indev_get_vect(indev, &vect);
+
+    if (!vect.x && !vect.y) return;
 
     origin_x += vect.x;
     origin_y += vect.y;
@@ -284,13 +295,19 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
             if ((pos.x - x < TOUCH_RANGE && pos.x - x > -TOUCH_RANGE) && 
                 (pos.y - y < TOUCH_RANGE && pos.y - y > -TOUCH_RANGE))
             {
-                station_clicked.geo_x = lines[i].stations[j].geo_x;
-                station_clicked.geo_y = lines[i].stations[j].geo_y;
-                station_clicked.line_belonged = (int8_t)(i + 1);
-                station_clicked.is_transfer = lines[i].stations[j].is_transfer;
-                station_clicked.name = lines[i].stations[j].name;
+                station_clicked[0].geo_x = lines[i].stations[j].geo_x;
+                station_clicked[0].geo_y = lines[i].stations[j].geo_y;
+                station_clicked[0].line_belonged = (int8_t)(i + 1);
+                station_clicked[0].is_transfer = lines[i].stations[j].is_transfer;
+                station_clicked[0].name = lines[i].stations[j].name;
 
-                pop_window_show(&station_clicked, line_info_btns);
+                if (station_clicked[0].is_transfer > 0)
+                {
+                    station_clicked[1].line_belonged = station_clicked[0].is_transfer;
+                    station_clicked[1].name = lines[i].stations[j].name;
+                }
+
+                pop_window_show(station_clicked, line_info_btns);
 
                 if (!is_station_clicked)
                 {
@@ -480,6 +497,8 @@ void line_info_btn_init(lv_obj_t * obj, LineinfoBtn * btn, int8_t count)
 
     if (count) lv_obj_add_flag(btn->line_info_btn, LV_OBJ_FLAG_HIDDEN);
 
+    lv_obj_add_event_cb(btn->line_info_btn, line_info_btn_cb, LV_EVENT_CLICKED, station_clicked + count);
+
     // lv_label_set_text(dire_label1 , "佛祖岭 方向");
     // lv_label_set_text(dire_label2 , "天河机场 方向");
     
@@ -582,6 +601,8 @@ void pop_window_show(Station *sta, LineinfoBtn * btn)
         lv_label_set_text(btn[i].time_label1 , "首班 06:10  末班 23:10");
         lv_label_set_text(btn[i].time_label2 , "首班 06:10  末班 23:10");
 
+        
+
         if (!sta->is_transfer) break;
         else{
            line_number = sta->is_transfer; 
@@ -589,3 +610,19 @@ void pop_window_show(Station *sta, LineinfoBtn * btn)
     }
 }
 
+void line_info_btn_cb(lv_event_t * e)
+{
+    //lv_obj_t * obj = lv_event_get_target(e);//获取产生这个事件的对象
+    Station * sta = (Station *)lv_event_get_user_data(e);
+
+    lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
+    is_station_clicked = 0;
+
+    is_station_info = 1; 
+    station_info_show(sta);
+    //create_metro_map();
+    
+    draw_transparent_rect(canvas, lv_color_hex(COLOR_LIGHT_GRAY));
+
+}

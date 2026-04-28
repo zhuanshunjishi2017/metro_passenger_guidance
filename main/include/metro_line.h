@@ -45,7 +45,7 @@ typedef struct {
     int8_t vertical_offset;  //标签垂直偏移量，下为正
     int8_t is_draw_point;      //是否为端点
     int8_t line_belonged; //所属的线路
-} Station;                   // 站点结构体 两个偏移皆为0则不绘制（换乘车站）
+} Station;                   // 站点结构体
 
 
 typedef struct {
@@ -56,15 +56,6 @@ typedef struct {
     uint8_t line_number;
 } MetroLine; // 线路结构体
 
-
-typedef struct {
-    lv_obj_t * line_info_btn;
-    lv_obj_t * line_number_label;
-    lv_obj_t * direction_label1;
-    lv_obj_t * direction_label2;
-    lv_obj_t * time_label1;
-    lv_obj_t * time_label2;
-} LineinfoBtn;
 
 
 

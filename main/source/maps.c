@@ -13,16 +13,20 @@ extern MetroLine metro_lines[4];
 
 uint16_t magnify_size = 30;
 
+//原点
 lv_coord_t origin_x = -30;
 lv_coord_t origin_y = -30;
 
 int8_t plus = 1;
 int8_t minus = -1;
 
-int8_t is_showing = 0;//正在显示的线路，0为全部
-int8_t is_station_clicked = 0; //是否存在被点击的车站
+//下面定义一些标志位
+int8_t is_showing = 0;           //正在显示的线路，0为全部
+int8_t is_station_clicked = 0;   //是否存在被点击的车站
+int8_t is_station_info = 0;      //是否有站点详细信息显示
 
-Station station_clicked;
+
+Station station_clicked[2];
 
 
 lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin)
@@ -169,6 +173,11 @@ void create_metro_map(void)
     {
         pop_window_move(&station_clicked);
     } 
+    if (is_station_info)
+    {
+        draw_transparent_rect(canvas, lv_color_hex(COLOR_LIGHT_GRAY));
+        ;
+    }
     draw_line_container(canvas);
     
 }
@@ -198,9 +207,10 @@ void draw_transparent_rect(lv_obj_t * canvas, lv_color_t color)
 
     rect_dsc.bg_color = color;
     rect_dsc.outline_width = 0;
-    rect_dsc.bg_opa = LV_OPA_80;
+    rect_dsc.bg_opa = LV_OPA_70;
 
     rect_dsc.radius = 0;
 
     lv_canvas_draw_rect(canvas,0 ,0, CANVAS_W ,CANVAS_H ,&rect_dsc); 
+
 }
