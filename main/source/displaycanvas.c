@@ -23,10 +23,12 @@ lv_obj_t line_labels[4][2];
 lv_obj_t * location_image;//位置的照片
 
 lv_obj_t * pop_window;//弹出的窗口
-lv_obj_t *line_info_btn1;//线路信息
-lv_obj_t *line_number_label, *dire_label1, *dire_label2, *time_label1, *time_label2;
+//lv_obj_t *line_info_btn1;//线路信息
+//lv_obj_t *line_number_label, *dire_label1, *dire_label2, *time_label1, *time_label2;
 lv_obj_t * start_btn, *end_btn, *start_label, *end_label;
 lv_obj_t * star_btn, *star_label, *pop_top_label;
+
+LineinfoBtn line_info_btns[2] = {0};
 
 lv_style_t flame_style, line_info_style, blue_label_style, black_label_style;
 lv_style_t blue_button_style, white_button_style;
@@ -288,7 +290,7 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
                 station_clicked.is_transfer = lines[i].stations[j].is_transfer;
                 station_clicked.name = lines[i].stations[j].name;
 
-                pop_window_show(&station_clicked);
+                pop_window_show(&station_clicked, line_info_btns);
 
                 if (!is_station_clicked)
                 {
@@ -359,6 +361,7 @@ void pop_window_init(lv_obj_t * obj)
     lv_style_set_radius(&blue_button_style, BUTTON_RADIUS);
     lv_style_set_opa(&blue_button_style, LV_OPA_COVER);
 
+    //设置样式完毕
 
     pop_window = lv_obj_create(obj);
     lv_obj_move_foreground(pop_window);
@@ -379,11 +382,17 @@ void pop_window_init(lv_obj_t * obj)
     lv_obj_set_style_pad_left(pop_top_label, 12 , 0);
     lv_obj_set_style_text_font(pop_top_label, &heiti_20, 0);
 
-    char *str = "街道口";
-    lv_label_set_text(pop_top_label, str);
+    // char *str = "街道口";
+    // lv_label_set_text(pop_top_label, str);
 
-    line_info_btn_init(pop_window, line_info_btn1 ,0);
+
+    //初始化两个站牌
+    for (int8_t i = 0; i < 2; i++)
+        line_info_btn_init(pop_window, line_info_btns + i , i);
     
+
+
+
     start_btn = lv_btn_create(pop_window);
     
     lv_obj_set_pos(start_btn, 10 ,BOTTOM_BTN_Y_NORM);
@@ -411,6 +420,9 @@ void pop_window_init(lv_obj_t * obj)
 
     lv_obj_add_style(end_btn, &btn_style, 0);
 
+
+
+
     star_btn = lv_btn_create(pop_window);
     
     lv_obj_set_pos(star_btn, 206 , 8);
@@ -428,49 +440,51 @@ void pop_window_init(lv_obj_t * obj)
 }
 
 
-void line_info_btn_init(lv_obj_t * obj, lv_obj_t * btn, int8_t count)
+void line_info_btn_init(lv_obj_t * obj, LineinfoBtn * btn, int8_t count)
 {
-    btn = lv_btn_create(obj);
+    btn->line_info_btn = lv_btn_create(obj);
 
-    lv_obj_set_pos(btn, 10 , 56 + count * (LINE_BTN_H + 10));
-    lv_obj_set_size(btn, LINE_BTN_W, LINE_BTN_H);
+    lv_obj_set_pos(btn->line_info_btn , 10 , 56 + count * (LINE_BTN_H + 10));
+    lv_obj_set_size(btn->line_info_btn , LINE_BTN_W, LINE_BTN_H);
 
-    lv_obj_add_style(btn, &line_info_style, 0);
+    lv_obj_add_style(btn->line_info_btn , &line_info_style, 0);
 
-    line_number_label = lv_label_create(btn);
-    lv_obj_set_pos(line_number_label, 0, 0);
-    lv_obj_set_size(line_number_label, 63 , 29);
+    btn->line_number_label = lv_label_create(btn->line_info_btn);
+    lv_obj_set_pos(btn->line_number_label, 0, 0);
+    lv_obj_set_size(btn->line_number_label, 63 , 29);
 
-    lv_obj_set_style_bg_opa(line_number_label, LV_OPA_COVER, 0);
-    lv_obj_set_style_radius(line_number_label, BUTTON_RADIUS, 0);
-    lv_obj_set_style_text_color(line_number_label, lv_color_white(), 0);
-    lv_obj_set_style_text_font(line_number_label, &heiti_16, 0);
-    lv_obj_set_style_bg_color(line_number_label, lv_color_hex(COLOR_LINE2), 0);
-    lv_obj_set_style_pad_top(line_number_label, 6, 0);
-    lv_obj_set_style_text_align(line_number_label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_style_bg_opa(btn->line_number_label, LV_OPA_COVER, 0);
+    lv_obj_set_style_radius(btn->line_number_label, BUTTON_RADIUS, 0);
+    lv_obj_set_style_text_color(btn->line_number_label, lv_color_white(), 0);
+    lv_obj_set_style_text_font(btn->line_number_label, &heiti_16, 0);
+    lv_obj_set_style_bg_color(btn->line_number_label, lv_color_hex(COLOR_LINE2), 0);
+    lv_obj_set_style_pad_top(btn->line_number_label, 6, 0);
+    lv_obj_set_style_text_align(btn->line_number_label, LV_TEXT_ALIGN_CENTER, 0);
 
-    lv_label_set_text(line_number_label, "2号线");
+    //lv_label_set_text(btn->line_number_label, "2号线");
 
-    dire_label1 = lv_label_create(btn);
-    dire_label2 = lv_label_create(btn);
-    time_label1 = lv_label_create(btn);
-    time_label2 = lv_label_create(btn);
+    btn->direction_label1 = lv_label_create(btn->line_info_btn);
+    btn->direction_label2 = lv_label_create(btn->line_info_btn);
+    btn->time_label1 = lv_label_create(btn->line_info_btn);
+    btn->time_label2 = lv_label_create(btn->line_info_btn);
 
-    lv_obj_add_style(dire_label1, &black_label_style, 0);
-    lv_obj_add_style(dire_label2, &black_label_style, 0);
-    lv_obj_add_style(time_label1, &blue_label_style, 0);
-    lv_obj_add_style(time_label2, &blue_label_style, 0);
+    lv_obj_add_style(btn->direction_label1, &black_label_style, 0);
+    lv_obj_add_style(btn->direction_label2, &black_label_style, 0);
+    lv_obj_add_style(btn->time_label1, &blue_label_style, 0);
+    lv_obj_add_style(btn->time_label2, &blue_label_style, 0);
 
-    lv_obj_set_pos(dire_label1, 72, 0);
-    lv_obj_set_pos(time_label1, 72, 24);
-    lv_obj_set_pos(dire_label2, 72, 60);
-    lv_obj_set_pos(time_label2, 72, 60 + 24);
+    lv_obj_set_pos(btn->direction_label1, 72, 0);
+    lv_obj_set_pos(btn->time_label1, 72, 24);
+    lv_obj_set_pos(btn->direction_label2, 72, 60);
+    lv_obj_set_pos(btn->time_label2, 72, 60 + 24);
 
-    lv_label_set_text(dire_label1 , "佛祖岭 方向");
-    lv_label_set_text(dire_label2 , "天河机场 方向");
+    if (count) lv_obj_add_flag(btn->line_info_btn, LV_OBJ_FLAG_HIDDEN);
+
+    // lv_label_set_text(dire_label1 , "佛祖岭 方向");
+    // lv_label_set_text(dire_label2 , "天河机场 方向");
     
-    lv_label_set_text(time_label1 , "首班 06:10  末班 23:10");
-    lv_label_set_text(time_label2 , "首班 06:10  末班 23:10");
+    // lv_label_set_text(time_label1 , "首班 06:10  末班 23:10");
+    // lv_label_set_text(time_label2 , "首班 06:10  末班 23:10");
     
 }
 
@@ -506,51 +520,72 @@ void pop_window_move(Station *sta)
     
 }
     
-void pop_window_show(Station *sta)
+void pop_window_show(Station *sta, LineinfoBtn * btn)
 {
     pop_window_move(sta);
 
-    if (sta->is_transfer) lv_obj_set_size(pop_window, POP_WINDOW_W,POP_WINDOW_H_TRANS);
-    else lv_obj_set_size(pop_window, POP_WINDOW_W,POP_WINDOW_H_NORM);
-
-    lv_label_set_text(pop_top_label, sta->name);
-    //lv_label_set_text(pop_top_label, "循礼门");
-
-    int8_t line_number = sta->line_belonged;
-    char * sta1 = metro_lines[line_number - 1].stations[0].name;
-    char * sta2 = metro_lines[line_number - 1].stations[metro_lines[line_number - 1].count - 1].name;
-    char line_str[10], sta1_str[24], sta2_str[24];
-    snprintf(line_str, sizeof(line_str), "%d号线",line_number);
-    snprintf(sta1_str, sizeof(sta1_str), "%s 方向",sta1);
-    snprintf(sta2_str, sizeof(sta2_str), "%s 方向",sta2);
-
-    lv_label_set_text(line_number_label, line_str);
-    //lv_label_set_text(line_number_label, "1号线");
-
-    lv_color_t color;
-    switch (line_number)
+    if (sta->is_transfer)
     {
-        case 1:
-            color = lv_color_hex(COLOR_LINE1);
-            break;
-        case 2:
-            color = lv_color_hex(COLOR_LINE2);
-            break;
-        case 3:
-            color = lv_color_hex(COLOR_LINE3);
-            break;
-        case 4:
-            color = lv_color_hex(COLOR_LINE4);
-            break;
-        default:
-            break;
-
+        lv_obj_set_size(pop_window, POP_WINDOW_W,POP_WINDOW_H_TRANS);
+        lv_obj_set_y(start_btn, BOTTOM_BTN_Y_TRANS);
+        lv_obj_set_y(end_btn, BOTTOM_BTN_Y_TRANS);
+        lv_obj_clear_flag(btn[1].line_info_btn, LV_OBJ_FLAG_HIDDEN);
+    }
+    else 
+    {
+        lv_obj_set_size(pop_window, POP_WINDOW_W,POP_WINDOW_H_NORM);
+        lv_obj_set_y(start_btn, BOTTOM_BTN_Y_NORM);
+        lv_obj_set_y(end_btn, BOTTOM_BTN_Y_NORM);
+        lv_obj_add_flag(btn[1].line_info_btn, LV_OBJ_FLAG_HIDDEN);
     }
 
-    lv_obj_set_style_bg_color(line_number_label, color, 0);
 
-    lv_label_set_text(dire_label1, sta1_str);
-    lv_label_set_text(dire_label2, sta2_str);
+    lv_label_set_text(pop_top_label, sta->name);
 
+
+    int8_t line_number = sta->line_belonged;
+    for (int8_t i = 0; i < 2 ;i++)
+    {
+        char * sta1 = metro_lines[line_number - 1].stations[0].name;
+        char * sta2 = metro_lines[line_number - 1].stations[metro_lines[line_number - 1].count - 1].name;
+        char line_str[10], sta1_str[24], sta2_str[24];
+        snprintf(line_str, sizeof(line_str), "%d号线",line_number);
+        snprintf(sta1_str, sizeof(sta1_str), "%s 方向",sta1);
+        snprintf(sta2_str, sizeof(sta2_str), "%s 方向",sta2);
+
+        lv_label_set_text(btn[i].line_number_label, line_str);
+
+        lv_color_t color;
+        switch (line_number)
+        {
+            case 1:
+                color = lv_color_hex(COLOR_LINE1);
+                break;
+            case 2:
+                color = lv_color_hex(COLOR_LINE2);
+                break;
+            case 3:
+                color = lv_color_hex(COLOR_LINE3);
+                break;
+            case 4:
+                color = lv_color_hex(COLOR_LINE4);
+                break;
+            default:
+                break;
+        }
+
+        lv_obj_set_style_bg_color(btn[i].line_number_label, color, 0);
+
+        lv_label_set_text(btn[i].direction_label1, sta1_str);
+        lv_label_set_text(btn[i].direction_label2, sta2_str);
+
+        lv_label_set_text(btn[i].time_label1 , "首班 06:10  末班 23:10");
+        lv_label_set_text(btn[i].time_label2 , "首班 06:10  末班 23:10");
+
+        if (!sta->is_transfer) break;
+        else{
+           line_number = sta->is_transfer; 
+        } 
+    }
 }
 

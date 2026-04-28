@@ -45,7 +45,7 @@
 #define BOTTOM_BTN_Y_TRANS  322
 #define BOTTOM_BTN_X        149
 
-#define SEARCH_LIST_LEN     25
+#define SEARCH_LIST_LEN     10
 
 // --- 外部变量声明 ---
 extern const lv_font_t heiti_14;

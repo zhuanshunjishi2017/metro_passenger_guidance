@@ -57,6 +57,16 @@ typedef struct {
 } MetroLine; // 线路结构体
 
 
+typedef struct {
+    lv_obj_t * line_info_btn;
+    lv_obj_t * line_number_label;
+    lv_obj_t * direction_label1;
+    lv_obj_t * direction_label2;
+    lv_obj_t * time_label1;
+    lv_obj_t * time_label2;
+} LineinfoBtn;
+
+
 
 extern const lv_font_t heiti_14;
 

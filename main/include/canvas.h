@@ -38,11 +38,14 @@ void lines_selector_cb(lv_event_t * e);
 
 void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , MetroLine *line);
 
-void line_info_btn_init(lv_obj_t * obj, lv_obj_t * btn, int8_t count);
+void line_info_btn_init(lv_obj_t * obj, LineinfoBtn * btn, int8_t count);
+
+
+
 
 void pop_window_move(Station *sta);
 
-void pop_window_show(Station *sta);
+void pop_window_show(Station *sta, LineinfoBtn * btn);
 
 
 #endif
