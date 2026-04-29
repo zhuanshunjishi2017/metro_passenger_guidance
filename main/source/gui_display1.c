@@ -1,7 +1,13 @@
 #include "gui.h"
 #include "canvas.h"
+#include "route_planner.h"
 void start_ta_kb_show_cb(lv_event_t *e);
 void end_ta_kb_show_cb(lv_event_t *e);
+void btn4_cb(lv_event_t *e); // 确定按钮回调
+
+// 全局变量，用于跨界面传递路线信息
+RouteResult last_route_result;
+char last_route_desc[1024] = {0};
 
 lv_obj_t* main_lb1;
 lv_obj_t* start_lb,*end_lb;
@@ -13,6 +19,7 @@ lv_obj_t* display12,*display12_lb1;
 lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
+lv_obj_t* start_img,*end_img;
 extern lv_obj_t* top_search_station[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_line[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
@@ -31,6 +38,7 @@ void ui_init(void)
 	lv_label_set_text(btn4_lb,"确定");
 	lv_obj_set_style_text_font(btn4_lb,&heiti_16,LV_PART_MAIN);
 	lv_obj_set_style_bg_color(btn4_lb, lv_color_hex(0xffffff), 0);
+	lv_obj_add_event_cb(btn4, btn4_cb, LV_EVENT_CLICKED, NULL);
 
     lv_obj_t * line1 = lv_line_create(display1);
     lv_line_set_points(line1, line_points, 2);
@@ -210,7 +218,26 @@ void search_result_show_label_set_text(char * text)
         }
     }
 }
+void route_design_result(const char* start_name, const char* end_name)
+{
+    start_img = lv_img_create(display0);
+    lv_img_set_src(start_img, "0:/location_start.bin");
+    lv_obj_add_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+    end_img = lv_img_create(display0);
+    lv_img_set_src(end_img, "0:/location_end.bin");
+    lv_obj_add_flag(end_img, LV_OBJ_FLAG_HIDDEN);
 
+    const Station* start_station = find_station_by_name(start_name);
+    const Station* end_station = find_station_by_name(end_name);
+    lv_coord_t start_x = geo_to_screen(start_station->geo_x, origin_x);
+    lv_coord_t start_y = geo_to_screen(start_station->geo_y, origin_y);
+    lv_obj_set_pos(start_img, start_x - 38, start_y - 75);
+    lv_obj_clear_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+    lv_coord_t end_x = geo_to_screen(end_station->geo_x, origin_x);
+    lv_coord_t end_y = geo_to_screen(end_station->geo_y, origin_y);
+    lv_obj_set_pos(end_img, end_x - 38, end_y - 75);
+    lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
+}
 
 //回调函数
 void start_ta_kb_show_cb(lv_event_t *e)
@@ -265,5 +292,54 @@ void end_ta_kb_show_cb(lv_event_t *e)
         lv_obj_move_foreground(end_lb);
         lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
+    }
+}
+
+// 确定按钮回调函数 - 路线规划
+void btn4_cb(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    if(code == LV_EVENT_CLICKED)
+    {
+        const char* start_name = lv_textarea_get_text(start_ta);
+        const char* end_name = lv_textarea_get_text(end_ta);
+
+        if (strlen(start_name) == 0 || strlen(end_name) == 0) {
+            // 显示错误提示
+            return;
+        }
+
+        // 查找路线
+        RouteResult result = find_route(start_name, end_name);
+
+        if (result.route_count > 0 && result.routes[0].step_count > 0) {
+            // 保存路线结果到全局变量
+            last_route_result = result;
+            get_route_description(&result.routes[0], last_route_desc, sizeof(last_route_desc));
+
+            // 跳转到主界面 (display0)
+            route_design_result(start_name, end_name);
+            lv_scr_load(display0);
+
+            // 在主界面上显示路线结果
+            // 这里需要在主界面的代码中处理显示路线结果
+        } else {
+            // 显示未找到路径提示
+            lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
+
+            lv_obj_t* error_display = lv_obj_create(display1);
+            lv_obj_set_size(error_display, 672, 545);
+            lv_obj_set_pos(error_display, 352, 55);
+            lv_obj_set_style_radius(error_display, 4, 0);
+            lv_obj_set_style_bg_color(error_display, lv_color_hex(0xffffff), 0);
+
+            lv_obj_t* error_label = lv_label_create(error_display);
+            lv_obj_set_pos(error_label, 10, 250);
+            lv_obj_set_size(error_label, 652, 50);
+            lv_obj_set_style_text_color(error_label, lv_color_hex(COLOR_DARK_BLUE), 0);
+            lv_obj_set_style_text_font(error_label, &heiti_20, 0);
+            lv_label_set_text(error_label, "未找到有效路径，请检查站点名称");
+        }
     }
 }

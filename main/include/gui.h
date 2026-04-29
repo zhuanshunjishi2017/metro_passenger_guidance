@@ -4,6 +4,7 @@
 #include "drivers.h"
 #include "lv_port_disp_template.h"
 #include "lv_port_indev_template.h"
+#include "route_planner.h"
 #include <stdio.h>
 
 // --- 颜色定义 ---
@@ -74,6 +75,10 @@ extern lv_obj_t* kb,*ta;
 extern lv_obj_t* timetable1,*timetable2,*timetable3;
 extern lv_obj_t* transparent;
 
+// --- 路线结果显示相关 ---
+extern RouteResult last_route_result;
+extern char last_route_desc[1024];
+
 
 
 
@@ -107,6 +112,12 @@ void create_simple_btn(lv_obj_t** btn, lv_obj_t* parent, int x, int y, int w, in
 void kb_show(lv_obj_t* kb,lv_obj_t* ta,lv_color_t bg_color);
 void kb_hide(lv_obj_t* kb);
 void transparent_init(lv_obj_t* display,lv_color_t bg_color);  //包含键盘隐藏回调函数创建
+
+/**
+ * @brief 路线规划确定按钮回调
+ * @param e 事件结构体
+ */
+void btn4_cb(lv_event_t *e);
 
 #endif
 
