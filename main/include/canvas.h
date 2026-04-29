@@ -25,6 +25,9 @@ extern lv_coord_t origin_x, origin_y, magnify_size;
 extern lv_style_t btn_style, black_label_style, blue_label_style;
 extern lv_style_t blue_button_style;
 
+extern lv_timer_t * station_timer;
+
+
 typedef struct {
     lv_obj_t * label_frame;
     lv_obj_t * train_order_label;
@@ -82,6 +85,9 @@ void station_info_init(lv_obj_t * canvas);
 void time_label_init(lv_obj_t * obj ,TimeLabel *tl, int8_t count);
 void sta_canvas_init(lv_obj_t * canvas);
 
+void timetable_label_init(lv_obj_t * obj,TimeLabel * tl);
+
+
 void sta_create_metro_line(lv_obj_t * canvas,MetroLine *line , Station *sta);
 void station_name_text_show(lv_obj_t * canvas, lv_coord_t x, lv_draw_label_dsc_t* dsc,const Station *sta);
 lv_coord_t sta_coord_trans(lv_coord_t pos, lv_coord_t origin);
@@ -93,9 +99,19 @@ void station_info_show(const Station *sta, int8_t);
 void station_info_refresh(int8_t);
 
 void change_btn_cb(lv_event_t * e);
+void timetable_btn_cb(lv_event_t * e);
 
 void sta_canvas_cb(lv_event_t * e);
 void sta_pressing_canvas(lv_indev_t *);
+
+void timetable_show(MetroLine *line);
+void station_timer_cb(lv_timer_t * timer);
+
+void time_label_update(MetroLine *line, Station * sta);
+
+ void del_time_label_text(TimeLabel *tl);
+
+
 
 
 

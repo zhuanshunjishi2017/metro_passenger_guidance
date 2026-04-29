@@ -7,6 +7,11 @@
 #include "lvgl.h"
 #include <stdint.h>
 
+#define HOUR_MIN_MODE  0
+#define MIN_SEC_MODE   1
+
+#define STATION_STOP_TIME 20
+
 typedef struct{
     int8_t hour;
     int8_t min;
@@ -20,6 +25,9 @@ void secondsToTimeStruct(int seconds, TimeStruct* result);
 void timeDifference(const TimeStruct* t1, const TimeStruct* t2, TimeStruct* result);
 void timeAdd(const TimeStruct* current, const TimeStruct* interval, TimeStruct* result);
 int timeCompare(const TimeStruct *t1, const TimeStruct *t2);
+void timeToString(const TimeStruct* t, char* buffer, int mode) ;
+
+
 
 void get_current_time(TimeStruct *result);
 
