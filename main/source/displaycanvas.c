@@ -300,11 +300,15 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
                 station_clicked[0].line_belonged = (int8_t)(i + 1);
                 station_clicked[0].is_transfer = lines[i].stations[j].is_transfer;
                 station_clicked[0].name = lines[i].stations[j].name;
+                station_clicked[0].id = lines[i].stations[j].id;
+                station_clicked[0].is_transfer = lines[i].stations[j].is_transfer;
 
                 if (station_clicked[0].is_transfer > 0)
                 {
                     station_clicked[1].line_belonged = station_clicked[0].is_transfer;
                     station_clicked[1].name = lines[i].stations[j].name;
+                    station_clicked[1].id = lines[i].stations[j].transfer_id;
+                    station_clicked[1].is_transfer = (int8_t)(i + 1);
                 }
 
                 pop_window_show(station_clicked, line_info_btns);
@@ -620,9 +624,9 @@ void line_info_btn_cb(lv_event_t * e)
     is_station_clicked = 0;
 
     is_station_info = 1; 
-    station_info_show(sta);
+    station_info_show(sta, true);
     //create_metro_map();
     
-    draw_transparent_rect(canvas, lv_color_hex(COLOR_LIGHT_GRAY));
+    draw_transparent_rect(canvas, lv_color_hex(COLOR_MID_GRAY));
 
 }

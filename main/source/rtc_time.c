@@ -1,6 +1,10 @@
 #include "drivers.h"
 #include "lv_port_disp_template.h"
 #include "lv_port_indev_template.h"
+#include "timestruct.h"
+#include <stdlib.h>
+
+
 //#define RTC_CLOCK_SOURCE_LXTAL
 #define BKP_VALUE    0x32F0
 #define DEC2BCD(x) ((((x) / 10) << 4) | ((x) % 10))
@@ -61,6 +65,21 @@ void get_rtc_time_string(char *buf, size_t len)
              rtc_time.hour,
              rtc_time.minute,
              rtc_time.second);
+}
+
+void get_current_time(TimeStruct *result)
+{
+    rtc_parameter_struct rtc_time;
+    rtc_current_time_get(&rtc_time);
+
+    char hour_str[3], min_str[3], sec_str[3];
+    sprintf(hour_str,"%0.2x", rtc_time.hour);
+    sprintf(min_str,"%0.2x", rtc_time.minute);
+    sprintf(sec_str,"%0.2x", rtc_time.second);
+
+    result->hour = atoi(hour_str);
+    result->min = atoi(min_str);
+    result->sec = atoi(sec_str);
 }
 
 /*!
