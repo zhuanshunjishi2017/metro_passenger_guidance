@@ -1,5 +1,5 @@
 #include "gui.h"
-
+#include "canvas.h"
 void btn1_cb(lv_event_t *e);
 void btn2_cb(lv_event_t *e);
 void btn3_cb(lv_event_t *e);
@@ -20,10 +20,15 @@ lv_obj_t* line_blue,*line_white;
 lv_obj_t* bell_blue,*bell_white;
 lv_obj_t* map_lb,*bell_lb,*line_lb,*search_lb;
 lv_obj_t* transparent = NULL;
+lv_obj_t* top_search_station[SEARCH_LIST_LEN];
+lv_obj_t* top_search_line[SEARCH_LIST_LEN];
+lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
+lv_obj_t* ta_lb1_btn;
 extern lv_obj_t* start_ta,*end_ta;
 extern lv_obj_t* display11,*display12;
 extern lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
+extern lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
 static char time_buf[48];
 void timetable_init(void)
 {
@@ -198,46 +203,190 @@ void display_set(lv_obj_t* display,int judge)  //设置主界面
 }
 void transparent_init(lv_obj_t* display,lv_color_t bg_color)  //生成隐藏的覆盖整个canvas的label
 {
-	create_simple_label(&transparent,display,0,0,1024,600,"",NULL);
-	lv_obj_set_style_bg_opa(transparent, LV_OPA_50, 0);
+	if (transparent == NULL)
+	{
+		create_simple_label(&transparent,display,0,0,1024,600,"",NULL);
+		lv_obj_set_style_bg_opa(transparent, LV_OPA_50, 0);
+		lv_obj_set_style_bg_color(transparent,bg_color,LV_PART_MAIN);
+		lv_obj_add_flag(transparent,LV_OBJ_FLAG_CLICKABLE);
+		lv_obj_move_foreground(transparent);
+		lv_obj_add_event_cb(transparent, kb_hide_cb, LV_EVENT_ALL,NULL);   //键盘隐藏回调创建
+		lv_obj_add_event_cb(kb, keyBoard_event_cb, LV_EVENT_ALL, NULL);   //键盘输入回调创建
+	}
+	lv_obj_clear_flag(transparent, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_set_style_bg_color(transparent,bg_color,LV_PART_MAIN);
-	lv_obj_add_flag(transparent,LV_OBJ_FLAG_CLICKABLE);
-	lv_obj_move_foreground(transparent);
-	lv_obj_add_event_cb(transparent, kb_hide_cb, LV_EVENT_ALL,NULL);   //键盘隐藏回调创建
-	lv_obj_add_event_cb(kb, keyBoard_event_cb, LV_EVENT_ALL, NULL);   //键盘输入回调创建
+    lv_obj_move_foreground(transparent);
 }
 void top_ta_record_lb_init(lv_obj_t* display)  //初始化历史记录框
 {
-	create_simple_label(&ta_lb1,display,239,55,400,210,"",NULL);
+	// create_simple_label(&ta_lb1,display,239,55,400,210,"",NULL);
+	ta_lb1 = lv_obj_create(display);  //创建空白父容器
+	lv_obj_set_size(ta_lb1, 400, 210);
+	lv_obj_set_pos(ta_lb1, 239, 55);
 	lv_obj_set_style_bg_color(ta_lb1,lv_color_hex(0xffffff),LV_PART_MAIN);
 	lv_obj_set_style_bg_opa(ta_lb1, LV_OPA_100, 0);
 	lv_obj_set_style_radius(ta_lb1,4,LV_PART_MAIN);
+	lv_obj_set_scroll_dir(ta_lb1, LV_DIR_VER);
 	lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_set_style_pad_left(ta_lb1, 0, 0);
+	lv_obj_set_style_pad_right(ta_lb1, 0, 0);
+	lv_obj_set_style_pad_top(ta_lb1, 0, 0);
+	lv_obj_set_style_pad_bottom(ta_lb1, 0, 0);
 	lv_obj_move_foreground(ta_lb1);
+
 	create_simple_label(&ta_lb1_lb1,ta_lb1,16,16,80,23,"历史记录",&heiti_20);
 	lv_obj_set_style_text_color(ta_lb1_lb1,lv_color_hex(COLOR_DARK_BLUE), 0);
 
+	create_simple_btn(&ta_lb1_btn,ta_lb1,323,13,62,30,lv_color_hex(0xeff5fd));
+	lv_obj_set_style_radius(ta_lb1_btn, BUTTON_RADIUS, LV_PART_MAIN);
+	lv_obj_t * btn_text = lv_label_create(ta_lb1_btn);
+	lv_obj_set_style_border_color(ta_lb1_btn, lv_color_hex(COLOR_DARK_BLUE), 0);
+	lv_obj_center(btn_text);
+	lv_obj_set_style_border_width(ta_lb1_btn, 1, 0);
+	lv_obj_set_style_text_color(btn_text,lv_color_hex(0xdc2929), 0);
+	lv_obj_set_style_border_opa(ta_lb1_btn, LV_OPA_100, 0);
+	lv_obj_set_style_text_font(btn_text, &heiti_16, LV_PART_MAIN);
+	lv_label_set_text(btn_text, "清空");
 }
 void top_ta_result_lb_init(lv_obj_t* display)
 {
-	create_simple_label(&ta_lb2,display,239,55,400,210,"",NULL);
+	ta_lb2 = lv_obj_create(display);  //创建空白父容器
+	lv_obj_set_size(ta_lb2, 400, 210);
+	lv_obj_set_pos(ta_lb2, 239, 55);
 	lv_obj_set_style_bg_color(ta_lb2,lv_color_hex(0xffffff),LV_PART_MAIN);
 	lv_obj_set_style_bg_opa(ta_lb2, LV_OPA_100, 0);
 	lv_obj_set_style_radius(ta_lb2,4,LV_PART_MAIN);
+	lv_obj_set_scroll_dir(ta_lb2, LV_DIR_VER);
 	lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_set_style_pad_left(ta_lb2, 0, 0);
+	lv_obj_set_style_pad_right(ta_lb2, 0, 0);
+	lv_obj_set_style_pad_top(ta_lb2, 0, 0);
+	lv_obj_set_style_pad_bottom(ta_lb2, 0, 0);
 	lv_obj_move_foreground(ta_lb2);
+
 	create_simple_label(&ta_lb2_lb1,ta_lb2,16,16,80,23,"搜索结果",&heiti_20);
 	lv_obj_set_style_text_color(ta_lb2_lb1,lv_color_hex(COLOR_DARK_BLUE), 0);
 }
+void top_search_station_init(void)
+{
+    if (top_search_station[0] == NULL || top_search_line[0] == NULL)
+    {
+        for(int i = 0; i < SEARCH_LIST_LEN; i++) {
+            top_search_station[i] = lv_label_create(ta_lb2);
+            lv_obj_set_style_border_color(top_search_station[i], lv_color_hex(COLOR_MID_GRAY), 0);
+            lv_obj_set_style_border_width(top_search_station[i], 1, 0);
+            lv_obj_set_style_pad_left(top_search_station[i], 16, 0);
+            lv_obj_set_style_pad_top(top_search_station[i], 16, 0);
+    
+            lv_obj_set_pos(top_search_station[i], -1, 60 + i * 50);
+            lv_obj_set_size(top_search_station[i], 398 , 50);
+            lv_obj_add_flag(top_search_station[i], LV_OBJ_FLAG_CLICKABLE);
+            lv_obj_set_style_text_font(top_search_station[i], &heiti_16, LV_PART_MAIN);
+            lv_label_set_text(top_search_station[i], "");
+            lv_obj_add_flag(top_search_station[i],LV_OBJ_FLAG_HIDDEN);
 
+            top_search_line[i] = lv_label_create(ta_lb2);
+            lv_obj_set_pos(top_search_line[i], 323, 69 + i * 50);
+            lv_obj_set_size(top_search_line[i], 63, 28);
+            lv_obj_set_style_radius(top_search_line[i],4,LV_PART_MAIN);
+            lv_obj_set_style_bg_color(top_search_line[i], lv_color_hex(0xffffff), 0);
+            lv_obj_set_style_bg_opa(top_search_line[i], LV_OPA_COVER, 0);
+            lv_obj_add_flag(top_search_line[i],LV_OBJ_FLAG_HIDDEN);
+            
+            lv_obj_set_style_text_align(top_search_line[i], LV_TEXT_ALIGN_CENTER, 0);
+            lv_obj_set_style_pad_top(top_search_line[i],4, 0);
+            lv_obj_set_style_text_font(top_search_line[i], &heiti_16, LV_PART_MAIN);
+            lv_label_set_text(top_search_line[i], "");
+            lv_obj_set_style_text_color(top_search_line[i],lv_color_hex(0xffffff), 0);
+
+            top_search_transfer[i] = lv_label_create(ta_lb2);
+            lv_obj_set_pos(top_search_transfer[i], 248, 69 + i * 50);
+            lv_obj_set_size(top_search_transfer[i], 63, 28);
+            lv_obj_set_style_radius(top_search_transfer[i],4,LV_PART_MAIN);
+            lv_obj_set_style_bg_color(top_search_transfer[i], lv_color_hex(0xffffff), 0);
+            lv_obj_set_style_bg_opa(top_search_transfer[i], LV_OPA_COVER, 0);
+            lv_obj_add_flag(top_search_transfer[i],LV_OBJ_FLAG_HIDDEN);
+            
+            lv_obj_set_style_text_align(top_search_transfer[i], LV_TEXT_ALIGN_CENTER, 0);
+            lv_obj_set_style_pad_top(top_search_transfer[i],4, 0);
+            lv_obj_set_style_text_font(top_search_transfer[i], &heiti_16, LV_PART_MAIN);
+            lv_label_set_text(top_search_transfer[i], "");
+            lv_obj_set_style_text_color(top_search_transfer[i],lv_color_hex(0xffffff), 0);
+        }
+    }
+    else
+    {
+        for(int i = 0; i < SEARCH_LIST_LEN; i++) 
+        {
+            lv_label_set_text(top_search_station[i], "");
+            lv_obj_add_flag(top_search_station[i],LV_OBJ_FLAG_HIDDEN);
+
+            lv_label_set_text(top_search_line[i], "");
+            lv_obj_add_flag(top_search_line[i],LV_OBJ_FLAG_HIDDEN);
+
+            lv_label_set_text(top_search_transfer[i], "");
+            lv_obj_add_flag(top_search_transfer[i],LV_OBJ_FLAG_HIDDEN);
+        }
+    }
+}   
+
+void top_search_result_text(const char * text)
+{
+    int index = 0;
+    top_search_station_init();
+    if (!*text){
+        lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
+        return;
+    }
+    const char* text_cstr = text; // 确保text是以'\0'结尾的字符串
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < metro_lines[i].count; j++)
+        {
+            if (!strncmp(metro_lines[i].stations[j].name_pinyin, text_cstr, strlen(text_cstr))
+                && metro_lines[i].stations[j].is_transfer >= 0) 
+            {
+                lv_obj_clear_flag(top_search_station[index], LV_OBJ_FLAG_HIDDEN);                
+                lv_label_set_text(top_search_station[index], metro_lines[i].stations[j].name);
+
+                lv_label_set_text(top_search_line[index], 
+                                            metro_lines[i].line_number == 1 ? "1号线" :
+                                            metro_lines[i].line_number == 2 ? "2号线" :
+                                            metro_lines[i].line_number == 3 ? "3号线" : "4号线");
+                lv_obj_set_style_bg_color(top_search_line[index], lv_color_hex(metro_lines[i].line_color), 0);
+                lv_obj_clear_flag(top_search_line[index], LV_OBJ_FLAG_HIDDEN);
+                lv_obj_move_foreground(top_search_line[index]);
+
+                if (metro_lines[i].stations[j].is_transfer)
+                {
+                    int8_t transfer_line = metro_lines[i].stations[j].is_transfer;
+                    lv_label_set_text(top_search_transfer[index], 
+                                            transfer_line == 1 ? "1号线" :
+                                            transfer_line == 2 ? "2号线" :
+                                            transfer_line == 3 ? "3号线" : "4号线");
+                    lv_obj_set_style_bg_color(top_search_transfer[index], lv_color_hex(metro_lines[transfer_line-1].line_color), 0);
+                    lv_obj_clear_flag(top_search_transfer[index], LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_move_foreground(top_search_transfer[index]);
+                }
+
+                index++;
+                if (index >= SEARCH_LIST_LEN) 
+                {
+                    return; // 最多显示SEARCH_LIST_LEN条结果
+                }
+            }
+        }
+    }
+}
 
 
 /**
  * 回调函数
  */
-void screen_load_event_cb(lv_event_t *e)  //切换界面后立即隐去kb（如果有）
+void screen_load_event_cb(lv_event_t *e)  
 {
 	// 获取用户数据传入的键盘对象
     lv_obj_t * kb = (lv_obj_t *)lv_event_get_user_data(e);
@@ -245,28 +394,48 @@ void screen_load_event_cb(lv_event_t *e)  //切换界面后立即隐去kb（如�
 	if (code ==  LV_EVENT_SCREEN_LOADED)
 	{
 		lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
-		if(ta) {
+		if(ta)
+		{
             lv_obj_del(ta);
             ta = NULL; // 置空，防止悬空指针
         }
         //创建新的
+		if(ta_lb1) 
+		{
+			lv_obj_del(ta_lb1);
+			ta_lb1 = NULL; // 置空，防止悬空指针
+		}
+		if(ta_lb2) 
+		{
+			lv_obj_del(ta_lb2);
+			ta_lb2 = NULL; // 置空，防止悬空指针
+			for (int i = 0; i < SEARCH_LIST_LEN; i++) 
+			{
+        		top_search_station[i]   = NULL;
+        		top_search_line[i]      = NULL;
+        		top_search_transfer[i]  = NULL;
+    		}
+		}
         creat_top_ta(lv_scr_act());
+		top_ta_result_lb_init(lv_layer_top());
+		top_ta_record_lb_init(lv_layer_top());
 
 		lv_textarea_set_text(start_ta, "");
 		lv_textarea_set_text(end_ta, "");  
 		lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);  //切换界面后重置输入框和搜索结果显示状态
-
 		for (int i = 0; i < SEARCH_LIST_LEN; i++)
 		{
-        	if (search_result_show_label[i] != NULL)
+			if (search_result_show_label[i] != NULL || search_line_show_label[i] != NULL || search_line_transfer_show_label[i] != NULL)
 			{
-            	lv_obj_del_async(search_result_show_label[i]);
-           	 	search_result_show_label[i] = NULL;
+				lv_obj_del_async(search_result_show_label[i]);
+				search_result_show_label[i] = NULL;
 				lv_obj_del_async(search_line_show_label[i]);
 				search_line_show_label[i] = NULL;
-        	}
-    	}
+				lv_obj_del_async(search_line_transfer_show_label[i]);
+				search_line_transfer_show_label[i] = NULL;
+    		}
+		}
 	}
 }
 void btn1_cb(lv_event_t *e)
@@ -295,17 +464,35 @@ void kb_show_cb(lv_event_t *e)
 	lv_obj_t *ta = lv_event_get_target(e);
 	if (code == LV_EVENT_CLICKED)
 	{
+		if (lv_obj_get_parent(ta) == display1)
+		{
+			for (int i = 0; i < SEARCH_LIST_LEN; i++)
+			{
+				if (search_result_show_label[i] != NULL || search_line_show_label[i] != NULL || search_line_transfer_show_label[i] != NULL)
+				{
+					lv_obj_del_async(search_result_show_label[i]);
+					search_result_show_label[i] = NULL;
+					lv_obj_del_async(search_line_show_label[i]);
+					search_line_show_label[i] = NULL;
+					lv_obj_del_async(search_line_transfer_show_label[i]);
+					search_line_transfer_show_label[i] = NULL;
+    			}
+			}
+			lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
+        	lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
+    	}
 		kb_show(kb,ta,lv_color_hex(COLOR_MID_GRAY));
+		lv_obj_set_style_bg_opa(transparent, 100, 0);
 		lv_obj_move_foreground(ta);
 		lv_obj_clear_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);  //生成历史记录框
+		lv_obj_move_foreground(ta_lb1);
 	}
 	if (code == LV_EVENT_VALUE_CHANGED)
 	{
 		lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+		lv_obj_move_foreground(ta_lb2);
 	}
-	
-
 }
 void kb_hide_cb(lv_event_t *e)
 {
@@ -331,6 +518,11 @@ void keyBoard_event_cb(lv_event_t *e)
 		id = lv_btnmatrix_get_selected_btn(kb);
 		text = lv_keyboard_get_btn_text(kb, id);
 		lv_obj_t * current_ta = lv_keyboard_get_textarea(kb);
+
+		if (current_ta == ta && strcmp(text, LV_SYMBOL_OK) != 0)
+		{
+			top_search_result_text(lv_textarea_get_text(current_ta));
+		}
 		if ((current_ta == start_ta || current_ta == end_ta) && strcmp(text, LV_SYMBOL_OK) != 0)
 		{
 			lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
@@ -382,7 +574,6 @@ void create_simple_btn(lv_obj_t** btn, lv_obj_t* parent, int x, int y, int w, in
     lv_obj_set_size(*btn, w, h);
     lv_obj_set_style_radius(*btn, BUTTON_RADIUS, LV_PART_MAIN);
     lv_obj_set_style_bg_color(*btn, bg_color, LV_PART_MAIN);
-    
 }
 
 /**
@@ -394,10 +585,7 @@ void create_simple_btn(lv_obj_t** btn, lv_obj_t* parent, int x, int y, int w, in
 void kb_show(lv_obj_t* kb,lv_obj_t* ta,lv_color_t bg_color)
 {
 	lv_keyboard_set_textarea(kb,ta);
-	if (lv_obj_has_flag(kb,LV_OBJ_FLAG_HIDDEN))
-	{
-		transparent_init(lv_scr_act(),bg_color);  
-	}
+	transparent_init(lv_layer_top(),bg_color);  
 	lv_obj_clear_flag(kb,LV_OBJ_FLAG_HIDDEN);
 	lv_obj_move_foreground(kb);
 }

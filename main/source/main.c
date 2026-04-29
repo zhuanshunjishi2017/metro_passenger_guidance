@@ -57,6 +57,9 @@ int main(void)
   display11_init();
   lv_obj_move_foreground(display11);
   
+  //display2_gui
+  // display2_ui_init();
+
   timetable_init();
   while(1)
 	{

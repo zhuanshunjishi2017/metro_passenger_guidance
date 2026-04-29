@@ -13,7 +13,9 @@ lv_obj_t* display12,*display12_lb1;
 lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
-
+extern lv_obj_t* top_search_station[SEARCH_LIST_LEN];
+extern lv_obj_t* top_search_line[SEARCH_LIST_LEN];
+extern lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
 static lv_point_t line_points[] = {{352,55},{352,599}};
 void ui_init(void)
 {
@@ -218,6 +220,18 @@ void start_ta_kb_show_cb(lv_event_t *e)
     lv_event_code_t code = lv_event_get_code(e);
     if (code == LV_EVENT_CLICKED)
     {
+        for (int i = 0; i < SEARCH_LIST_LEN; i++)
+		{
+			if (top_search_station[i] != NULL || top_search_line[i] != NULL || top_search_transfer[i] != NULL)
+			{
+				lv_obj_del_async(top_search_station[i]);
+				top_search_station[i] = NULL;
+				lv_obj_del_async(top_search_line[i]);
+				top_search_line[i] = NULL;
+				lv_obj_del_async(top_search_transfer[i]);
+				top_search_transfer[i] = NULL;
+    		}
+		}
         kb_show(kb,ta,lv_color_hex(0xffffff));
         lv_obj_set_style_bg_opa(transparent, 0, 0);
         lv_obj_move_foreground(ta);
@@ -233,6 +247,18 @@ void end_ta_kb_show_cb(lv_event_t *e)
     lv_event_code_t code = lv_event_get_code(e);
     if (code == LV_EVENT_CLICKED)
     {
+        for (int i = 0; i < SEARCH_LIST_LEN; i++)
+		{
+			if (top_search_station[i] != NULL || top_search_line[i] != NULL || top_search_transfer[i] != NULL)
+			{
+				lv_obj_del_async(top_search_station[i]);
+				top_search_station[i] = NULL;
+				lv_obj_del_async(top_search_line[i]);
+				top_search_line[i] = NULL;
+				lv_obj_del_async(top_search_transfer[i]);
+				top_search_transfer[i] = NULL;
+    		}
+		}
         kb_show(kb,ta,lv_color_hex(0xffffff));
         lv_obj_set_style_bg_opa(transparent, 0, 0);
         lv_obj_move_foreground(ta);
