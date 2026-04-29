@@ -59,6 +59,12 @@
 #define TIME_LABEL_W        480
 #define TIME_LABEL_H        90
 
+#define STATION_DIST        45
+#define STATION_Y           55
+#define STATION_RADIUS_NORM 6
+#define STATION_RADIUS_NOW  7
+#define STA_LINE_W          6
+
 
 // --- 外部变量声明 ---
 extern const lv_font_t heiti_14;

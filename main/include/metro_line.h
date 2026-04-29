@@ -6,6 +6,7 @@
 #include "lv_port_indev_template.h"
 #include "lvgl.h"
 #include <stdint.h>
+#include "timestruct.h"
 
 #define SCREEN_W 1024
 #define SCREEN_H 600  // 屏幕分辨率
@@ -45,7 +46,15 @@ typedef struct {
     int8_t vertical_offset;  //标签垂直偏移量，下为正
     int8_t is_draw_point;      //是否为端点
     int8_t line_belonged; //所属的线路
-} Station;                   // 站点结构体
+    int8_t transfer_id;
+} Station;// 站点结构体
+
+
+typedef struct{
+    TimeStruct first_train_time;
+    TimeStruct last_train_time;
+    uint16_t depart_period;
+} Timetable; //列车时间表
 
 
 typedef struct {
@@ -54,8 +63,9 @@ typedef struct {
     uint32_t line_color;
     uint8_t draw_point_count;
     uint8_t line_number;
+    const uint16_t * station_period;
+    Timetable * timetable;
 } MetroLine; // 线路结构体
-
 
 
 

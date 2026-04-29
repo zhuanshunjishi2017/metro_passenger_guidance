@@ -175,8 +175,7 @@ void create_metro_map(void)
     } 
     if (is_station_info)
     {
-        draw_transparent_rect(canvas, lv_color_hex(COLOR_LIGHT_GRAY));
-        ;
+        draw_transparent_rect(canvas, lv_color_hex(COLOR_MID_GRAY));
     }
     draw_line_container(canvas);
     

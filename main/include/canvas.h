@@ -80,14 +80,22 @@ void line_info_btn_cb(lv_event_t * e);
 
 void station_info_init(lv_obj_t * canvas);
 void time_label_init(lv_obj_t * obj ,TimeLabel *tl, int8_t count);
+void sta_canvas_init(lv_obj_t * canvas);
 
-void station_info_show(Station *sta);
+void sta_create_metro_line(lv_obj_t * canvas,MetroLine *line , Station *sta);
+void station_name_text_show(lv_obj_t * canvas, lv_coord_t x, lv_draw_label_dsc_t* dsc,const Station *sta);
+lv_coord_t sta_coord_trans(lv_coord_t pos, lv_coord_t origin);
 
-void station_info_refresh(void);
+void sta_click_canvas(lv_indev_t *indev, MetroLine *line);
+
+void station_info_show(const Station *sta, int8_t);
+
+void station_info_refresh(int8_t);
 
 void change_btn_cb(lv_event_t * e);
 
-
+void sta_canvas_cb(lv_event_t * e);
+void sta_pressing_canvas(lv_indev_t *);
 
 
 
