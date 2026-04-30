@@ -1,13 +1,13 @@
 #include "gui.h"
 #include "canvas.h"
 #include "route_planner.h"
+#include "lvgl/lvgl.h"
 void start_ta_kb_show_cb(lv_event_t *e);
 void end_ta_kb_show_cb(lv_event_t *e);
 void btn4_cb(lv_event_t *e); // 确定按钮回调
 
 // 全局变量，用于跨界面传递路线信息
-RouteResult last_route_result;
-char last_route_desc[1024] = {0};
+Route route_result;
 
 lv_obj_t* main_lb1;
 lv_obj_t* start_lb,*end_lb;
@@ -20,9 +20,12 @@ lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
 lv_obj_t* start_img,*end_img;
+lv_obj_t* pp_window;
+lv_obj_t* star_bt,* route_name;
 extern lv_obj_t* top_search_station[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_line[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
+extern lv_style_t flame_style,blue_button_style,blue_label_style;
 static lv_point_t line_points[] = {{352,55},{352,599}};
 void ui_init(void)
 {
@@ -238,6 +241,110 @@ void route_design_result(const char* start_name, const char* end_name)
     lv_obj_set_pos(end_img, end_x - 38, end_y - 75);
     lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
 }
+void pop_search_result_window_lineinfo_init(const Station *st1, const Station *st2,int index)
+{
+    lv_obj_t* lineinfo = lv_obj_create(pp_window);
+    lv_obj_set_size(lineinfo, 371, 168);
+    lv_obj_set_pos(lineinfo, 0, 54 + index * 168);
+    lv_obj_set_style_border_width(lineinfo, 0, 0);        
+    lv_obj_set_style_pad_all(lineinfo, 0, 0);
+
+    lv_obj_t* line_cl = lv_obj_create(lineinfo);
+    lv_obj_set_size(line_cl, 6, 141);
+    lv_obj_set_pos(line_cl, 30, 16);
+    lv_obj_set_style_bg_color(line_cl, lv_color_hex(metro_lines[st1->line_belonged-1].line_color), 0);
+    lv_obj_set_style_bg_opa(line_cl, LV_OPA_COVER, 0);
+    lv_obj_set_style_radius(line_cl, 4, 0);
+
+    lv_obj_t* st1_lb = lv_label_create(lineinfo);
+    lv_obj_set_pos(st1_lb, 50, 16);
+    lv_obj_set_style_text_font(st1_lb, &heiti_20, 0);
+    lv_label_set_text(st1_lb, st1->name);
+
+    lv_obj_t* st2_lb = lv_label_create(lineinfo);
+    lv_obj_set_pos(st2_lb, 50, 16 + 141 - 28);
+    lv_obj_set_style_text_font(st2_lb, &heiti_20, 0);
+    lv_label_set_text(st2_lb, st2->name);
+
+    lv_obj_t* line_lb = lv_label_create(lineinfo);
+    lv_obj_set_pos(line_lb, 50, 50);
+    lv_obj_set_size(line_lb, 63, 29);
+    lv_obj_set_style_radius(line_lb, 4, 0);
+    lv_obj_set_style_bg_color(line_lb, lv_color_hex(metro_lines[st1->line_belonged-1].line_color), 0);
+    lv_obj_set_style_bg_opa(line_lb, LV_OPA_COVER, 0);
+    lv_obj_set_style_text_align(line_lb, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_style_text_font(line_lb, &heiti_16, 0);
+    lv_label_set_text(line_lb, 
+                        metro_lines[st1->line_belonged-1].line_number == 1 ? "1号线" :
+                        metro_lines[st1->line_belonged-1].line_number == 2 ? "2号线" :
+                        metro_lines[st1->line_belonged-1].line_number == 3 ? "3号线" : "4号线");
+    
+    lv_obj_t* direction = lv_label_create(lineinfo);
+    lv_obj_set_pos(direction, 133, 55);
+    lv_obj_set_style_text_font(direction, &heiti_16, 0);
+    if (st2->id > st1->id)
+    {
+        lv_label_set_text_fmt(direction, "%s 方向",
+            metro_lines[st1->line_belonged-1].stations[metro_lines[st1->line_belonged-1].count - 1].name);
+    }
+    else
+    {
+        lv_label_set_text_fmt(direction, "%s 方向",
+            metro_lines[st1->line_belonged-1].stations[0].name);
+    }
+    
+}
+void pop_search_result_window_init(void)
+{
+    pp_window = lv_obj_create(display0);
+    lv_obj_add_style(pp_window, &flame_style, 0);
+    lv_obj_set_size(pp_window,371,451);
+    lv_obj_add_flag(pp_window, LV_OBJ_FLAG_HIDDEN);
+
+    route_name = lv_label_create(pp_window);
+    lv_obj_set_pos(route_name, 0, 0);
+    lv_obj_set_size(route_name, 371, 54);
+    lv_obj_set_style_bg_color(route_name, lv_color_hex(COLOR_LIGHT_BLUE), 0);
+    lv_obj_set_style_bg_opa(route_name, LV_OPA_COVER, 0);
+    lv_obj_set_style_text_align(route_name, LV_TEXT_ALIGN_LEFT, 0);
+    lv_obj_set_style_pad_top(route_name, 13, 0);
+    lv_obj_set_style_pad_left(route_name, 13 , 0);
+    lv_obj_set_style_text_font(route_name, &heiti_24, 0);
+
+    star_bt = lv_btn_create(pp_window);
+    lv_obj_add_style(star_bt, &blue_button_style, 0);
+    lv_obj_set_pos(star_bt, 286, 12);
+    lv_obj_set_size(star_bt, 73, 30);
+
+    lv_obj_t* star_bt_label = lv_label_create(star_bt);
+    lv_label_set_text(star_bt_label, "收藏");
+    lv_obj_center(star_bt_label);
+    lv_obj_set_style_text_font(star_bt_label, &heiti_16, LV_PART_MAIN);
+    lv_obj_set_style_text_color(star_bt_label,lv_color_hex(0xffffff), 0);
+}
+void pop_search_result_window_show(Route* route)
+{
+    int flag = 0;
+    const Station *route_show_result[MAX_TRANSFER_COUNT];
+    if (route->step_count == 0) return;
+    lv_label_set_text_fmt(route_name, "%s-%s", route->steps[0].station_name, route->steps[route->step_count - 1].station_name);
+    route_show_result[0] = find_station_by_name(route->steps[0].station_name);
+    for (int i = 0; i < route->step_count; i++)
+    {
+        if (route->steps[i].is_transfer)
+        {
+            const Station *st = find_station_by_name(route->steps[i].station_name);
+            route_show_result[flag++] = st;
+        }
+    }
+    route_show_result[flag] = find_station_by_name(route->steps[route->step_count - 1].station_name);
+
+    for (int i = 0; i <= flag; i++)
+    {
+        pop_search_result_window_lineinfo_init(route_show_result[i], route_show_result[i+1], i);
+    }
+    lv_obj_clear_flag(pp_window, LV_OBJ_FLAG_HIDDEN);
+}
 
 //回调函数
 void start_ta_kb_show_cb(lv_event_t *e)
@@ -310,19 +417,15 @@ void btn4_cb(lv_event_t *e)
         }
 
         // 查找路线
-        RouteResult result = find_route(start_name, end_name);
+        find_route(start_name, end_name, &route_result);
 
-        if (result.route_count > 0 && result.routes[0].step_count > 0) {
-            // 保存路线结果到全局变量
-            last_route_result = result;
-            get_route_description(&result.routes[0], last_route_desc, sizeof(last_route_desc));
-
+        route_design_result(start_name, end_name);
+        pop_search_result_window_show(&route_result);
+        lv_scr_load(display0);
+        if (route_result.step_count > 0) {
             // 跳转到主界面 (display0)
-            route_design_result(start_name, end_name);
-            lv_scr_load(display0);
-
             // 在主界面上显示路线结果
-            // 这里需要在主界面的代码中处理显示路线结果
+
         } else {
             // 显示未找到路径提示
             lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);

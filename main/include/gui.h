@@ -82,9 +82,6 @@ extern lv_obj_t* timetable1,*timetable2,*timetable3;
 extern lv_obj_t* transparent;
 
 // --- 路线结果显示相关 ---
-extern RouteResult last_route_result;
-extern char last_route_desc[1024];
-
 
 
 

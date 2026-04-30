@@ -158,16 +158,15 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
     // 将起点的所有线路加入队列
     for (int i = 0; i < start_line_count; i++) {
         int line = start_lines[i];
-        int node_index = path_node_count;
+        int node_index = path_node_count++;
 
         path_nodes[node_index].station_id = start_id;
         path_nodes[node_index].line_id = line;
-        path_nodes[node_index].distance = 0;
+        path_nodes[node_index].distance = 0; //相对距离起始点
         path_nodes[node_index].transfers = 0;
         path_nodes[node_index].parent_index = -1;
 
         queue[rear++] = node_index;
-        path_node_count++;
     }
 
     // BFS搜索
@@ -187,7 +186,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
                 current_temp = path_nodes[current_temp].parent_index;
             }
 
-            // 填充路径结果
+            // 填充output_route路径结果
             output_route->step_count = 0;
             output_route->total_stations = path_count;
             output_route->distance = current->distance;
@@ -195,7 +194,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
 
             // 填充路径步骤
             for (int i = path_count - 1; i >= 0 && output_route->step_count < MAX_PATH_LENGTH; i--) {
-                PathNode* node = &path_nodes[path_indices[i]];
+                PathNode* node = &path_nodes[path_indices[i]]; //当前遍历节点node
                 const Station* station = find_station_by_id(node->station_id);
 
                 if (station) {
@@ -211,13 +210,8 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
                     } else {
                         PathNode* prev_node = NULL;
                         PathNode* next_node = NULL;
-
-                        if (i > 0) {
-                            prev_node = &path_nodes[path_indices[i - 1]];
-                        }
-                        if (i < path_count - 1) {
-                            next_node = &path_nodes[path_indices[i + 1]];
-                        }
+                        prev_node = &path_nodes[path_indices[i - 1]];
+                        next_node = &path_nodes[path_indices[i + 1]];
 
                         if ((prev_node && node->line_id != prev_node->line_id) || (next_node && node->line_id != next_node->line_id)) {
                             output_route->steps[output_route->step_count].action = 2; // 换乘
@@ -262,7 +256,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
                     new_node->station_id = next_station_id;
                     new_node->line_id = line + 1;
                     new_node->distance = current->distance + 1;
-                    new_node->transfers = current->transfers;
+                    new_node->transfers = current->transfers; //换乘次数暂不增加
                     new_node->parent_index = current_index;
 
                     // 检查是否需要换乘
@@ -306,124 +300,17 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
 }
 
 // 公共函数实现
-void route_planner_init(void)
+void find_route(const char* start_name, const char* end_name, Route* output_route)
 {
-    clear_search_state();
-}
-
-RouteResult find_route(const char* start_name, const char* end_name)
-{
-    RouteResult result;
-    memset(&result, 0, sizeof(RouteResult));
+    memset(output_route, 0, sizeof(Route));
 
     const Station* start_station = find_station_by_name(start_name);
     const Station* end_station = find_station_by_name(end_name);
 
     if (!start_station || !end_station) {
-        return result; // 站点不存在
+        return; // 站点不存在
     }
-
     // 查找路径
-    bfs_find_path(start_station->id, end_station->id, &result.routes[0]);
+    bfs_find_path(start_station->id, end_station->id, output_route);
 
-    if (result.routes[0].step_count > 0) {
-        result.route_count = 1;
-    }
-
-    return result;
-}
-
-Route find_best_route(const char* start_name, const char* end_name)
-{
-    return find_route(start_name, end_name).routes[0];
-}
-
-RouteResult find_route_by_station(const Station* start_station, const Station* end_station)
-{
-    RouteResult result;
-    memset(&result, 0, sizeof(RouteResult));
-
-    if (!start_station || !end_station) {
-        return result;
-    }
-
-    bfs_find_path(start_station->id, end_station->id, &result.routes[0]);
-
-    if (result.routes[0].step_count > 0) {
-        result.route_count = 1;
-    }
-
-    return result;
-}
-
-void clear_route_result(RouteResult* result)
-{
-    if (result) {
-        memset(result, 0, sizeof(RouteResult));
-    }
-}
-
-void print_route(const Route* route)
-{
-    if (!route || route->step_count == 0) {
-        printf("No route found.\n");
-        return;
-    }
-
-    printf("Route: %d stations, %d transfers, distance: %d\n",
-           route->total_stations, route->transfer_count, route->distance);
-
-    for (int i = 0; i < route->step_count; i++) {
-        const char* action_str = "";
-        switch (route->steps[i].action) {
-            case 0: action_str = "Board"; break;
-            case 1: action_str = "Get off"; break;
-            case 2: action_str = "Transfer"; break;
-            case 3: action_str = "Pass"; break;
-        }
-
-        printf("%d: %s at %s (Line %d)%s\n",
-               i + 1, action_str, route->steps[i].station_name, route->steps[i].line_number,
-               route->steps[i].is_transfer ? " [Transfer]" : "");
-    }
-}
-
-void get_route_description(const Route* route, char* buffer, int buffer_size)
-{
-    if (!route || !buffer || buffer_size == 0) {
-        return;
-    }
-
-    if (route->step_count == 0) {
-        snprintf(buffer, buffer_size, "未找到路径");
-        return;
-    }
-
-    int offset = 0;
-
-    // 添加概览信息
-    offset += snprintf(buffer + offset, buffer_size - offset,
-                     "共%d站，换乘%d次，距离%d站\n",
-                     route->total_stations, route->transfer_count, route->distance);
-
-    // 添加详细路线
-    int current_line = -1;
-    for (int i = 0; i < route->step_count && offset < buffer_size - 1; i++) {
-        const RouteStep* step = &route->steps[i];
-
-        if (step->action == 0) { // 上车
-            offset += snprintf(buffer + offset, buffer_size - offset,
-                             "从%s乘%d号线", step->station_name, step->line_number);
-            current_line = step->line_number;
-        } else if (step->action == 2) { // 换乘
-            offset += snprintf(buffer + offset, buffer_size - offset,
-                             "，在%s换乘%d号线", step->station_name, step->line_number);
-            current_line = step->line_number;
-        } else if (step->action == 1) { // 下车
-            offset += snprintf(buffer + offset, buffer_size - offset,
-                             "，到达%s", step->station_name);
-        }
-    }
-
-    offset += snprintf(buffer + offset, buffer_size - offset, "。");
 }
