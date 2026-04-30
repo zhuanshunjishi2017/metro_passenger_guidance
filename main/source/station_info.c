@@ -817,7 +817,6 @@ void station_info_refresh(int8_t is_init)
 
 
     timetable_show(&metro_lines[showing_station.line_belonged - 1]);
-
     //默认不打开时间表
     if (is_timetable_showing)
     {
