@@ -209,6 +209,8 @@ void canvas_cb(lv_event_t * e)
             {
                 is_station_info = 0;
                 lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
+                lv_timer_del(station_timer);
+                station_timer = NULL;
                 create_metro_map();
             }
             break;

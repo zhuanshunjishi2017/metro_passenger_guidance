@@ -59,6 +59,7 @@
 #define TIME_LABEL_Y        270
 #define TIME_LABEL_W        480
 #define TIME_LABEL_H        90
+#define TIMETABLE_LABEL_H   230
 
 #define STATION_DIST        45
 #define STATION_Y           55

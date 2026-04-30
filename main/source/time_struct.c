@@ -24,7 +24,7 @@ static void secondsToTime(int totalSeconds, TimeStruct* result) {
     totalSeconds %= 86400;
     if (totalSeconds < 0) {
         totalSeconds += 86400;
-    }
+    } 
     result->hour = totalSeconds / 3600;
     result->min  = (totalSeconds % 3600) / 60;
     result->sec  = totalSeconds % 60;
@@ -36,7 +36,7 @@ static void secondsToTime(int totalSeconds, TimeStruct* result) {
  */
 void secondsToTimeStruct(int seconds, TimeStruct* result) {
     int total = seconds;  // 提升为 int 避免溢出
-    result->hour = total / 3600;   // 对于 |seconds| <= 127，hour 始终为 0
+    result->hour = total / 3600;  
     result->min  = (total % 3600) / 60;
     result->sec  = total % 60;
 }
@@ -72,6 +72,20 @@ int timeCompare(const TimeStruct *t1, const TimeStruct *t2)
     int sec1 = timeToSeconds(t1);
     int sec2 = timeToSeconds(t2);
 
-    return sec1 - sec2;
+    return (sec1 - sec2);
 }
 
+/**
+ * 将 TimeStruct 转换为形如 "09:41" 或 "05:23" 的字符串。
+ * @param t       输入的时间结构体指针
+ * @param buffer  输出字符串缓冲区（至少需要 6 字节，含 '\0'）
+ * @param mode    模式：HOUR_MIN_MODE 或 MIN_SEC_MODE
+ */
+void timeToString(const TimeStruct* t, char* buffer, int mode) 
+{
+    if (mode == HOUR_MIN_MODE) {
+        sprintf(buffer, "%02d:%02d", t->hour, t->min);
+    } else {  // MIN_SEC_MODE
+        sprintf(buffer, "%02d:%02d", t->min, t->sec);
+    }
+}
