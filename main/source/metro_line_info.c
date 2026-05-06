@@ -154,7 +154,7 @@ const uint16_t time_line_1[31] = {
     73, 82, 141, 93, 102, 79, 79, 88, 97, 90, 103, 
     107, 82, 71, 136, 128, 104, 92, 100, 304};
 
-Timetable timetable_line_1 = {{6, 0 ,0}, {23, 0, 0}, 300};
+Timetable timetable_line_1 = {{6, 0 ,0}, {23, 0, 0}, 313};
 
 const uint16_t time_line_2[37] = {
     600, 143, 204, 164, 395, 289, 201, 109, 
@@ -163,7 +163,7 @@ const uint16_t time_line_2[37] = {
     144, 132, 79, 101, 82, 137, 149, 106, 204, 
     160, 200, 102};
 
-Timetable timetable_line_2 = {{6, 0 ,0}, {23, 0, 0}, 240};
+Timetable timetable_line_2 = {{6, 0 ,0}, {23, 0, 0}, 248};
 
 
 const uint16_t time_line_3[23] = {
@@ -171,7 +171,7 @@ const uint16_t time_line_3[23] = {
     111, 253, 98, 183, 123, 89, 168, 
     93, 93, 90, 88, 76, 125, 118, 167, 242};
 
-Timetable timetable_line_3 = {{6, 0 ,0}, {23, 0, 0}, 360};
+Timetable timetable_line_3 = {{6, 0 ,0}, {23, 0, 0}, 372};
 
 
 const uint16_t time_line_4[36] = {
@@ -180,7 +180,7 @@ const uint16_t time_line_4[36] = {
     57, 57, 50, 50, 59, 52, 58, 56, 73, 86, 88,
     69, 91, 107, 78};
 
-Timetable timetable_line_4 = {{6, 0 ,0}, {23, 0, 0}, 240};
+Timetable timetable_line_4 = {{6, 0 ,0}, {23, 0, 0}, 255};
 
 
 

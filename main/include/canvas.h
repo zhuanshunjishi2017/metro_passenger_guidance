@@ -81,6 +81,8 @@ void line_info_btn_cb(lv_event_t * e);
 下面是有关站点屏幕的函数声明
 */
 
+lv_color_t get_line_color(int8_t line_number);
+
 void station_info_init(lv_obj_t * canvas);
 void time_label_init(lv_obj_t * obj ,TimeLabel *tl, int8_t count);
 void sta_canvas_init(lv_obj_t * canvas);
@@ -109,7 +111,13 @@ void station_timer_cb(lv_timer_t * timer);
 
 void time_label_update(MetroLine *line, Station * sta);
 
- void del_time_label_text(TimeLabel *tl);
+void draw_train_icon(MetroLine *line, Station * sta, int8_t remain_sta_count, int remain_sec, int count);
+
+
+void del_time_label_text(TimeLabel *tl);
+
+//获取某个站点某个方向的首末班车时间
+void get_first_last_train(Station *sta, char (*result)[7], int8_t direction);
 
 
 

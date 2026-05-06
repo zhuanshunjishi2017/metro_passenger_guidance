@@ -228,12 +228,14 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
         }
 
         // 搜索相邻站点
-        for (int line = 0; line < 4; line++) {
+        for (int line = 0; line < 4; line++) 
+        {
             const MetroLine* metro_line = &metro_lines[line];
 
             // 查找当前站点在当前线路上的位置
             int current_pos = -1;
-            for (int i = 0; i < metro_line->count; i++) {
+            for (int i = 0; i < metro_line->count; i++) 
+            {
                 if (metro_line->stations[i].id == current->station_id) {
                     current_pos = i;
                     break;
@@ -243,10 +245,12 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
             if (current_pos == -1) continue;
 
             // 搜索前一个和后一个站点
-            for (int direction = -1; direction <= 1; direction += 2) {
+            for (int direction = -1; direction <= 1; direction += 2) 
+            {
                 int next_pos = current_pos + direction;
 
-                if (next_pos >= 0 && next_pos < metro_line->count) {
+                if (next_pos >= 0 && next_pos < metro_line->count) 
+                {
                     int next_station_id = metro_line->stations[next_pos].id;
 
                     // 创建新节点
@@ -263,7 +267,8 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
                     const Station* next_station = find_station_by_id(next_station_id);
                     const Station* current_station = find_station_by_id(current->station_id);
 
-                    if (current_station && current_station->is_transfer > 0) {
+                    if (current_station && current_station->is_transfer > 0) 
+                    {
                         // 检查换乘
                         if (line + 1 != current->line_id) {
                             new_node->transfers++;
@@ -278,7 +283,8 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
 
         // 检查是否可以换乘到其他线路
         const Station* current_station = find_station_by_id(current->station_id);
-        if (current_station && current_station->is_transfer > 0) {
+        if (current_station && current_station->is_transfer > 0) 
+        {
             int transfer_line = current_station->is_transfer;
 
             if (transfer_line > 0 && transfer_line <= 4) {

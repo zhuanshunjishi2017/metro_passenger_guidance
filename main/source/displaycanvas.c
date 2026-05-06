@@ -604,10 +604,17 @@ void pop_window_show(Station *sta, LineinfoBtn * btn)
         lv_label_set_text(btn[i].direction_label1, sta1_str);
         lv_label_set_text(btn[i].direction_label2, sta2_str);
 
-        lv_label_set_text(btn[i].time_label1 , "首班 06:10  末班 23:10");
-        lv_label_set_text(btn[i].time_label2 , "首班 06:10  末班 23:10");
+        char first_last_time[2][2][7], first_last_time_str[2][40];
 
+        get_first_last_train(station_clicked + i, first_last_time[0], 0);
+        get_first_last_train(station_clicked + i, first_last_time[1], 1);
         
+        sprintf(first_last_time_str[0], "首班 %s  末班 %s", first_last_time[0][0], first_last_time[0][1]);
+        sprintf(first_last_time_str[1], "末班 %s  末班 %s", first_last_time[1][0], first_last_time[1][1]);
+
+        lv_label_set_text(btn[i].time_label1 , first_last_time_str[0]);
+        lv_label_set_text(btn[i].time_label2 , first_last_time_str[1]);
+
 
         if (!sta->is_transfer) break;
         else{
