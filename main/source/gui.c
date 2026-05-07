@@ -31,7 +31,13 @@ extern lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* pp_window,*star_bt,* route_name,*cancel_btn;
+
+
 static char time_buf[48];
+
+extern LineinfoBtn line_info_btns[2];
+
+
 void timetable_init(void)
 {
 	timetable1 = lv_label_create(display0);
@@ -87,7 +93,7 @@ void create_buttons(lv_obj_t* display0,int judge)
 	lv_obj_add_event_cb(btn3,btn3_cb,LV_EVENT_ALL,NULL);
 	create_simple_label(&bell_lb,display0,13,261,33,19,"提醒",&heiti_16);
 
-	create_simple_btn(&btn_search,display0,544,10,73,35,lv_color_hex(0x3f6ead));
+	create_simple_btn(&btn_search,display0,544,8,73,39,lv_color_hex(0x3f6ead));
 	search_lb = lv_label_create(btn_search);
 	lv_obj_set_flex_align(btn_search, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	lv_label_set_text(search_lb,"搜索");
@@ -127,15 +133,16 @@ void create_buttons(lv_obj_t* display0,int judge)
 void creat_top_ta(lv_obj_t* display0)
 {
 	ta = lv_textarea_create(display0);
-	lv_obj_set_pos(ta,264,8);
-	lv_obj_set_size(ta,266,34);
+	lv_obj_set_pos(ta,264,6);
+	lv_obj_set_size(ta,266,26);
 	lv_obj_set_style_radius(ta,4,LV_PART_MAIN);
 	lv_textarea_set_one_line(ta, true);          // 强制单行
     lv_obj_set_scrollbar_mode(ta, LV_SCROLLBAR_MODE_OFF); // 关掉滚动条
 	lv_textarea_set_placeholder_text(ta, "在此输入站点以检索");
 	lv_obj_set_style_text_color(ta,lv_color_hex(COLOR_MID_GRAY),LV_PART_TEXTAREA_PLACEHOLDER);
-	lv_obj_set_style_text_font(ta,&heiti_16, LV_PART_TEXTAREA_PLACEHOLDER);  //显示提示占位符
+	lv_obj_set_style_text_font(ta,&heiti_16, 0);  //显示提示占位符
 	lv_obj_add_event_cb(ta, kb_show_cb, LV_EVENT_ALL, NULL);  //键盘弹出回调创建
+
 }
 void metro_logo(lv_obj_t* display0,int judge)
 {
@@ -576,12 +583,45 @@ void top_search_result_click_cb(lv_event_t *e)
         {
             if (!strcmp(metro_lines[i].stations[j].name, station_name))
             {
-                 station_name = metro_lines[i].stations[j].name_pinyin;
-                 break;
+                 //station_name = metro_lines[i].stations[j].name_pinyin;
+                station_name = metro_lines[i].stations[j].name;
+
+				station_clicked[0].geo_x = metro_lines[i].stations[j].geo_x;
+                station_clicked[0].geo_y = metro_lines[i].stations[j].geo_y;
+                station_clicked[0].line_belonged = (int8_t)(i + 1);
+                station_clicked[0].is_transfer = metro_lines[i].stations[j].is_transfer;
+                station_clicked[0].name = metro_lines[i].stations[j].name;
+                station_clicked[0].id = metro_lines[i].stations[j].id;
+                station_clicked[0].is_transfer = metro_lines[i].stations[j].is_transfer;
+
+                if (station_clicked[0].is_transfer > 0)
+                {
+                    station_clicked[1].line_belonged = station_clicked[0].is_transfer;
+                    station_clicked[1].name = metro_lines[i].stations[j].name;
+                    station_clicked[1].id = metro_lines[i].stations[j].transfer_id;
+                    station_clicked[1].is_transfer = (int8_t)(i + 1);
+                }
+
+                pop_window_show(station_clicked, line_info_btns);
+
+                if (!is_station_clicked)
+                {
+                    lv_obj_clear_flag(location_image, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
+                    is_station_clicked = 1;
+                }
+                break;
             }
         }
     }
     lv_textarea_set_text(ta, station_name);
+
+	kb_hide(kb);
+	lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
+	if(!lv_obj_has_flag(ta_lb2,LV_OBJ_FLAG_HIDDEN))
+	{
+		lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+	}
 }
 
 /**

@@ -32,6 +32,8 @@ lv_style_t btn_style, rec_style, selector_style, line_style;//创建样式
 lv_style_t flame_style, line_info_style, blue_label_style, black_label_style;
 lv_style_t blue_button_style;
 
+int8_t is_start_selected, is_end_selected;
+
 void canvas_init(lv_obj_t *canvas)
 {
     lv_obj_clear_flag(canvas, LV_OBJ_FLAG_SCROLLABLE);
@@ -185,8 +187,8 @@ void lines_selector_cb(lv_event_t * e)
 {
     int8_t *para_number = lv_event_get_user_data(e);
 
-    if (*para_number == is_showing) is_showing = 0;
-    else is_showing = *para_number;
+    if (*para_number == is_line_showing) is_line_showing = 0;
+    else is_line_showing = *para_number;
 
     create_metro_map();
 }

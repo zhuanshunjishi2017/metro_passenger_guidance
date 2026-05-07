@@ -10,7 +10,9 @@
 extern int8_t plus, minus;
 extern MetroLine metro_lines[4];
 
-extern int8_t is_showing;
+extern int8_t is_line_showing;
+extern int8_t is_route_showing;
+
 extern lv_obj_t  *display0;
 
 extern int8_t is_station_clicked;
@@ -20,10 +22,14 @@ extern int8_t is_station_info ;
 
 extern lv_obj_t * station_info_disp;
 
-extern lv_coord_t origin_x, origin_y, magnify_size;
+extern lv_coord_t origin_x, origin_y;
+extern uint16_t magnify_size;
 
 extern lv_style_t btn_style, black_label_style, blue_label_style;
 extern lv_style_t blue_button_style;
+
+extern lv_obj_t *location_image, *pop_window;
+
 
 extern lv_timer_t * station_timer;
 
@@ -48,6 +54,8 @@ typedef struct {
     lv_obj_t * time_label2;
 } LineinfoBtn;
 
+
+void station_copy(Station *dist,const Station *source);
 
 /*
 下面是有关画布的函数声明

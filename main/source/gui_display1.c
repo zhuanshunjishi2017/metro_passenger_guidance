@@ -30,6 +30,8 @@ extern lv_obj_t* top_search_line[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
 extern lv_style_t flame_style,blue_button_style,blue_label_style, btn_style;
 static lv_point_t line_points[] = {{352,55},{352,599}};
+
+
 void ui_init(void)
 {
     create_simple_label(&main_lb1,display1,100,86,96,27,"路线规划",&heiti_24);
@@ -61,6 +63,7 @@ void ta_init(void)
     lv_obj_add_event_cb(start_ta, start_ta_kb_show_cb, LV_EVENT_ALL, kb);
     lv_textarea_set_one_line(start_ta, true);          // 强制单行
     lv_obj_set_scrollbar_mode(start_ta, LV_SCROLLBAR_MODE_OFF); // 关掉滚动条
+    lv_obj_set_style_text_font(start_ta, &heiti_16, 0);
 
     end_ta = lv_textarea_create(display1);
     lv_obj_set_pos(end_ta,101,255);
@@ -69,6 +72,8 @@ void ta_init(void)
     lv_obj_add_event_cb(end_ta, end_ta_kb_show_cb, LV_EVENT_ALL, kb);
     lv_textarea_set_one_line(end_ta, true);          // 强制单行
     lv_obj_set_scrollbar_mode(end_ta, LV_SCROLLBAR_MODE_OFF); // 关掉滚动条
+    lv_obj_set_style_text_font(end_ta, &heiti_16, 0);
+
 }
 void display11_init(void)
 {
@@ -419,6 +424,18 @@ void pop_search_result_window_show(Route* route)
         pop_search_result_window_lineinfo_init(route_show_result[i], route_show_result[i+1],i ,linebelonged[i]);
     }
     lv_obj_clear_flag(pp_window, LV_OBJ_FLAG_HIDDEN);
+
+    is_route_showing = 1;
+        
+    //隐藏正在显示的车站
+    if (is_station_clicked)
+    {
+        lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
+        is_station_clicked = 0;
+    }
+
+    create_metro_map();//强制重绘
 }
 
 //回调函数
@@ -487,7 +504,8 @@ void search_result_click_cb(lv_event_t *e)
         {
             if (!strcmp(metro_lines[i].stations[j].name, station_name))
             {
-                 station_name = metro_lines[i].stations[j].name_pinyin;
+                //station_name = metro_lines[i].stations[j].name_pinyin;
+                station_name = metro_lines[i].stations[j].name;
                  break;
             }
         }
@@ -523,7 +541,8 @@ void btn4_cb(lv_event_t *e)
         find_route(start_name, end_name, &route_result);
         // 设计并显示路线结果界面
         
-        if (route_result.step_count > 0) {
+        if (route_result.step_count > 0) 
+        {
             // 跳转到主界面 (display0)
             // 在主界面上显示路线结果
             route_design_result();
@@ -563,4 +582,8 @@ void cancelbtn_cb(lv_event_t *e)
         lv_obj_add_flag(start_img, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(end_img, LV_OBJ_FLAG_HIDDEN);
     }
+
+    is_route_showing = 0;
+
+    create_metro_map();//强制重绘
 }

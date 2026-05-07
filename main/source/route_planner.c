@@ -4,6 +4,8 @@
 
 extern const MetroLine metro_lines[4];
 
+void station_copy(Station *dist,const Station *source);
+
 // 简化的图节点结构
 typedef struct {
     int station_id;
@@ -46,7 +48,9 @@ const Station* find_station_by_name(const char* station_name)
 
     for (int line = 0; line < 4; line++) {
         for (int i = 0; i < metro_lines[line].count; i++) {
-            if (strcmp(metro_lines[line].stations[i].name_pinyin, station_name) == 0) {
+            if (strcmp(metro_lines[line].stations[i].name_pinyin, station_name) == 0
+              ||strcmp(metro_lines[line].stations[i].name, station_name) == 0) 
+            {
                 return &metro_lines[line].stations[i];
             }
         }
@@ -163,25 +167,28 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
             output_route->step_count = 0;
             output_route->distance = current->distance;
             output_route->transfer_count = current->transfers;
+            
+            const Station *station[MAX_PATH_LENGTH] ;
 
             // 填充路径步骤
             for (int i = path_count - 1; i >= 0 && output_route->step_count < MAX_PATH_LENGTH; i--) {
                 PathNode* node = &path_nodes[path_indices[i]];
-                const Station* station = find_station_by_id(node->station_id);
-
+                station[i] = find_station_by_id(node->station_id);
                 // 跳过重复的换乘站点
-                if (i < path_count - 1 && station) {
+                if (i < path_count - 1 && station[i]) {
                     PathNode* prev_node = &path_nodes[path_indices[i + 1]];
                     const Station* prev_station = find_station_by_id(prev_node->station_id);
-                    if (prev_station && station->only_id == prev_station->only_id) {
+                    if (prev_station && station[i]->only_id == prev_station->only_id) {
                         continue;  // 跳过重复的换乘站点
                     }
                 }
 
-                if (station) {
-                    output_route->steps[output_route->step_count].station_name = (char*)station->name_pinyin;
+                if (station[i]) {
+                    output_route->steps[output_route->step_count].station_name = (char*)station[i]->name_pinyin;
                     output_route->steps[output_route->step_count].line_number = node->line_id;
-                    output_route->steps[output_route->step_count].is_transfer = station->is_transfer > 0;
+                    output_route->steps[output_route->step_count].is_transfer = station[i]->is_transfer > 0;
+
+                    output_route->steps[output_route->step_count].sta = station[i];
 
                     // 确定动作类型
                     if (i == path_count - 1) {

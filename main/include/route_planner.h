@@ -15,6 +15,7 @@ typedef struct {
     int8_t line_number;       // 当前所在线路
     int8_t action;            // 动作类型：0-上车，1-下车，2-换乘, 3-经过
     bool is_transfer;         // 是否为换乘站
+    const Station *sta;
 } RouteStep;
 
 // 路径结构体

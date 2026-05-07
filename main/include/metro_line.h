@@ -7,6 +7,7 @@
 #include "lvgl.h"
 #include <stdint.h>
 #include "timestruct.h"
+//#include "route_planner.h"
 
 #define SCREEN_W 1024
 #define SCREEN_H 600  // 屏幕分辨率
@@ -72,11 +73,18 @@ typedef struct {
 
 extern const lv_font_t heiti_14;
 
+
+//声明一些有关地图绘制的函数
+
 lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin);
 static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t state);
 static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color, int8_t state);
+
 void create_metro_map(void);
 void draw_line_container(lv_obj_t * canvas);
 void draw_transparent_rect(lv_obj_t * canvas, lv_color_t color);
+
+void start_end_pin_move(void);
+
 
 #endif
