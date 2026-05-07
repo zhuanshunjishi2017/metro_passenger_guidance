@@ -6,7 +6,7 @@ void start_ta_kb_show_cb(lv_event_t *e);
 void end_ta_kb_show_cb(lv_event_t *e);
 void btn4_cb(lv_event_t *e); // 确定按钮回调
 void cancelbtn_cb(lv_event_t *e); // 取消按钮回调
-
+void search_result_click_cb(lv_event_t *e); // 搜索结果点击回调
 // 全局变量，用于跨界面传递路线信息
 Route route_result;
 
@@ -124,6 +124,8 @@ void search_result_show_label_init(lv_obj_t* display)
             lv_obj_set_style_text_font(search_result_show_label[i], &heiti_16, LV_PART_MAIN);
             lv_label_set_text(search_result_show_label[i], "");
             lv_obj_add_flag(search_result_show_label[i],LV_OBJ_FLAG_HIDDEN);
+
+            lv_obj_add_event_cb(search_result_show_label[i], search_result_click_cb, LV_EVENT_CLICKED, NULL);
 
             search_line_show_label[i] = lv_label_create(display);
             lv_obj_set_pos(search_line_show_label[i], 590, 71 + i * 54);
@@ -395,12 +397,10 @@ void pop_search_result_window_show(Route* route)
     int flag = 1;
     const Station *route_show_result[MAX_TRANSFER_COUNT];
     int8_t linebelonged[MAX_TRANSFER_COUNT];
+
     if (route->step_count == 0) return;
-    // lv_label_set_text_fmt(route_name, "%s-%s", "循礼门","长港路");
+
     route_show_result[0] = find_station_by_name(route->steps[0].station_name);
-    // linebelonged[0] = route->steps[0].line_number;
-    // route_show_result[0] = find_station_by_name("xunlimen");
-    // route_show_result[1] = find_station_by_name("changganglu");
     for (int i = 0; i < route->step_count; i++)
     {
         if (route->steps[i].action == 2) // 换乘站才显示在结果里
@@ -414,10 +414,6 @@ void pop_search_result_window_show(Route* route)
     route_show_result[flag] = find_station_by_name(route->steps[route->step_count - 1].station_name);
     lv_label_set_text_fmt(route_name, "%s-%s", route_show_result[0]->name, route_show_result[flag]->name);
 
-    // for (int i = 0; i + 1 <= 1; i++)
-    // {
-    //     pop_search_result_window_lineinfo_init(route_show_result[i], route_show_result[i+1], i);
-    // }
     for (int i = 0; i + 1 <= flag; i++)
     {
         pop_search_result_window_lineinfo_init(route_show_result[i], route_show_result[i+1],i ,linebelonged[i]);
@@ -481,6 +477,34 @@ void end_ta_kb_show_cb(lv_event_t *e)
     }
 }
 
+void search_result_click_cb(lv_event_t *e)
+{
+    lv_obj_t* label = lv_event_get_target(e);
+    const char* station_name = lv_label_get_text(label);
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < metro_lines[i].count; j++)
+        {
+            if (!strcmp(metro_lines[i].stations[j].name, station_name))
+            {
+                 station_name = metro_lines[i].stations[j].name_pinyin;
+                 break;
+            }
+        }
+    }
+    lv_obj_t * current_ta = lv_keyboard_get_textarea(kb);
+    if (current_ta == start_ta)
+    {
+        lv_textarea_set_text(start_ta, station_name);
+    }
+    if (current_ta == end_ta)
+    {
+        lv_textarea_set_text(end_ta, station_name);
+    }
+    lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
+}
+
 // 确定按钮回调函数 - 路线规划
 void btn4_cb(lv_event_t *e)
 {
@@ -515,7 +539,6 @@ void btn4_cb(lv_event_t *e)
             lv_obj_t* error_display = lv_obj_create(display1);
             lv_obj_set_size(error_display, 672, 545);
             lv_obj_set_pos(error_display, 352, 55);
-            lv_obj_set_style_radius(error_display, 4, 0);
             lv_obj_set_style_bg_color(error_display, lv_color_hex(0xffffff), 0);
 
             lv_obj_t* error_label = lv_label_create(error_display);
