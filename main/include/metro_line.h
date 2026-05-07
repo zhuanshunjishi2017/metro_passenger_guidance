@@ -47,6 +47,7 @@ typedef struct {
     int8_t is_draw_point;      //是否为端点
     int8_t line_belonged; //所属的线路
     int8_t transfer_id;
+    int8_t only_id;
 } Station;// 站点结构体
 
 

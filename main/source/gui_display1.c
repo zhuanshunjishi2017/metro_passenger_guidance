@@ -5,6 +5,7 @@
 void start_ta_kb_show_cb(lv_event_t *e);
 void end_ta_kb_show_cb(lv_event_t *e);
 void btn4_cb(lv_event_t *e); // 确定按钮回调
+void cancelbtn_cb(lv_event_t *e); // 取消按钮回调
 
 // 全局变量，用于跨界面传递路线信息
 Route route_result;
@@ -20,8 +21,10 @@ lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
 lv_obj_t* start_img,*end_img;
+const char*  start_name,* end_name;
+const Station*  start_station,*end_station;
 lv_obj_t* pp_window;
-lv_obj_t* star_bt,* route_name;
+lv_obj_t* star_bt,* route_name,*cancel_btn;
 extern lv_obj_t* top_search_station[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_line[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
@@ -221,38 +224,65 @@ void search_result_show_label_set_text(char * text)
         }
     }
 }
-void route_design_result(const char* start_name, const char* end_name)
+void route_design_result(void)
 {
-    start_img = lv_img_create(display0);
-    lv_img_set_src(start_img, "0:/location_start.bin");
-    lv_obj_add_flag(start_img, LV_OBJ_FLAG_HIDDEN);
-    end_img = lv_img_create(display0);
-    lv_img_set_src(end_img, "0:/location_end.bin");
-    lv_obj_add_flag(end_img, LV_OBJ_FLAG_HIDDEN);
+    if (start_img == NULL || end_img == NULL)
+    {
+        start_img = lv_img_create(canvas);
+        lv_img_set_src(start_img, "0:/location_start.bin");
+        end_img = lv_img_create(canvas);
+        lv_img_set_src(end_img, "0:/location_end.bin");
+    }
+    else
+    {
+        lv_obj_clear_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
+    }
+    start_station = find_station_by_name(start_name);
+    end_station = find_station_by_name(end_name);
 
-    const Station* start_station = find_station_by_name(start_name);
-    const Station* end_station = find_station_by_name(end_name);
     lv_coord_t start_x = geo_to_screen(start_station->geo_x, origin_x);
     lv_coord_t start_y = geo_to_screen(start_station->geo_y, origin_y);
-    lv_obj_set_pos(start_img, start_x - 38, start_y - 75);
     lv_obj_clear_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_pos(start_img, start_x - 38, start_y - 75);
+
     lv_coord_t end_x = geo_to_screen(end_station->geo_x, origin_x);
     lv_coord_t end_y = geo_to_screen(end_station->geo_y, origin_y);
-    lv_obj_set_pos(end_img, end_x - 38, end_y - 75);
     lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_pos(end_img, end_x - 38, end_y - 75);
+
 }
-void pop_search_result_window_lineinfo_init(const Station *st1, const Station *st2,int index)
+void pop_search_result_window_lineinfo_init(const Station *st1, const Station *st2,int index,int linebelonged)
 {
     lv_obj_t* lineinfo = lv_obj_create(pp_window);
     lv_obj_set_size(lineinfo, 371, 168);
-    lv_obj_set_pos(lineinfo, 0, 54 + index * 168);
+    lv_obj_set_pos(lineinfo, 0, 65 + index * 168);
     lv_obj_set_style_border_width(lineinfo, 0, 0);        
     lv_obj_set_style_pad_all(lineinfo, 0, 0);
 
+    int pp_x = lv_obj_get_x(pp_window);  // 弹窗在屏幕的 X
+    int pp_y = lv_obj_get_y(pp_window);  // 弹窗在屏幕的 Y
+
+    int btn_y;
+
+    // 如果内容超出弹窗高度 → 按钮跟在内容下面
+    if (180 + index * 168 > 451)
+    {
+        btn_y = pp_y + 180 + index * 168;
+    }
+    else
+    {
+        // 否则固定在弹窗右下角（屏幕坐标）
+        btn_y = pp_y + 451 - 25 - 40;
+    }
+    lv_obj_set_pos(cancel_btn, pp_x + 259, btn_y);
+    lv_obj_move_foreground(cancel_btn);
+    
     lv_obj_t* line_cl = lv_obj_create(lineinfo);
     lv_obj_set_size(line_cl, 6, 141);
     lv_obj_set_pos(line_cl, 30, 16);
-    lv_obj_set_style_bg_color(line_cl, lv_color_hex(metro_lines[st1->line_belonged-1].line_color), 0);
+    lv_obj_set_style_bg_color(line_cl, lv_color_hex(metro_lines[linebelonged-1].line_color), 0);
+    lv_obj_set_style_border_width(line_cl, 0, 0);    
     lv_obj_set_style_bg_opa(line_cl, LV_OPA_COVER, 0);
     lv_obj_set_style_radius(line_cl, 4, 0);
 
@@ -270,36 +300,53 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
     lv_obj_set_pos(line_lb, 50, 50);
     lv_obj_set_size(line_lb, 63, 29);
     lv_obj_set_style_radius(line_lb, 4, 0);
-    lv_obj_set_style_bg_color(line_lb, lv_color_hex(metro_lines[st1->line_belonged-1].line_color), 0);
+    lv_obj_set_style_bg_color(line_lb, lv_color_hex(metro_lines[linebelonged-1].line_color), 0);
     lv_obj_set_style_bg_opa(line_lb, LV_OPA_COVER, 0);
     lv_obj_set_style_text_align(line_lb, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_style_pad_top(line_lb,5, 0);
     lv_obj_set_style_text_font(line_lb, &heiti_16, 0);
+    lv_obj_set_style_text_color(line_lb,lv_color_hex(0xffffff), 0);
     lv_label_set_text(line_lb, 
-                        metro_lines[st1->line_belonged-1].line_number == 1 ? "1号线" :
-                        metro_lines[st1->line_belonged-1].line_number == 2 ? "2号线" :
-                        metro_lines[st1->line_belonged-1].line_number == 3 ? "3号线" : "4号线");
+                        metro_lines[linebelonged-1].line_number == 1 ? "1号线" :
+                        metro_lines[linebelonged-1].line_number == 2 ? "2号线" :
+                        metro_lines[linebelonged-1].line_number == 3 ? "3号线" : "4号线");
     
     lv_obj_t* direction = lv_label_create(lineinfo);
     lv_obj_set_pos(direction, 133, 55);
     lv_obj_set_style_text_font(direction, &heiti_16, 0);
-    if (st2->id > st1->id)
+
+    int id1,id2;
+    for (int i = 0; i < metro_lines[linebelonged-1].count; i++)
+    {
+        if (metro_lines[linebelonged-1].stations[i].name_pinyin == st1->name_pinyin)
+        {
+            id1 = metro_lines[linebelonged-1].stations[i].id;
+        }
+        if (metro_lines[linebelonged-1].stations[i].name_pinyin == st2->name_pinyin)
+        {
+            id2 = metro_lines[linebelonged-1].stations[i].id;
+        }
+    }
+    if (id2 > id1)
     {
         lv_label_set_text_fmt(direction, "%s 方向",
-            metro_lines[st1->line_belonged-1].stations[metro_lines[st1->line_belonged-1].count - 1].name);
+            metro_lines[linebelonged-1].stations[metro_lines[linebelonged-1].count - 1].name);
     }
     else
     {
         lv_label_set_text_fmt(direction, "%s 方向",
-            metro_lines[st1->line_belonged-1].stations[0].name);
+            metro_lines[linebelonged-1].stations[0].name);
     }
-    
+    //线路颜色，方向等信息不对，要修正判断条件
 }
 void pop_search_result_window_init(void)
 {
     pp_window = lv_obj_create(display0);
     lv_obj_add_style(pp_window, &flame_style, 0);
+    lv_obj_set_pos(pp_window, 100, 95);
     lv_obj_set_size(pp_window,371,451);
     lv_obj_add_flag(pp_window, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_scroll_dir(pp_window, LV_DIR_TOP | LV_DIR_BOTTOM);
 
     route_name = lv_label_create(pp_window);
     lv_obj_set_pos(route_name, 0, 0);
@@ -321,27 +368,53 @@ void pop_search_result_window_init(void)
     lv_obj_center(star_bt_label);
     lv_obj_set_style_text_font(star_bt_label, &heiti_16, LV_PART_MAIN);
     lv_obj_set_style_text_color(star_bt_label,lv_color_hex(0xffffff), 0);
+
+    cancel_btn = lv_btn_create(pp_window);
+    lv_obj_set_size(cancel_btn, 90, 38);
+    // lv_obj_align(cancel_btn, LV_ALIGN_BOTTOM_RIGHT, -22, -25);
+    lv_obj_set_style_radius(cancel_btn, 4, 0);
+    lv_obj_set_style_bg_opa(cancel_btn, LV_OPA_COVER, 0);
+    lv_obj_set_style_bg_color(cancel_btn, lv_color_hex(0xf5f5f5), 0);
+    lv_obj_move_foreground(cancel_btn);
+    lv_obj_add_event_cb(cancel_btn, cancelbtn_cb, LV_EVENT_CLICKED, NULL);
+
+    lv_obj_t *label = lv_label_create(cancel_btn);
+    lv_label_set_text(label, "完成");
+    lv_obj_set_style_text_font(label, &heiti_16, LV_PART_MAIN);
+    lv_obj_set_style_text_color(label,lv_color_hex(COLOR_BLACK), 0);
+    lv_obj_center(label);
 }
 void pop_search_result_window_show(Route* route)
 {
-    int flag = 0;
+    int flag = 1;
     const Station *route_show_result[MAX_TRANSFER_COUNT];
+    int8_t linebelonged[MAX_TRANSFER_COUNT];
     if (route->step_count == 0) return;
-    lv_label_set_text_fmt(route_name, "%s-%s", route->steps[0].station_name, route->steps[route->step_count - 1].station_name);
+    // lv_label_set_text_fmt(route_name, "%s-%s", "循礼门","长港路");
     route_show_result[0] = find_station_by_name(route->steps[0].station_name);
+    // linebelonged[0] = route->steps[0].line_number;
+    // route_show_result[0] = find_station_by_name("xunlimen");
+    // route_show_result[1] = find_station_by_name("changganglu");
     for (int i = 0; i < route->step_count; i++)
     {
-        if (route->steps[i].is_transfer)
+        if (route->steps[i].action == 2) // 换乘站才显示在结果里
         {
             const Station *st = find_station_by_name(route->steps[i].station_name);
+            linebelonged[flag - 1] = route->steps[i].line_number;
             route_show_result[flag++] = st;
         }
     }
+    linebelonged[flag - 1] = route->steps[route->step_count - 1].line_number;
     route_show_result[flag] = find_station_by_name(route->steps[route->step_count - 1].station_name);
+    lv_label_set_text_fmt(route_name, "%s-%s", route_show_result[0]->name, route_show_result[flag]->name);
 
-    for (int i = 0; i <= flag; i++)
+    // for (int i = 0; i + 1 <= 1; i++)
+    // {
+    //     pop_search_result_window_lineinfo_init(route_show_result[i], route_show_result[i+1], i);
+    // }
+    for (int i = 0; i + 1 <= flag; i++)
     {
-        pop_search_result_window_lineinfo_init(route_show_result[i], route_show_result[i+1], i);
+        pop_search_result_window_lineinfo_init(route_show_result[i], route_show_result[i+1],i ,linebelonged[i]);
     }
     lv_obj_clear_flag(pp_window, LV_OBJ_FLAG_HIDDEN);
 }
@@ -408,8 +481,8 @@ void btn4_cb(lv_event_t *e)
     lv_event_code_t code = lv_event_get_code(e);
     if(code == LV_EVENT_CLICKED)
     {
-        const char* start_name = lv_textarea_get_text(start_ta);
-        const char* end_name = lv_textarea_get_text(end_ta);
+        start_name = lv_textarea_get_text(start_ta);
+        end_name = lv_textarea_get_text(end_ta);
 
         if (strlen(start_name) == 0 || strlen(end_name) == 0) {
             // 显示错误提示
@@ -418,13 +491,15 @@ void btn4_cb(lv_event_t *e)
 
         // 查找路线
         find_route(start_name, end_name, &route_result);
-
-        route_design_result(start_name, end_name);
-        pop_search_result_window_show(&route_result);
-        lv_scr_load(display0);
+        // 设计并显示路线结果界面
+        
         if (route_result.step_count > 0) {
             // 跳转到主界面 (display0)
             // 在主界面上显示路线结果
+            route_design_result();
+            pop_search_result_window_init();
+            pop_search_result_window_show(&route_result);
+            lv_scr_load(display0);
 
         } else {
             // 显示未找到路径提示
@@ -444,5 +519,19 @@ void btn4_cb(lv_event_t *e)
             lv_obj_set_style_text_font(error_label, &heiti_20, 0);
             lv_label_set_text(error_label, "未找到有效路径，请检查站点名称");
         }
+    }
+}
+
+void cancelbtn_cb(lv_event_t *e)
+{
+    lv_obj_del_async(pp_window);
+    pp_window = NULL;
+    route_name = NULL;
+    cancel_btn = NULL;
+    star_bt = NULL;
+    if (start_img != NULL && end_img != NULL)
+    {
+        lv_obj_add_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(end_img, LV_OBJ_FLAG_HIDDEN);
     }
 }

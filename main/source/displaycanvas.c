@@ -32,7 +32,6 @@ lv_style_t btn_style, rec_style, selector_style, line_style;//创建样式
 lv_style_t flame_style, line_info_style, blue_label_style, black_label_style;
 lv_style_t blue_button_style, white_button_style;
 
-
 void canvas_init(lv_obj_t *canvas)
 {
     lv_obj_clear_flag(canvas, LV_OBJ_FLAG_SCROLLABLE);
@@ -519,7 +518,6 @@ void pop_window_move(Station *sta)
     lv_coord_t y = geo_to_screen(sta->geo_y, origin_y);
 
     lv_obj_set_pos(location_image, x - 38, y - 75);
-
     x += 25;
     if (sta->is_transfer)
     {
