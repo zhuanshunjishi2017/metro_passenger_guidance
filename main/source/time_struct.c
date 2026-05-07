@@ -83,9 +83,16 @@ int timeCompare(const TimeStruct *t1, const TimeStruct *t2)
  */
 void timeToString(const TimeStruct* t, char* buffer, int mode) 
 {
-    if (mode == HOUR_MIN_MODE) {
+    if (mode == HOUR_MIN_MODE) 
+    {
         sprintf(buffer, "%02d:%02d", t->hour, t->min);
-    } else {  // MIN_SEC_MODE
+    } 
+    else if (mode == MIN_SEC_MODE)
+    { 
         sprintf(buffer, "%02d:%02d", t->min, t->sec);
+    }
+    else if (mode == MIN_MODE)
+    {
+        sprintf(buffer, "%d", t->min);
     }
 }

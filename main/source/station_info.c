@@ -1227,3 +1227,26 @@ void get_first_last_train(Station *sta, char (*result)[7], int8_t direction)
     //末班车顺延
     timeToString(origin_time + 1, result[1], HOUR_MIN_MODE);
 }
+
+//获取两站之间的时间
+void get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2, TimeStruct *res)
+{
+    int interval_sec = 0;//定义间隔的秒数
+
+    if (id_1 == id_2) return;
+
+    else if (id_1 > id_2)
+    {
+        int temp = id_1;
+        id_1 = id_2;
+        id_2 = temp;
+    }
+    
+    for (int i = id_1 - 1; i < id_2 - 1; i++)
+    {
+        interval_sec += line->station_period[i];
+    }
+    secondsToTimeStruct(interval_sec, res);
+
+
+}
