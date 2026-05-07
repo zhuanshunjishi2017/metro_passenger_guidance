@@ -209,28 +209,53 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
             return;
         }
 
-        // 搜索相邻站点（只在当前线路）
-        const MetroLine* metro_line = &metro_lines[current->line_id - 1];
+        // 搜索相邻站点
+        for (int line = 0; line < 4; line++) 
+        {
+            const MetroLine* metro_line = &metro_lines[line];
 
-        // 查找当前站点位置
-        int current_pos = -1;
-        for (int i = 0; i < metro_line->count; i++) {
-            if (metro_line->stations[i].only_id == current->station_id) {
-                current_pos = i;
-                break;
+            // 查找当前站点在当前线路上的位置
+            int current_pos = -1;
+            for (int i = 0; i < metro_line->count; i++) 
+            {
+                if (metro_line->stations[i].id == current->station_id) {
+                    current_pos = i;
+                    break;
+                }
             }
         }
 
-        if (current_pos >= 0) {
-            // 搜索前后站点
-            for (int direction = -1; direction <= 1; direction += 2) {
+            if (current_pos == -1) continue;
+
+            // 搜索前一个和后一个站点
+            for (int direction = -1; direction <= 1; direction += 2) 
+            {
                 int next_pos = current_pos + direction;
 
-                if (next_pos >= 0 && next_pos < metro_line->count) {
-                    int next_station_id = metro_line->stations[next_pos].only_id;
+                if (next_pos >= 0 && next_pos < metro_line->count) 
+                {
+                    int next_station_id = metro_line->stations[next_pos].id;
 
-                    if (visited[next_station_id][current->line_id]) {
-                        continue;
+                    // 创建新节点
+                    int new_node_index = path_node_count;
+                    PathNode* new_node = &path_nodes[new_node_index];
+
+                    new_node->station_id = next_station_id;
+                    new_node->line_id = line + 1;
+                    new_node->distance = current->distance + 1;
+                    new_node->transfers = current->transfers; //换乘次数暂不增加
+                    new_node->parent_index = current_index;
+
+                    // 检查是否需要换乘
+                    const Station* next_station = find_station_by_id(next_station_id);
+                    const Station* current_station = find_station_by_id(current->station_id);
+
+                    if (current_station && current_station->is_transfer > 0) 
+                    {
+                        // 检查换乘
+                        if (line + 1 != current->line_id) {
+                            new_node->transfers++;
+                        }
                     }
 
                     if (path_node_count >= MAX_STATIONS * 4 - 1) {
@@ -251,9 +276,11 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
             }
         }
 
-        // 检查换乘
-        int station_lines[4];
-        int line_count = get_station_lines(current->station_id, station_lines);
+        // 检查是否可以换乘到其他线路
+        const Station* current_station = find_station_by_id(current->station_id);
+        if (current_station && current_station->is_transfer > 0) 
+        {
+            int transfer_line = current_station->is_transfer;
 
         for (int i = 0; i < line_count; i++) {
             int transfer_line = station_lines[i];
