@@ -9,6 +9,7 @@
 
 #define HOUR_MIN_MODE  0
 #define MIN_SEC_MODE   1
+#define MIN_MODE       2
 
 #define STATION_STOP_TIME 20
 
