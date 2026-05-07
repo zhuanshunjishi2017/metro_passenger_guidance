@@ -30,7 +30,7 @@ LineinfoBtn line_info_btns[2] = {0};
 
 lv_style_t btn_style, rec_style, selector_style, line_style;//创建样式
 lv_style_t flame_style, line_info_style, blue_label_style, black_label_style;
-lv_style_t blue_button_style, white_button_style;
+lv_style_t blue_button_style;
 
 void canvas_init(lv_obj_t *canvas)
 {

@@ -1229,11 +1229,11 @@ void get_first_last_train(Station *sta, char (*result)[7], int8_t direction)
 }
 
 //获取两站之间的时间
-void get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2, TimeStruct *res)
+int get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2)
 {
     int interval_sec = 0;//定义间隔的秒数
 
-    if (id_1 == id_2) return;
+    if (id_1 == id_2) return interval_sec;
 
     else if (id_1 > id_2)
     {
@@ -1246,7 +1246,7 @@ void get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2, TimeStruct 
     {
         interval_sec += line->station_period[i];
     }
-    secondsToTimeStruct(interval_sec, res);
+    return interval_sec;
 
 
 }

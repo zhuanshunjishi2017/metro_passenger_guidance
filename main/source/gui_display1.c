@@ -28,7 +28,7 @@ lv_obj_t* star_bt,* route_name,*cancel_btn;
 extern lv_obj_t* top_search_station[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_line[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
-extern lv_style_t flame_style,blue_button_style,blue_label_style;
+extern lv_style_t flame_style,blue_button_style,blue_label_style, btn_style;
 static lv_point_t line_points[] = {{352,55},{352,599}};
 void ui_init(void)
 {
@@ -341,7 +341,11 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
     lv_obj_t* time_lb = lv_label_create(lineinfo);
     lv_obj_set_pos(time_lb, 50, 100);
     lv_obj_set_style_text_font(time_lb, &heiti_16, 0);
-    lv_label_set_text_fmt(time_lb, "%d站 (%d分钟)",abs(id2 - id1), abs(id2 - id1) * 2);
+
+    int sec = get_station_interval(&(metro_lines[linebelonged-1]), id1, id2);
+    //timeToString(&period, period_str, MIN_MODE);
+
+    lv_label_set_text_fmt(time_lb, "%d站 (%d分钟)",abs(id2 - id1), sec/60);
 }
 void pop_search_result_window_init(void)
 {
@@ -358,9 +362,9 @@ void pop_search_result_window_init(void)
     lv_obj_set_style_bg_color(route_name, lv_color_hex(COLOR_LIGHT_BLUE), 0);
     lv_obj_set_style_bg_opa(route_name, LV_OPA_COVER, 0);
     lv_obj_set_style_text_align(route_name, LV_TEXT_ALIGN_LEFT, 0);
-    lv_obj_set_style_pad_top(route_name, 13, 0);
+    lv_obj_set_style_pad_top(route_name, 17, 0);
     lv_obj_set_style_pad_left(route_name, 13 , 0);
-    lv_obj_set_style_text_font(route_name, &heiti_24, 0);
+    lv_obj_set_style_text_font(route_name, &heiti_20, 0);
 
     star_bt = lv_btn_create(pp_window);
     lv_obj_add_style(star_bt, &blue_button_style, 0);
@@ -376,9 +380,7 @@ void pop_search_result_window_init(void)
     cancel_btn = lv_btn_create(pp_window);
     lv_obj_set_size(cancel_btn, 90, 38);
     // lv_obj_align(cancel_btn, LV_ALIGN_BOTTOM_RIGHT, -22, -25);
-    lv_obj_set_style_radius(cancel_btn, 4, 0);
-    lv_obj_set_style_bg_opa(cancel_btn, LV_OPA_COVER, 0);
-    lv_obj_set_style_bg_color(cancel_btn, lv_color_hex(0xf5f5f5), 0);
+    lv_obj_add_style(cancel_btn, &btn_style,0);
     lv_obj_move_foreground(cancel_btn);
     lv_obj_add_event_cb(cancel_btn, cancelbtn_cb, LV_EVENT_CLICKED, NULL);
 

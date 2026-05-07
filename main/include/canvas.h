@@ -119,6 +119,7 @@ void del_time_label_text(TimeLabel *tl);
 //获取某个站点某个方向的首末班车时间
 void get_first_last_train(Station *sta, char (*result)[7], int8_t direction);
 
+int get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2);
 
 
 
