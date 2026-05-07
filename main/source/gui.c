@@ -7,7 +7,7 @@ void kb_show_cb(lv_event_t *e);
 void kb_hide_cb(lv_event_t *e);
 void keyBoard_event_cb(lv_event_t *e);
 void screen_load_event_cb(lv_event_t *e);
-
+void top_search_result_click_cb(lv_event_t *e);
 
 lv_obj_t* label_left,*label_top;
 lv_obj_t* lb_t1;
@@ -289,6 +289,8 @@ void top_search_station_init(void)
             lv_label_set_text(top_search_station[i], "");
             lv_obj_add_flag(top_search_station[i],LV_OBJ_FLAG_HIDDEN);
 
+			lv_obj_add_event_cb(top_search_station[i], top_search_result_click_cb, LV_EVENT_CLICKED, NULL);
+
             top_search_line[i] = lv_label_create(ta_lb2);
             lv_obj_set_pos(top_search_line[i], 323, 69 + i * 50);
             lv_obj_set_size(top_search_line[i], 63, 28);
@@ -437,7 +439,6 @@ void screen_load_event_cb(lv_event_t *e)
 			
 		}
 		
-
 		lv_textarea_set_text(start_ta, "");
 		lv_textarea_set_text(end_ta, "");  
 		lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
@@ -565,6 +566,23 @@ void keyBoard_event_cb(lv_event_t *e)
 	}
 }
 
+void top_search_result_click_cb(lv_event_t *e)
+{
+	lv_obj_t* label = lv_event_get_target(e);
+    const char* station_name = lv_label_get_text(label);
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < metro_lines[i].count; j++)
+        {
+            if (!strcmp(metro_lines[i].stations[j].name, station_name))
+            {
+                 station_name = metro_lines[i].stations[j].name_pinyin;
+                 break;
+            }
+        }
+    }
+    lv_textarea_set_text(ta, station_name);
+}
 
 /**
  * @brief 通用 Label 创建工具实现
