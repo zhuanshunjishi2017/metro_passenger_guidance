@@ -610,7 +610,7 @@ void pop_window_show(Station *sta, LineinfoBtn * btn)
         get_first_last_train(station_clicked + i, first_last_time[1], 1);
         
         sprintf(first_last_time_str[0], "首班 %s  末班 %s", first_last_time[0][0], first_last_time[0][1]);
-        sprintf(first_last_time_str[1], "末班 %s  末班 %s", first_last_time[1][0], first_last_time[1][1]);
+        sprintf(first_last_time_str[1], "首班 %s  末班 %s", first_last_time[1][0], first_last_time[1][1]);
 
         lv_label_set_text(btn[i].time_label1 , first_last_time_str[0]);
         lv_label_set_text(btn[i].time_label2 , first_last_time_str[1]);
