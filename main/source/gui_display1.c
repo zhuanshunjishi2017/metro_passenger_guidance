@@ -224,6 +224,7 @@ void search_result_show_label_set_text(char * text)
         }
     }
 }
+
 void route_design_result(void)
 {
     if (start_img == NULL || end_img == NULL)
@@ -262,9 +263,7 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
 
     int pp_x = lv_obj_get_x(pp_window);  // 弹窗在屏幕的 X
     int pp_y = lv_obj_get_y(pp_window);  // 弹窗在屏幕的 Y
-
     int btn_y;
-
     // 如果内容超出弹窗高度 → 按钮跟在内容下面
     if (180 + index * 168 > 451)
     {
@@ -292,7 +291,7 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
     lv_label_set_text(st1_lb, st1->name);
 
     lv_obj_t* st2_lb = lv_label_create(lineinfo);
-    lv_obj_set_pos(st2_lb, 50, 16 + 141 - 28);
+    lv_obj_set_pos(st2_lb, 50, 16 + 141 -20);
     lv_obj_set_style_text_font(st2_lb, &heiti_20, 0);
     lv_label_set_text(st2_lb, st2->name);
 
@@ -315,6 +314,7 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
     lv_obj_set_pos(direction, 133, 55);
     lv_obj_set_style_text_font(direction, &heiti_16, 0);
 
+    
     int id1,id2;
     for (int i = 0; i < metro_lines[linebelonged-1].count; i++)
     {
@@ -330,14 +330,18 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
     if (id2 > id1)
     {
         lv_label_set_text_fmt(direction, "%s 方向",
-            metro_lines[linebelonged-1].stations[metro_lines[linebelonged-1].count - 1].name);
+        metro_lines[linebelonged-1].stations[metro_lines[linebelonged-1].count - 1].name);
     }
     else
     {
         lv_label_set_text_fmt(direction, "%s 方向",
-            metro_lines[linebelonged-1].stations[0].name);
+        metro_lines[linebelonged-1].stations[0].name);
     }
-    //线路颜色，方向等信息不对，要修正判断条件
+
+    lv_obj_t* time_lb = lv_label_create(lineinfo);
+    lv_obj_set_pos(time_lb, 50, 100);
+    lv_obj_set_style_text_font(time_lb, &heiti_16, 0);
+    lv_label_set_text_fmt(time_lb, "%d站 (%d分钟)",abs(id2 - id1), abs(id2 - id1) * 2);
 }
 void pop_search_result_window_init(void)
 {
