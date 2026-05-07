@@ -10,7 +10,9 @@ extern void *canvas_buf;
 extern lv_obj_t * canvas;
 extern lv_obj_t * location_image;
 extern MetroLine metro_lines[4];
-
+extern lv_obj_t* end_img,* start_img;
+extern const char* start_name, *end_name;
+extern const Station* start_station, *end_station;
 uint16_t magnify_size = 30;
 
 //原点
@@ -173,6 +175,20 @@ void create_metro_map(void)
     {
         pop_window_move(&station_clicked);
     } 
+    if (start_name && end_name && !lv_obj_has_flag(start_img, LV_OBJ_FLAG_HIDDEN) && !lv_obj_has_flag(end_img, LV_OBJ_FLAG_HIDDEN))
+    {
+        lv_coord_t start_x = geo_to_screen(start_station->geo_x, origin_x);
+        lv_coord_t start_y = geo_to_screen(start_station->geo_y, origin_y);
+        lv_obj_set_pos(start_img, start_x - 38, start_y - 75);
+        lv_obj_move_foreground(start_img);
+        lv_obj_clear_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+        lv_coord_t end_x = geo_to_screen(end_station->geo_x, origin_x);
+        lv_coord_t end_y = geo_to_screen(end_station->geo_y, origin_y);
+        lv_obj_set_pos(end_img, end_x - 38, end_y - 75);
+        lv_obj_move_foreground(end_img);
+        lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
+        
+    }
     if (is_station_info)
     {
         draw_transparent_rect(canvas, lv_color_hex(COLOR_MID_GRAY));

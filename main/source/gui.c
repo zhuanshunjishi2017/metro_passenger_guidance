@@ -25,10 +25,12 @@ lv_obj_t* top_search_line[SEARCH_LIST_LEN];
 lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
 lv_obj_t* ta_lb1_btn;
 extern lv_obj_t* start_ta,*end_ta;
+extern lv_obj_t* start_img,*end_img;
 extern lv_obj_t* display11,*display12;
 extern lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
+extern lv_obj_t* pp_window,*star_bt,* route_name,*cancel_btn;
 static char time_buf[48];
 void timetable_init(void)
 {
@@ -419,6 +421,22 @@ void screen_load_event_cb(lv_event_t *e)
         creat_top_ta(lv_scr_act());
 		top_ta_result_lb_init(lv_layer_top());
 		top_ta_record_lb_init(lv_layer_top());
+
+		if (start_img != NULL && end_img != NULL && lv_scr_act() != display0)
+		{
+			lv_obj_add_flag(end_img,LV_OBJ_FLAG_HIDDEN);
+			lv_obj_add_flag(start_img,LV_OBJ_FLAG_HIDDEN);
+			if (pp_window != NULL)
+			{
+				lv_obj_del_async(pp_window);
+				pp_window = NULL;
+				route_name = NULL;
+    			cancel_btn = NULL;
+    			star_bt = NULL;
+			}
+			
+		}
+		
 
 		lv_textarea_set_text(start_ta, "");
 		lv_textarea_set_text(end_ta, "");  
