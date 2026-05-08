@@ -8,14 +8,12 @@
 #include "route_planner.h"
 #include "canvas.h"
 
-extern Route route_result;
 
 extern void *canvas_buf;
 extern lv_obj_t * canvas;
 extern lv_obj_t * location_image;
 extern MetroLine metro_lines[4];
-extern lv_obj_t* end_img,* start_img;
-extern const char* start_name, *end_name;
+
 extern const Station* start_station, *end_station;
 uint16_t magnify_size = 30;
 
@@ -31,6 +29,9 @@ int8_t is_line_showing = 0;           //正在显示的线路，0为全部
 int8_t is_station_clicked = 0;   //是否存在被点击的车站
 int8_t is_station_info = 0;      //是否有站点详细信息显示
 int8_t is_route_showing = 0;     //是否有规划的路线正在显示
+
+int8_t is_start_selected, is_end_selected;
+
 
 
 Station station_clicked[2];
@@ -123,44 +124,19 @@ static void draw_route(lv_obj_t *canvas, const Route *route)
         pts[j].y = geo_to_screen(route->steps[i].sta->geo_y, origin_y);
 
         dsc.color = get_line_color(route->steps[i].line_number);
-        //处理中南路和洪山广场这一段并行线
-        if (route->steps[i].line_number == 2 && 
-            ((route->steps[i].sta->only_id == 52)||(route->steps[i].sta->only_id == 53)))
-        {
-            pts[j].x += 2;
-            pts[j].y += 2;
-        }
-        else if (route->steps[i].line_number == 4 && (route->steps[i].sta->only_id == 53))
-        {
-            j++;
-            pts[j].x = pts[j-1].x - 1;
-            pts[j].y = pts[j-1].y - 1;
-            lv_canvas_draw_line(canvas, pts + j - 1, 2 , &dsc);
-        }
-        else if (route->steps[i].line_number == 4 && (route->steps[i].sta->only_id == 52))
-        {
-            pts[j].x -= 1;
-            pts[j].y -= 1;
-            j++;
-            pts[j].x = pts[j-1].x + 1;
-            pts[j].y = pts[j-1].y + 1;
-            lv_canvas_draw_line(canvas, pts + j - 1 , 2 , &dsc);
 
-        }
-        
+        //绘制线路
         if (j > 0)
         {    
             lv_canvas_draw_line(canvas, pts + j - 1, 2 , &dsc);
         }
-
         j++;
     }
-    //绘制车站
+    
     for (int i = 0; i < route->total_stations; i++)
-        draw_station(canvas, 
-                    route->steps[i].sta, 
-                    get_line_color(route->steps[i].line_number), 
-                    HIGHLIGHT_STATE);
+            //绘制车站
+        draw_station(canvas, route->steps[i].sta, 
+            get_line_color(route->steps[i].line_number), HIGHLIGHT_STATE);
 
 }
 
@@ -250,11 +226,15 @@ void create_metro_map(void)
     {
         pop_window_move(station_clicked);
     } 
+    if (is_start_selected || is_end_selected)
+    {
+        start_end_pin_move();
+    }
+
     if (is_route_showing)
     {
         draw_transparent_rect(canvas, lv_color_white());
         draw_route(canvas, &route_result);
-        start_end_pin_move();
     }
     if (is_station_info)
     {
@@ -304,14 +284,12 @@ void start_end_pin_move(void)
     lv_coord_t start_y = geo_to_screen(start_station->geo_y, origin_y);
     lv_obj_set_pos(start_img, start_x - 38, start_y - 75);
     //lv_obj_move_foreground(start_img);
-    lv_obj_clear_flag(start_img, LV_OBJ_FLAG_HIDDEN);
 
 
     lv_coord_t end_x = geo_to_screen(end_station->geo_x, origin_x);
     lv_coord_t end_y = geo_to_screen(end_station->geo_y, origin_y);
     lv_obj_set_pos(end_img, end_x - 38, end_y - 75);
     //lv_obj_move_foreground(end_img);
-    lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
 
 }
 

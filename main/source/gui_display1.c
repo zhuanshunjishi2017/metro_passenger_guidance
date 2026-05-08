@@ -270,17 +270,11 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
 
     int pp_x = lv_obj_get_x(pp_window);  // 弹窗在屏幕的 X
     int pp_y = lv_obj_get_y(pp_window);  // 弹窗在屏幕的 Y
-    int btn_y;
-    // 如果内容超出弹窗高度 → 按钮跟在内容下面
-    if (180 + index * 168 > 451)
-    {
-        btn_y = pp_y + 180 + index * 168;
-    }
-    else
-    {
-        // 否则固定在弹窗右下角（屏幕坐标）
-        btn_y = pp_y + 451 - 25 - 40;
-    }
+    //按钮的纵坐标
+    int btn_y  =  btn_y = pp_y + 195 + index * 168;
+
+
+
     lv_obj_set_pos(cancel_btn, pp_x + 259, btn_y);
     lv_obj_move_foreground(cancel_btn);
     
@@ -318,7 +312,7 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
                         metro_lines[linebelonged-1].line_number == 3 ? "3号线" : "4号线");
     
     lv_obj_t* direction = lv_label_create(lineinfo);
-    lv_obj_set_pos(direction, 133, 55);
+    lv_obj_set_pos(direction, 130, 55);
     lv_obj_set_style_text_font(direction, &heiti_16, 0);
 
     
@@ -399,7 +393,7 @@ void pop_search_result_window_init(void)
 }
 void pop_search_result_window_show(Route* route)
 {
-    int flag = 1;
+    int flag = 1;//总共需要乘坐的线路数量
     const Station *route_show_result[MAX_TRANSFER_COUNT];
     int8_t linebelonged[MAX_TRANSFER_COUNT];
 
@@ -415,6 +409,12 @@ void pop_search_result_window_show(Route* route)
             route_show_result[flag++] = st;
         }
     }
+    if (flag == 1)
+    {
+        lv_obj_set_size(pp_window,371,260);
+
+    }
+
     linebelonged[flag - 1] = route->steps[route->step_count - 1].line_number;
     route_show_result[flag] = find_station_by_name(route->steps[route->step_count - 1].station_name);
     lv_label_set_text_fmt(route_name, "%s-%s", route_show_result[0]->name, route_show_result[flag]->name);
@@ -424,7 +424,13 @@ void pop_search_result_window_show(Route* route)
         pop_search_result_window_lineinfo_init(route_show_result[i], route_show_result[i+1],i ,linebelonged[i]);
     }
     lv_obj_clear_flag(pp_window, LV_OBJ_FLAG_HIDDEN);
+    
+    lv_obj_clear_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
 
+    //更新标志位
+    is_start_selected = 1;
+    is_end_selected = 1;
     is_route_showing = 1;
         
     //隐藏正在显示的车站
@@ -549,8 +555,9 @@ void btn4_cb(lv_event_t *e)
             pop_search_result_window_init();
             pop_search_result_window_show(&route_result);
             lv_scr_load(display0);
-
-        } else {
+        } 
+        else 
+        {
             // 显示未找到路径提示
             lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
@@ -584,6 +591,8 @@ void cancelbtn_cb(lv_event_t *e)
     }
 
     is_route_showing = 0;
+    is_start_selected = 0;
+    is_end_selected = 0;
 
     create_metro_map();//强制重绘
 }

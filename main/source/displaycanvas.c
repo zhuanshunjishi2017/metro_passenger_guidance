@@ -23,16 +23,19 @@ lv_obj_t * location_image;//位置的图标
 lv_obj_t * pop_window;//弹出的窗口
 
 lv_obj_t * start_btn, *end_btn, *start_label, *end_label;
-lv_obj_t * star_btn, *star_label, *pop_top_label;
+lv_obj_t * collect_btn, *collect_label, *pop_top_label;
 
 LineinfoBtn line_info_btns[2] = {0};
+
 
 
 lv_style_t btn_style, rec_style, selector_style, line_style;//创建样式
 lv_style_t flame_style, line_info_style, blue_label_style, black_label_style;
 lv_style_t blue_button_style;
 
-int8_t is_start_selected, is_end_selected;
+extern const Station* start_station, *end_station;
+extern const Station* find_station_by_id(int station_id);
+
 
 void canvas_init(lv_obj_t *canvas)
 {
@@ -72,6 +75,15 @@ void location_pic_init(lv_obj_t *canvas)
     location_image = lv_img_create(canvas);
 	lv_img_set_src(location_image, "0:/location.bin");
     lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
+
+    start_img = lv_img_create(canvas);
+    lv_img_set_src(start_img, "0:/location_start.bin");
+    lv_obj_add_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+
+    end_img = lv_img_create(canvas);
+    lv_img_set_src(end_img, "0:/location_end.bin");
+    lv_obj_add_flag(end_img, LV_OBJ_FLAG_HIDDEN);
+
 
 }
 
@@ -304,6 +316,7 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
                 station_clicked[0].is_transfer = lines[i].stations[j].is_transfer;
                 station_clicked[0].name = lines[i].stations[j].name;
                 station_clicked[0].id = lines[i].stations[j].id;
+                station_clicked[0].only_id = lines[i].stations[j].only_id;
                 station_clicked[0].is_transfer = lines[i].stations[j].is_transfer;
 
                 if (station_clicked[0].is_transfer > 0)
@@ -421,6 +434,7 @@ void pop_window_init(lv_obj_t * obj)
     
     lv_obj_set_pos(start_btn, 10 ,BOTTOM_BTN_Y_NORM);
     lv_obj_set_size(start_btn,BOTTOM_BTN_W, BOTTOM_BTN_H);
+    lv_obj_add_event_cb(start_btn, start_end_btn_cb, LV_EVENT_CLICKED, para_numbers);
 
     start_label = lv_label_create(start_btn);
     lv_label_set_text(start_label, "设为起点");
@@ -431,10 +445,14 @@ void pop_window_init(lv_obj_t * obj)
 
     lv_obj_add_style(start_btn, &btn_style, 0);
 
+
+
     end_btn = lv_btn_create(pop_window);
     
     lv_obj_set_pos(end_btn, BOTTOM_BTN_X ,BOTTOM_BTN_Y_NORM);
     lv_obj_set_size(end_btn,BOTTOM_BTN_W, BOTTOM_BTN_H);
+    lv_obj_add_event_cb(end_btn, start_end_btn_cb, LV_EVENT_CLICKED, para_numbers + 1);
+
 
     end_label = lv_label_create(end_btn);
     lv_label_set_text(end_label, "设为终点");
@@ -447,18 +465,18 @@ void pop_window_init(lv_obj_t * obj)
 
 
 
-    star_btn = lv_btn_create(pop_window);
+    collect_btn = lv_btn_create(pop_window);
     
-    lv_obj_set_pos(star_btn, 206 , 8);
-    lv_obj_set_size(star_btn,TOP_BTN_W, TOP_BTN_H);
+    lv_obj_set_pos(collect_btn, 206 , 8);
+    lv_obj_set_size(collect_btn,TOP_BTN_W, TOP_BTN_H);
 
-    star_label = lv_label_create(star_btn);
-    lv_label_set_text(star_label, "收藏");
-    lv_obj_set_style_text_font(star_label, &heiti_16, 0);
-    lv_obj_set_style_text_color(star_label, lv_color_white(), 0);
-    lv_obj_center(star_label);
+    collect_label = lv_label_create(collect_btn);
+    lv_label_set_text(collect_label, "收藏");
+    lv_obj_set_style_text_font(collect_label, &heiti_16, 0);
+    lv_obj_set_style_text_color(collect_label, lv_color_white(), 0);
+    lv_obj_center(collect_label);
 
-    lv_obj_add_style(star_btn, &blue_button_style, 0);
+    lv_obj_add_style(collect_btn, &blue_button_style, 0);
     
     lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
 }
@@ -628,14 +646,58 @@ void line_info_btn_cb(lv_event_t * e)
     //lv_obj_t * obj = lv_event_get_target(e);//获取产生这个事件的对象
     Station * sta = (Station *)lv_event_get_user_data(e);
 
+    is_station_info = 1; 
+    station_info_show(sta, true);
+    hide_pop_window();
+
+}
+
+
+void start_end_btn_cb(lv_event_t *e)
+{
+    int8_t* mode = (int8_t *)lv_event_get_user_data(e);
+    //lv_obj_t * btn = lv_event_get_target(e);//获取产生这个事件的对象
+
+    if (*mode == 1)
+    {    
+        end_station = find_station_by_id(station_clicked[0].only_id);
+        is_end_selected = 1; 
+        lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
+
+    }    
+    else if (*mode == 0)
+    {    
+        start_station = find_station_by_id(station_clicked[0].only_id);
+        is_start_selected = 1; 
+        lv_obj_clear_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+    }
+
+
+    if (is_start_selected && is_end_selected)
+    {
+        start_name = start_station->name;
+        end_name = end_station->name;
+
+        find_route(start_name, end_name, &route_result);
+        // 设计并显示路线结果界面
+        
+        if (route_result.step_count > 0) 
+        {
+            // 在主界面上显示路线结果
+            route_design_result();
+            pop_search_result_window_init();
+            pop_search_result_window_show(&route_result);
+        } 
+    } 
+
+    hide_pop_window();
+}
+
+void hide_pop_window(void)
+{
     lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
     is_station_clicked = 0;
 
-    is_station_info = 1; 
-    station_info_show(sta, true);
-    //create_metro_map();
-    
-    draw_transparent_rect(canvas, lv_color_hex(COLOR_MID_GRAY));
-
+    create_metro_map();
 }

@@ -5,6 +5,7 @@
 #include "lv_port_disp_template.h"
 #include "lv_port_indev_template.h"
 #include "metro_line.h"
+#include "route_planner.h"
 
 
 extern int8_t plus, minus;
@@ -32,6 +33,14 @@ extern lv_obj_t *location_image, *pop_window;
 
 
 extern lv_timer_t * station_timer;
+
+extern int8_t is_start_selected, is_end_selected;
+
+extern lv_obj_t* end_img,* start_img;
+
+extern Route route_result;
+extern const char* start_name, *end_name;
+
 
 
 typedef struct {
@@ -84,6 +93,10 @@ void pop_window_show(Station *sta, LineinfoBtn * btn);
 
 void line_info_btn_cb(lv_event_t * e);
 
+void hide_pop_window(void);
+
+void start_end_btn_cb(lv_event_t *e);
+
 
 /*
 下面是有关站点屏幕的函数声明
@@ -130,7 +143,13 @@ void get_first_last_train(Station *sta, char (*result)[7], int8_t direction);
 int get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2);
 
 
+/*
+gui里的函数声明
+*/
 
+void route_design_result(void);
+void pop_search_result_window_init(void);
+void pop_search_result_window_show(Route* route);
 
 
 #endif

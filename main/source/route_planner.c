@@ -5,6 +5,8 @@
 extern const MetroLine metro_lines[4];
 
 void station_copy(Station *dist,const Station *source);
+const Station* find_station_by_id(int station_id);
+
 
 // 简化的图节点结构
 typedef struct {
@@ -63,7 +65,7 @@ const Station* find_station_by_name(const char* station_name)
  * @param station_id 站点ID
  * @return 站点指针，如果不存在返回NULL
  */
-static const Station* find_station_by_id(int station_id)
+const Station* find_station_by_id(int station_id)
 {
     for (int line = 0; line < 4; line++) {
         for (int i = 0; i < metro_lines[line].count; i++) {
