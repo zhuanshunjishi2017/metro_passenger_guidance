@@ -2,6 +2,7 @@
 #include "lv_port_disp_template.h"
 #include "lv_port_indev_template.h"
 #include "gui.h"
+#include "favorites.h"
 void gpio_init(void);
 void my_rtc_setup(void);
 void keyBoard_event_cb(lv_event_t *e);
@@ -22,6 +23,7 @@ extern lv_obj_t* display11;
 int main(void)
 {
 	sys_init();
+	favorites_init();
 	
 	rcu_periph_clock_enable(RCU_GPIOA);
 	gpio_init();

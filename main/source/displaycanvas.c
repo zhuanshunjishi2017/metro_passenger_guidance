@@ -7,6 +7,7 @@
 #include "gui.h"
 #include "metro_line.h"
 #include "canvas.h"
+#include "favorites.h"
 
 
 void *canvas_buf;//缓冲区
@@ -477,6 +478,7 @@ void pop_window_init(lv_obj_t * obj)
     lv_obj_center(collect_label);
 
     lv_obj_add_style(collect_btn, &blue_button_style, 0);
+    lv_obj_add_event_cb(collect_btn, favorites_button_event_cb, LV_EVENT_CLICKED, NULL);
     
     lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
 }
@@ -584,6 +586,7 @@ void pop_window_show(Station *sta, LineinfoBtn * btn)
 
 
     lv_label_set_text(pop_top_label, sta->name);
+    favorites_bind_button(collect_btn, collect_label, sta);
 
 
     int8_t line_number = sta->line_belonged;

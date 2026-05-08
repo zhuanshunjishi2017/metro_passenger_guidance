@@ -8,6 +8,7 @@
 #include "metro_line.h"
 #include "canvas.h"
 #include "timestruct.h"
+#include "favorites.h"
 
 void * sta_canvas_buf;//站点画布缓冲区
 
@@ -237,6 +238,7 @@ void station_info_init(lv_obj_t * canvas)
     lv_obj_center(sta_star_label);
 
     lv_obj_add_style(sta_star_btn, &blue_button_style, 0);
+    lv_obj_add_event_cb(sta_star_btn, favorites_button_event_cb, LV_EVENT_CLICKED, NULL);
     
     
     
@@ -774,6 +776,7 @@ void station_info_show(const Station *sta, int8_t is_init)
     lv_obj_clear_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
 
     lv_label_set_text(sta_name_label, sta->name);
+    favorites_bind_button(sta_star_btn, sta_star_label, sta);
 
 
     int8_t line_number = showing_station.line_belonged;
