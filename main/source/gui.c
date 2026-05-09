@@ -31,7 +31,7 @@ extern lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* pp_window,*star_bt,* route_name,*cancel_btn;
-
+extern int8_t is_route_showing,is_station_clicked,is_line_showing;
 
 static char time_buf[48];
 
@@ -442,9 +442,27 @@ void screen_load_event_cb(lv_event_t *e)
 				route_name = NULL;
     			cancel_btn = NULL;
     			star_bt = NULL;
+				is_route_showing = 0;
+    			is_start_selected = 0;
+    			is_end_selected = 0;
 			}
-			
 		}
+		if (is_station_info)
+        {
+            is_station_info = 0;
+            lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
+            lv_timer_del(station_timer);
+            station_timer = NULL;
+        }
+		if(is_station_clicked)
+		{
+			hide_pop_window();
+		}
+		if (is_line_showing)
+		{
+			is_line_showing = 0;
+		}
+		create_metro_map();  //重新创建地图界面，重置站点选择状态和路线显示状态
 		
 		lv_textarea_set_text(start_ta, "");
 		lv_textarea_set_text(end_ta, "");  

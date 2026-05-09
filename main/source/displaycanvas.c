@@ -36,7 +36,7 @@ lv_style_t blue_button_style;
 
 extern const Station* start_station, *end_station;
 extern const Station* find_station_by_id(int station_id);
-
+extern lv_obj_t* pp_window,*star_bt,* route_name,*cancel_btn;
 
 void canvas_init(lv_obj_t *canvas)
 {
@@ -329,7 +329,7 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
                 }
 
                 pop_window_show(station_clicked, line_info_btns);
-
+                lv_obj_move_foreground(pop_window);
                 if (!is_station_clicked)
                 {
                     lv_obj_clear_flag(location_image, LV_OBJ_FLAG_HIDDEN);
@@ -660,12 +660,21 @@ void start_end_btn_cb(lv_event_t *e)
 {
     int8_t* mode = (int8_t *)lv_event_get_user_data(e);
     //lv_obj_t * btn = lv_event_get_target(e);//获取产生这个事件的对象
+    if (pp_window != NULL)
+	{
+		lv_obj_del_async(pp_window);
+		pp_window = NULL;
+		route_name = NULL;
+    	cancel_btn = NULL;
+    	star_bt = NULL;
+    }
 
     if (*mode == 1)
     {    
         end_station = find_station_by_id(station_clicked[0].only_id);
         is_end_selected = 1; 
         lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_move_foreground(end_img);
 
     }    
     else if (*mode == 0)
@@ -673,6 +682,7 @@ void start_end_btn_cb(lv_event_t *e)
         start_station = find_station_by_id(station_clicked[0].only_id);
         is_start_selected = 1; 
         lv_obj_clear_flag(start_img, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_move_foreground(start_img);
     }
 
 

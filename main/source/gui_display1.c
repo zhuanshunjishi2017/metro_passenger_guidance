@@ -434,14 +434,14 @@ void pop_search_result_window_show(Route* route)
     is_route_showing = 1;
         
     //隐藏正在显示的车站
-    if (is_station_clicked)
-    {
-        lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
-        is_station_clicked = 0;
-    }
+    // if (is_station_clicked)
+    // {
+    //     lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
+    //     lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
+    //     is_station_clicked = 0;
+    // }
 
-    create_metro_map();//强制重绘
+    // create_metro_map();//强制重绘
 }
 
 //回调函数
@@ -558,21 +558,22 @@ void btn4_cb(lv_event_t *e)
         } 
         else 
         {
-            // 显示未找到路径提示
-            lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
+            // // 显示未找到路径提示
+            // lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
+            // lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
 
-            lv_obj_t* error_display = lv_obj_create(display1);
-            lv_obj_set_size(error_display, 672, 545);
-            lv_obj_set_pos(error_display, 352, 55);
-            lv_obj_set_style_bg_color(error_display, lv_color_hex(0xffffff), 0);
+            // lv_obj_t* error_display = lv_obj_create(display1);
+            // lv_obj_set_size(error_display, 672, 545);
+            // lv_obj_set_pos(error_display, 352, 55);
+            // lv_obj_set_style_bg_color(error_display, lv_color_hex(0xffffff), 0);
 
-            lv_obj_t* error_label = lv_label_create(error_display);
-            lv_obj_set_pos(error_label, 10, 250);
-            lv_obj_set_size(error_label, 652, 50);
-            lv_obj_set_style_text_color(error_label, lv_color_hex(COLOR_DARK_BLUE), 0);
-            lv_obj_set_style_text_font(error_label, &heiti_20, 0);
-            lv_label_set_text(error_label, "未找到有效路径，请检查站点名称");
+            // lv_obj_t* error_label = lv_label_create(error_display);
+            // lv_obj_set_pos(error_label, 10, 250);
+            // lv_obj_set_size(error_label, 652, 50);
+            // lv_obj_set_style_text_color(error_label, lv_color_hex(COLOR_DARK_BLUE), 0);
+            // lv_obj_set_style_text_font(error_label, &heiti_20, 0);
+            // lv_label_set_text(error_label, "未找到有效路径，请检查站点名称");
+            return;
         }
     }
 }
