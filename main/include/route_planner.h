@@ -29,6 +29,7 @@ typedef struct {
 
 
 const Station* find_station_by_name(const char* station_name);
+const Station* find_station_by_id(int station_id);
 
 /**
  * @brief 查找两个站点之间的路径

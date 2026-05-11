@@ -1,6 +1,6 @@
 #ifndef FAVORITES_H
 #define FAVORITES_H
-
+#define MAX_FAVORITES 150
 #include "canvas.h"
 #include <stdbool.h>
 #include <stdint.h>

@@ -32,8 +32,11 @@ extern lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* pp_window,*star_bt,* route_name,*cancel_btn;
 extern int8_t is_route_showing,is_station_clicked,is_line_showing;
-
+extern lv_obj_t* station_prompt;
+extern size_t favorite_count;
+extern lv_obj_t* favorite_station_show_lb[30];
 static char time_buf[48];
+extern int is_both_ta_filled;
 
 extern LineinfoBtn line_info_btns[2];
 
@@ -431,7 +434,7 @@ void screen_load_event_cb(lv_event_t *e)
 		top_ta_result_lb_init(lv_layer_top());
 		top_ta_record_lb_init(lv_layer_top());
 
-		if (start_img != NULL && end_img != NULL && lv_scr_act() != display0)
+		if (start_img != NULL && end_img != NULL  && !is_both_ta_filled)
 		{
 			lv_obj_add_flag(end_img,LV_OBJ_FLAG_HIDDEN);
 			lv_obj_add_flag(start_img,LV_OBJ_FLAG_HIDDEN);
@@ -464,6 +467,24 @@ void screen_load_event_cb(lv_event_t *e)
 		}
 		create_metro_map();  //重新创建地图界面，重置站点选择状态和路线显示状态
 		
+		if (!lv_obj_has_flag(display11, LV_OBJ_FLAG_HIDDEN))
+		{
+			if (favorite_count == 0)
+			{
+				lv_obj_clear_flag(station_prompt, LV_OBJ_FLAG_HIDDEN);
+			}
+			else
+			{
+				lv_obj_add_flag(station_prompt, LV_OBJ_FLAG_HIDDEN);
+			}
+			favorite_station_show();
+
+			for (int i = 0; i < 30; i++)
+			{
+				lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
+			}
+		}
+		
 		lv_textarea_set_text(start_ta, "");
 		lv_textarea_set_text(end_ta, "");  
 		lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
@@ -480,6 +501,8 @@ void screen_load_event_cb(lv_event_t *e)
 				search_line_transfer_show_label[i] = NULL;
     		}
 		}
+
+		is_both_ta_filled = 0;
 	}
 }
 void btn1_cb(lv_event_t *e)
@@ -550,6 +573,13 @@ void kb_hide_cb(lv_event_t *e)
 		{
 			lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
 		}
+		if (is_station_info)
+        {
+            is_station_info = 0;
+            lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
+            lv_timer_del(station_timer);
+            station_timer = NULL;
+        }
 	}
 }		
 void keyBoard_event_cb(lv_event_t *e)
@@ -622,7 +652,7 @@ void top_search_result_click_cb(lv_event_t *e)
                 }
 
                 pop_window_show(station_clicked, line_info_btns);
-
+				pop_window_move(station_clicked);
                 if (!is_station_clicked)
                 {
                     lv_obj_clear_flag(location_image, LV_OBJ_FLAG_HIDDEN);
