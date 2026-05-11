@@ -67,6 +67,8 @@
 #define STATION_RADIUS_NOW  7
 #define STA_LINE_W          6
 
+#define REMINDER_SET_W      272
+#define REMINDER_SET_X      752 - CANVAS_X
 
 // --- 外部变量声明 ---
 extern const lv_font_t heiti_14;

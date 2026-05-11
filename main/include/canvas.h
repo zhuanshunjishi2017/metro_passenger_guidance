@@ -36,10 +36,14 @@ extern lv_timer_t * station_timer;
 
 extern int8_t is_start_selected, is_end_selected;
 
+extern int8_t is_reminder_set_showing;
+
 extern lv_obj_t* end_img,* start_img;
 
 extern Route route_result;
 extern const char* start_name, *end_name;
+
+extern int8_t direction_state;
 
 
 
@@ -123,6 +127,7 @@ void station_info_refresh(int8_t);
 
 void change_btn_cb(lv_event_t * e);
 void timetable_btn_cb(lv_event_t * e);
+void remind_add_btn_cb(lv_event_t *e);
 
 void sta_canvas_cb(lv_event_t * e);
 void sta_pressing_canvas(lv_indev_t *);
@@ -142,6 +147,12 @@ void get_first_last_train(Station *sta, char (*result)[7], int8_t direction);
 
 int get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2);
 
+/*
+提醒添加里面的函数声明
+*/
+void remind_entry_init(void);
+
+void reminder_set_show(Station *sta);
 
 /*
 gui里的函数声明

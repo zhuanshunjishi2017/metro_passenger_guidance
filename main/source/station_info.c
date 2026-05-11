@@ -29,7 +29,7 @@ lv_obj_t * train_icon[5];
 lv_obj_t * sta_line_canvas;
 lv_obj_t * sta_timetable_frame;
 
-lv_obj_t * sta_star_btn, * sta_star_label;
+lv_obj_t * sta_favorite_btn, * sta_favorite_label;
 lv_obj_t * sta_remind_add_btn, * sta_remind_add_label;
 
 TimeLabel timetable_labels[5];
@@ -42,6 +42,7 @@ lv_draw_rect_dsc_t rect_dsc_line;
 
 int8_t direction_state = 0;
 int8_t is_timetable_showing = 0;
+int8_t is_reminder_set_showing = 0;
 
 lv_timer_t * station_timer = NULL;
 
@@ -226,19 +227,19 @@ void station_info_init(lv_obj_t * canvas)
     
 
 
-    sta_star_btn = lv_btn_create(station_info_disp);
+    sta_favorite_btn = lv_btn_create(station_info_disp);
     
-    lv_obj_set_pos(sta_star_btn, 308 , 485);
-    lv_obj_set_size(sta_star_btn,73, 35);
+    lv_obj_set_pos(sta_favorite_btn, 308 , 485);
+    lv_obj_set_size(sta_favorite_btn,73, 35);
 
-    sta_star_label = lv_label_create(sta_star_btn);
-    lv_label_set_text(sta_star_label, "收藏");
-    lv_obj_set_style_text_font(sta_star_label, &heiti_16, 0);
-    lv_obj_set_style_text_color(sta_star_label, lv_color_white(), 0);
-    lv_obj_center(sta_star_label);
+    sta_favorite_label = lv_label_create(sta_favorite_btn);
+    lv_label_set_text(sta_favorite_label, "收藏");
+    lv_obj_set_style_text_font(sta_favorite_label, &heiti_16, 0);
+    lv_obj_set_style_text_color(sta_favorite_label, lv_color_white(), 0);
+    lv_obj_center(sta_favorite_label);
 
-    lv_obj_add_style(sta_star_btn, &blue_button_style, 0);
-    lv_obj_add_event_cb(sta_star_btn, favorites_button_event_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_style(sta_favorite_btn, &blue_button_style, 0);
+    lv_obj_add_event_cb(sta_favorite_btn, favorites_button_event_cb, LV_EVENT_CLICKED, NULL);
     
     
     
@@ -254,7 +255,12 @@ void station_info_init(lv_obj_t * canvas)
     lv_obj_center(sta_remind_add_label);
 
     lv_obj_add_style(sta_remind_add_btn, &blue_button_style, 0);
+    lv_obj_add_event_cb(sta_remind_add_btn, remind_add_btn_cb, LV_EVENT_CLICKED, NULL);
+
     
+    remind_entry_init();
+
+
     lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
 
 }
@@ -776,7 +782,7 @@ void station_info_show(const Station *sta, int8_t is_init)
     lv_obj_clear_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
 
     lv_label_set_text(sta_name_label, sta->name);
-    favorites_bind_button(sta_star_btn, sta_star_label, sta);
+    favorites_bind_button(sta_favorite_btn, sta_favorite_label, sta);
 
 
     int8_t line_number = showing_station.line_belonged;
@@ -853,7 +859,7 @@ void station_info_refresh(int8_t is_init)
         lv_obj_clear_flag(sta_line_canvas, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(time_labels->label_frame, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag((time_labels + 1)->label_frame, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_clear_flag(sta_star_btn, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(sta_favorite_btn, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(sta_remind_add_btn, LV_OBJ_FLAG_HIDDEN);
 
         lv_obj_add_flag(sta_timetable_frame, LV_OBJ_FLAG_HIDDEN);
@@ -877,7 +883,7 @@ void change_btn_cb(lv_event_t * e)
         lv_obj_clear_flag(sta_line_canvas, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(time_labels->label_frame, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag((time_labels + 1)->label_frame, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_clear_flag(sta_star_btn, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(sta_favorite_btn, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(sta_remind_add_btn, LV_OBJ_FLAG_HIDDEN);
 
         lv_obj_add_flag(sta_timetable_frame, LV_OBJ_FLAG_HIDDEN);
@@ -898,7 +904,7 @@ void timetable_btn_cb(lv_event_t * e)
         lv_obj_clear_flag(sta_line_canvas, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(time_labels->label_frame, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag((time_labels + 1)->label_frame, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_clear_flag(sta_star_btn, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(sta_favorite_btn, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(sta_remind_add_btn, LV_OBJ_FLAG_HIDDEN);
 
         lv_obj_add_flag(sta_timetable_frame, LV_OBJ_FLAG_HIDDEN);
@@ -916,7 +922,7 @@ void timetable_btn_cb(lv_event_t * e)
         lv_obj_add_flag(sta_line_canvas, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(time_labels->label_frame, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag((time_labels + 1)->label_frame, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(sta_star_btn, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(sta_favorite_btn, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(sta_remind_add_btn, LV_OBJ_FLAG_HIDDEN);
 
         lv_obj_clear_flag(sta_timetable_frame, LV_OBJ_FLAG_HIDDEN);
@@ -927,6 +933,33 @@ void timetable_btn_cb(lv_event_t * e)
     }
     
 }
+void remind_add_btn_cb(lv_event_t *e)
+{
+    is_reminder_set_showing = 1;
+    
+    lv_obj_add_flag(sta_line_canvas, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(time_labels->label_frame, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag((time_labels + 1)->label_frame, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(sta_favorite_btn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(sta_remind_add_btn, LV_OBJ_FLAG_HIDDEN);
+    
+    lv_obj_add_flag(timetable_btn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(change_btn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(sta_first_train_label, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(sta_last_train_label, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(sta_name_label, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(sta_line_number_label, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(sta_direction_label, LV_OBJ_FLAG_HIDDEN);
+    
+    //更改窗口大小
+    lv_obj_set_size(station_info_disp, REMINDER_SET_W, STATION_INFO_H);
+    lv_obj_set_x(station_info_disp, REMINDER_SET_X);
+
+    reminder_set_show(&showing_station);
+
+}
+
+
 
 void timetable_show(MetroLine *line)
 {
