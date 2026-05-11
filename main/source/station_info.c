@@ -105,7 +105,7 @@ void station_info_init(lv_obj_t * canvas)
     lv_obj_clear_flag(station_info_disp, LV_OBJ_FLAG_SCROLLABLE);
 
 
-    lv_obj_set_pos(station_info_disp, STATION_INFO_X, STATION_INFO_Y);
+    lv_obj_set_pos(station_info_disp, STATION_INFO_X + CANVAS_X, STATION_INFO_Y + CANVAS_Y);
     lv_obj_set_size(station_info_disp, STATION_INFO_W, STATION_INFO_H);
 
     lv_obj_set_style_radius(station_info_disp, 0, 0);

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "gui.h"
 #define FAVORITES_FILE_PATH "0:/favorites.txt"
 #define MAX_FAVORITES 150
 #define MAX_FAVORITES_BUTTONS 4
@@ -15,12 +15,13 @@ typedef struct {
     bool valid;         //是否有效
 } FavoriteBtn;
 
-static uint16_t favorite_ids[MAX_FAVORITES]; //用来储存被收藏的站点的唯一id
-static size_t favorite_count = 0; //用来计数有多少个收藏的车站
+uint16_t favorite_ids[MAX_FAVORITES]; //用来储存被收藏的站点的唯一id
+size_t favorite_count = 0; //用来计数有多少个收藏的车站
 static FavoriteBtn bindings[MAX_FAVORITES_BUTTONS]; 
 static bool favorites_ready = false;
+extern lv_obj_t* favorite_station_show_lb[30];
 
-static bool favorites_contains(uint16_t only_id)
+static bool favorites_contains(uint16_t only_id) //判断这个唯一id的车站是否被收藏了
 {
     for (size_t i = 0; i < favorite_count; i++) {
         if (favorite_ids[i] == only_id) {
@@ -30,12 +31,11 @@ static bool favorites_contains(uint16_t only_id)
     return false;
 }
 
-static void favorites_refresh_button(const FavoriteBtn *binding)
+static void favorites_refresh_button(const FavoriteBtn *binding) //检查这个车站是否被收藏了，并刷新按钮的显示
 {
     if (!binding || !binding->valid || !binding->btn || !binding->label) {
         return;
     }
-    //检查这个车站是否被收藏
     if (favorites_contains(binding->only_id)) 
     {
         //lv_obj_remove_style_all(binding->btn);
@@ -54,24 +54,23 @@ static void favorites_refresh_button(const FavoriteBtn *binding)
     lv_obj_center(binding->label);
 }
 
-static void favorites_refresh_all_buttons(void)
+static void favorites_refresh_all_buttons(void) //刷新所有绑定的按钮
 {
     for (size_t i = 0; i < MAX_FAVORITES_BUTTONS; i++) {
         favorites_refresh_button(&bindings[i]);
     }
 }
 
-//将收藏保存至sd卡
-static void favorites_save_to_sd(void)
+static void favorites_save_to_sd(void) //将收藏保存至sd卡
 {
     FIL file;
-    FRESULT res = f_open(&file, FAVORITES_FILE_PATH, FA_CREATE_ALWAYS | FA_WRITE);
+    FRESULT res = f_open(&file, FAVORITES_FILE_PATH, FA_CREATE_ALWAYS | FA_WRITE); //以写入模式打开文件，如果文件不存在就创建，存在就覆盖
     if (res != FR_OK) {
         return;
     }
 
-    char line[16];
-    UINT written = 0;
+    char line[16]; //line为写入数据的缓冲区
+    UINT written = 0; //记录实际写入的字节数
     for (size_t i = 0; i < favorite_count; i++)
     {
         int len = snprintf(line, sizeof(line), "%u\n", favorite_ids[i]);//将唯一id转化为字符串
@@ -108,7 +107,7 @@ static void favorites_load_from_sd(void)
         char *end = NULL;
         unsigned long value = strtoul(line, &end, 10);//将字符串转换为数字
         if (end == line) {
-            continue;
+            continue; //跳过\n或者无效行
         }
         if (value > UINT16_MAX) {
             continue;
@@ -125,7 +124,7 @@ static void favorites_load_from_sd(void)
     f_close(&file);
 }
 
-static FavoriteBtn *favorites_find_binding(lv_obj_t *btn)
+static FavoriteBtn *favorites_find_binding(lv_obj_t *btn) //根据按钮指针查找绑定关系
 {
     for (size_t i = 0; i < MAX_FAVORITES_BUTTONS; i++) {
         if (bindings[i].valid && bindings[i].btn == btn) {
@@ -163,7 +162,7 @@ static bool favorites_remove(uint16_t only_id)
 }
 
 //切换收藏状态
-static void favorites_toggle(uint16_t only_id)
+static void favorites_toggle(uint16_t only_id) //如果已经收藏了就取消收藏，没收藏就添加收藏
 {
     if (favorites_contains(only_id)) {
         favorites_remove(only_id);
@@ -233,4 +232,11 @@ void favorites_button_event_cb(lv_event_t *e)
 
     favorites_toggle(binding->only_id);
     favorites_refresh_all_buttons();
+
+    favorite_station_show(); //刷新收藏界面
+    for (int i = 0; i < 30; i++)
+	{
+		lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
+	}
+    hide_pop_window(); //切换完收藏状态后关闭弹窗
 }

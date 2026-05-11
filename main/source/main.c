@@ -57,6 +57,7 @@ int main(void)
   ta_init();
   display12_init();
   display11_init();
+  favorite_station_init();
   lv_obj_move_foreground(display11);
   
 
