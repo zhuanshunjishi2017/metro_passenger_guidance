@@ -223,6 +223,11 @@ void canvas_cb(lv_event_t * e)
             clicked_canvas(indev, metro_lines);
             if (is_station_info)
             {
+                if (is_reminder_set_showing)
+                {
+                    is_reminder_set_showing = 0;
+                    lv_obj_add_flag(reminder_disp, LV_OBJ_FLAG_HIDDEN);
+                }
                 is_station_info = 0;
                 lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
                 lv_timer_del(station_timer);
@@ -661,6 +666,7 @@ void line_info_btn_cb(lv_event_t * e)
         for (int i = 0; i < 30; i++)
             {
                 lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
+                lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
             }
     }
     lv_obj_move_foreground(station_info_disp);

@@ -469,6 +469,7 @@ void favorite_station_init(void)
     {
         favorite_station_show_lb[i] = lv_label_create(favorite_station_show_disp);
         lv_obj_set_style_border_color(favorite_station_show_lb[i], lv_color_hex(COLOR_MID_BLUE), 0);
+        lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
         lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
         lv_obj_set_style_bg_opa(favorite_station_show_lb[i], LV_OPA_100, 0);
         lv_obj_set_style_border_width(favorite_station_show_lb[i], 1, 0);
@@ -682,6 +683,9 @@ void station_info_click_cb(lv_event_t *e)
     if (!is_station_clicked)
     {
         lv_obj_set_style_bg_color(label, lv_color_hex(COLOR_DARK_BLUE), 0);
+        
+        lv_obj_set_style_text_color(label, lv_color_white(),0);
+
         station_copy(&station_clicked[0], station);
         if (station->is_transfer) {
             station_clicked[1].line_belonged = station->is_transfer;
@@ -704,6 +708,8 @@ void station_info_click_cb(lv_event_t *e)
                 && !lv_obj_has_flag(pop_window, LV_OBJ_FLAG_HIDDEN))
         {
             lv_obj_set_style_bg_color(label, lv_color_hex(COLOR_BG_BLUE), 0);
+            lv_obj_set_style_text_color(label, lv_color_black(),0);
+
             lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
             is_station_clicked = 0;
         }
@@ -712,8 +718,12 @@ void station_info_click_cb(lv_event_t *e)
             for (int i = 0; i < 30; i++)
             {
                 lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
+                lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
+
             }
             lv_obj_set_style_bg_color(label, lv_color_hex(COLOR_DARK_BLUE), 0);
+            lv_obj_set_style_text_color(label, lv_color_white(),0);
+
             station_copy(&station_clicked[0], station);
             if (station->is_transfer) {
                 station_clicked[1].line_belonged = station->is_transfer;

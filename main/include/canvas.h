@@ -45,6 +45,8 @@ extern const char* start_name, *end_name;
 
 extern int8_t direction_state;
 
+extern lv_obj_t * reminder_disp;
+
 
 
 typedef struct {
@@ -150,9 +152,11 @@ int get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2);
 /*
 提醒添加里面的函数声明
 */
-void remind_entry_init(void);
+void remind_entry_init(lv_obj_t * obj);
 
 void reminder_set_show(Station *sta);
+
+void remind_cancel_btn_cb(lv_event_t * e);
 
 /*
 gui里的函数声明

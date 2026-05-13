@@ -101,7 +101,7 @@ void station_info_init(lv_obj_t * canvas)
     lv_obj_set_style_pad_all(station_info_disp, 0, 0);
     lv_obj_move_foreground(station_info_disp);
 
-    lv_obj_set_scroll_dir(station_info_disp, LV_DIR_VER);
+    //lv_obj_set_scroll_dir(station_info_disp, LV_DIR_VER);
     lv_obj_clear_flag(station_info_disp, LV_OBJ_FLAG_SCROLLABLE);
 
 
@@ -257,8 +257,9 @@ void station_info_init(lv_obj_t * canvas)
     lv_obj_add_style(sta_remind_add_btn, &blue_button_style, 0);
     lv_obj_add_event_cb(sta_remind_add_btn, remind_add_btn_cb, LV_EVENT_CLICKED, NULL);
 
-    
-    remind_entry_init();
+    reminder_disp = lv_obj_create(canvas);
+
+    remind_entry_init(reminder_disp);
 
 
     lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
@@ -778,6 +779,7 @@ void station_info_show(const Station *sta, int8_t is_init)
     showing_station.line_belonged = sta->line_belonged;
     showing_station.id = sta->id;
 
+    lv_obj_add_flag(reminder_disp, LV_OBJ_FLAG_HIDDEN);
     
     lv_obj_clear_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
 
@@ -937,23 +939,13 @@ void remind_add_btn_cb(lv_event_t *e)
 {
     is_reminder_set_showing = 1;
     
-    lv_obj_add_flag(sta_line_canvas, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(time_labels->label_frame, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag((time_labels + 1)->label_frame, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(sta_favorite_btn, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(sta_remind_add_btn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
     
-    lv_obj_add_flag(timetable_btn, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(change_btn, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(sta_first_train_label, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(sta_last_train_label, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(sta_name_label, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(sta_line_number_label, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(sta_direction_label, LV_OBJ_FLAG_HIDDEN);
-    
+    lv_obj_clear_flag(reminder_disp, LV_OBJ_FLAG_HIDDEN);
+
     //更改窗口大小
-    lv_obj_set_size(station_info_disp, REMINDER_SET_W, STATION_INFO_H);
-    lv_obj_set_x(station_info_disp, REMINDER_SET_X);
+    lv_obj_move_foreground(reminder_disp);
+
 
     reminder_set_show(&showing_station);
 

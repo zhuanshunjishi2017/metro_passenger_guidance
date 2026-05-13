@@ -575,7 +575,12 @@ void kb_hide_cb(lv_event_t *e)
 		}
 		if (is_station_info)
         {
-            is_station_info = 0;
+			if (is_reminder_set_showing)
+			{
+				is_reminder_set_showing = 0;
+				lv_obj_add_flag(reminder_disp, LV_OBJ_FLAG_HIDDEN);
+			}
+			is_station_info = 0;
             lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
             lv_timer_del(station_timer);
             station_timer = NULL;
