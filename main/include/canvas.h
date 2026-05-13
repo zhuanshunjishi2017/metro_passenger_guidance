@@ -71,6 +71,7 @@ typedef struct {
 
 
 void station_copy(Station *dist,const Station *source);
+void station_clicked_fill(const Station *src, int8_t line);
 
 /*
 下面是有关画布的函数声明

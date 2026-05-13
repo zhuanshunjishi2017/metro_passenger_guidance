@@ -573,22 +573,7 @@ void top_search_result_click_cb(lv_event_t *e)
                  //station_name = metro_lines[i].stations[j].name_pinyin;
                 station_name = metro_lines[i].stations[j].name;
 
-				station_clicked[0].geo_x = metro_lines[i].stations[j].geo_x;
-                station_clicked[0].geo_y = metro_lines[i].stations[j].geo_y;
-                station_clicked[0].line_belonged = (int8_t)(i + 1);
-                station_clicked[0].is_transfer = metro_lines[i].stations[j].is_transfer;
-                station_clicked[0].name = metro_lines[i].stations[j].name;
-                station_clicked[0].id = metro_lines[i].stations[j].id;
-                station_clicked[0].only_id = metro_lines[i].stations[j].only_id;
-                station_clicked[0].is_transfer = metro_lines[i].stations[j].is_transfer;
-
-                if (station_clicked[0].is_transfer > 0)
-                {
-                    station_clicked[1].line_belonged = station_clicked[0].is_transfer;
-                    station_clicked[1].name = metro_lines[i].stations[j].name;
-                    station_clicked[1].id = metro_lines[i].stations[j].transfer_id;
-                    station_clicked[1].is_transfer = (int8_t)(i + 1);
-                }
+				station_clicked_fill(&metro_lines[i].stations[j], (int8_t)(i + 1));
 
 				if (lv_scr_act() != display0)
 				{

@@ -687,14 +687,9 @@ void station_info_click_cb(lv_event_t *e)
         
         lv_obj_set_style_text_color(label, lv_color_white(),0);
 
-        station_copy(&station_clicked[0], station);
-        if (station->is_transfer) {
-            station_clicked[1].line_belonged = station->is_transfer;
-            station_clicked[1].name = station->name;
-            station_clicked[1].id = station->transfer_id;
-            station_clicked[1].is_transfer = station->line_belonged;
-        }  //pop_window_show函数会根据station_clicked数组中的信息显示时间
-        
+        station_clicked_fill(station, station->line_belonged);
+
+
         pop_window_show(station_clicked, line_info_btns);
         lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
         
@@ -724,14 +719,9 @@ void station_info_click_cb(lv_event_t *e)
             lv_obj_set_style_bg_color(label, lv_color_hex(COLOR_DARK_BLUE), 0);
             lv_obj_set_style_text_color(label, lv_color_white(),0);
 
-            station_copy(&station_clicked[0], station);
-            if (station->is_transfer) {
-                station_clicked[1].line_belonged = station->is_transfer;
-                station_clicked[1].name = station->name;
-                station_clicked[1].id = station->transfer_id;
-                station_clicked[1].is_transfer = station->line_belonged;
-            }  //pop_window_show函数会根据station_clicked数组中的信息显示时间
-    
+            station_clicked_fill(station, station->line_belonged);
+
+
             pop_window_show(station_clicked, line_info_btns);
             lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
     

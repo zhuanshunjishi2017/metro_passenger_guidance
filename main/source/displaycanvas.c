@@ -318,22 +318,7 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
             if ((pos.x - x < TOUCH_RANGE && pos.x - x > -TOUCH_RANGE) && 
                 (pos.y - y < TOUCH_RANGE && pos.y - y > -TOUCH_RANGE))
             {
-                station_clicked[0].geo_x = lines[i].stations[j].geo_x;
-                station_clicked[0].geo_y = lines[i].stations[j].geo_y;
-                station_clicked[0].line_belonged = (int8_t)(i + 1);
-                station_clicked[0].is_transfer = lines[i].stations[j].is_transfer;
-                station_clicked[0].name = lines[i].stations[j].name;
-                station_clicked[0].id = lines[i].stations[j].id;
-                station_clicked[0].only_id = lines[i].stations[j].only_id;
-                station_clicked[0].is_transfer = lines[i].stations[j].is_transfer;
-
-                if (station_clicked[0].is_transfer > 0)
-                {
-                    station_clicked[1].line_belonged = station_clicked[0].is_transfer;
-                    station_clicked[1].name = lines[i].stations[j].name;
-                    station_clicked[1].id = lines[i].stations[j].transfer_id;
-                    station_clicked[1].is_transfer = (int8_t)(i + 1);
-                }
+                station_clicked_fill(&lines[i].stations[j], (int8_t)(i + 1));
 
                 pop_window_show(station_clicked, line_info_btns);
                 pop_window_move(station_clicked);
@@ -735,6 +720,18 @@ void start_end_btn_cb(lv_event_t *e)
         } 
     } 
     create_metro_map();
+}
+
+void station_clicked_fill(const Station *src, int8_t line)
+{
+    station_copy(&station_clicked[0], src);
+    station_clicked[0].line_belonged = line;
+    if (station_clicked[0].is_transfer > 0) {
+        station_clicked[1].line_belonged = station_clicked[0].is_transfer;
+        station_clicked[1].name = src->name;
+        station_clicked[1].id = src->transfer_id;
+        station_clicked[1].is_transfer = station_clicked[0].line_belonged;
+    }
 }
 
 void hide_pop_window(void)
