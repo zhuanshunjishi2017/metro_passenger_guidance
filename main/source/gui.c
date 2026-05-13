@@ -1,13 +1,12 @@
 #include "gui.h"
 #include "canvas.h"
-void btn1_cb(lv_event_t *e);
-void btn2_cb(lv_event_t *e);
-void btn3_cb(lv_event_t *e);
+void tab_btn_cb(lv_event_t *e);
 void kb_show_cb(lv_event_t *e);
 void kb_hide_cb(lv_event_t *e);
 void keyBoard_event_cb(lv_event_t *e);
 void screen_load_event_cb(lv_event_t *e);
 void top_search_result_click_cb(lv_event_t *e);
+void top_ta_reset(void);
 
 lv_obj_t* label_left,*label_top;
 lv_obj_t* lb_t1;
@@ -39,6 +38,20 @@ static char time_buf[48];
 extern int is_both_ta_filled;
 
 extern LineinfoBtn line_info_btns[2];
+
+void clear_search_result_labels(void) 
+{
+    for (int i = 0; i < SEARCH_LIST_LEN; i++) {
+        if (search_result_show_label[i] || search_line_show_label[i] || search_line_transfer_show_label[i]) {
+            lv_obj_del_async(search_result_show_label[i]);
+            search_result_show_label[i] = NULL;
+            lv_obj_del_async(search_line_show_label[i]);
+            search_line_show_label[i] = NULL;
+            lv_obj_del_async(search_line_transfer_show_label[i]);
+            search_line_transfer_show_label[i] = NULL;
+        }
+    }
+}
 
 
 void timetable_init(void)
@@ -73,30 +86,30 @@ void twocolumns(lv_obj_t* display0)
 	lv_obj_set_style_bg_color(label_top, lv_color_hex(0xd2dbe7), 0);
 	lv_obj_set_style_bg_opa(label_top, LV_OPA_COVER,0);
 }
-void create_buttons(lv_obj_t* display0,int judge)
+void create_buttons(lv_obj_t* display,int judge)
 {
-	btn1 = lv_btn_create(display0);
+	btn1 = lv_btn_create(display);
 	lv_obj_set_pos(btn1, 6, 70);
 	lv_obj_set_size(btn1, 50, 66);
 	lv_obj_set_style_radius(btn1,4,LV_PART_MAIN);
-	lv_obj_add_event_cb(btn1,btn1_cb,LV_EVENT_ALL,NULL);
-	create_simple_label(&map_lb,display0,13,107,33,19,"地图",&heiti_16);
+	lv_obj_add_event_cb(btn1,tab_btn_cb,LV_EVENT_ALL,display0);
+	create_simple_label(&map_lb,display,13,107,33,19,"地图",&heiti_16);
 
-	btn2 = lv_btn_create(display0);
+	btn2 = lv_btn_create(display);
 	lv_obj_set_pos(btn2, 6, 144);
 	lv_obj_set_size(btn2, 50, 66);
 	lv_obj_set_style_radius(btn2,4,LV_PART_MAIN);
-	lv_obj_add_event_cb(btn2,btn2_cb,LV_EVENT_ALL,NULL);
-	create_simple_label(&line_lb,display0,13,186,33,19,"线路",&heiti_16);
+	lv_obj_add_event_cb(btn2,tab_btn_cb,LV_EVENT_ALL,display1);
+	create_simple_label(&line_lb,display,13,186,33,19,"线路",&heiti_16);
 
-	btn3 = lv_btn_create(display0);
+	btn3 = lv_btn_create(display);
 	lv_obj_set_pos(btn3, 6, 222);
 	lv_obj_set_size(btn3, 50, 66);
 	lv_obj_set_style_radius(btn3,4,LV_PART_MAIN);
-	lv_obj_add_event_cb(btn3,btn3_cb,LV_EVENT_ALL,NULL);
-	create_simple_label(&bell_lb,display0,13,261,33,19,"提醒",&heiti_16);
+	lv_obj_add_event_cb(btn3,tab_btn_cb,LV_EVENT_ALL,display2);
+	create_simple_label(&bell_lb,display,13,261,33,19,"提醒",&heiti_16);
 
-	create_simple_btn(&btn_search,display0,544,8,73,39,lv_color_hex(0x3f6ead));
+	create_simple_btn(&btn_search,display,544,8,73,39,lv_color_hex(0x3f6ead));
 	search_lb = lv_label_create(btn_search);
 	lv_obj_set_flex_align(btn_search, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	lv_label_set_text(search_lb,"搜索");
@@ -408,33 +421,9 @@ void screen_load_event_cb(lv_event_t *e)
 	if (code ==  LV_EVENT_SCREEN_LOADED)
 	{
 		lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
-		if(ta)
-		{
-            lv_obj_del(ta);
-            ta = NULL; // 置空，防止悬空指针
-        }
-        //创建新的
-		if(ta_lb1) 
-		{
-			lv_obj_del(ta_lb1);
-			ta_lb1 = NULL; // 置空，防止悬空指针
-		}
-		if(ta_lb2) 
-		{
-			lv_obj_del(ta_lb2);
-			ta_lb2 = NULL; // 置空，防止悬空指针
-			for (int i = 0; i < SEARCH_LIST_LEN; i++) 
-			{
-        		top_search_station[i]   = NULL;
-        		top_search_line[i]      = NULL;
-        		top_search_transfer[i]  = NULL;
-    		}
-		}
-        creat_top_ta(lv_scr_act());
-		top_ta_result_lb_init(lv_layer_top());
-		top_ta_record_lb_init(lv_layer_top());
+		top_ta_reset();
 
-		if (start_img != NULL && end_img != NULL  && !is_both_ta_filled)
+		if (!is_both_ta_filled)  //如果两个输入框都未填充，说明是从地图界面切换回主界面，此时需要重置输入框和搜索结果显示状态
 		{
 			lv_obj_add_flag(end_img,LV_OBJ_FLAG_HIDDEN);
 			lv_obj_add_flag(start_img,LV_OBJ_FLAG_HIDDEN);
@@ -460,6 +449,7 @@ void screen_load_event_cb(lv_event_t *e)
 		if(is_station_clicked)
 		{
 			hide_pop_window();
+			favorite_station_lb_style_reset();
 		}
 		if (is_line_showing)
 		{
@@ -467,63 +457,18 @@ void screen_load_event_cb(lv_event_t *e)
 		}
 		create_metro_map();  //重新创建地图界面，重置站点选择状态和路线显示状态
 		
-		if (!lv_obj_has_flag(display11, LV_OBJ_FLAG_HIDDEN))
-		{
-			if (favorite_count == 0)
-			{
-				lv_obj_clear_flag(station_prompt, LV_OBJ_FLAG_HIDDEN);
-			}
-			else
-			{
-				lv_obj_add_flag(station_prompt, LV_OBJ_FLAG_HIDDEN);
-			}
-			favorite_station_show();
-
-			for (int i = 0; i < 30; i++)
-			{
-				lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
-			}
-		}
-		
 		lv_textarea_set_text(start_ta, "");
 		lv_textarea_set_text(end_ta, "");  
 		lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);  //切换界面后重置输入框和搜索结果显示状态
-		for (int i = 0; i < SEARCH_LIST_LEN; i++)
-		{
-			if (search_result_show_label[i] != NULL || search_line_show_label[i] != NULL || search_line_transfer_show_label[i] != NULL)
-			{
-				lv_obj_del_async(search_result_show_label[i]);
-				search_result_show_label[i] = NULL;
-				lv_obj_del_async(search_line_show_label[i]);
-				search_line_show_label[i] = NULL;
-				lv_obj_del_async(search_line_transfer_show_label[i]);
-				search_line_transfer_show_label[i] = NULL;
-    		}
-		}
-
+		clear_search_result_labels(); //清除搜索结果标签
 		is_both_ta_filled = 0;
 	}
 }
-void btn1_cb(lv_event_t *e)
+void tab_btn_cb(lv_event_t *e)
 {
-	lv_event_code_t code = lv_event_get_code(e);
-	if(code == LV_EVENT_PRESSED)
-		lv_scr_load(display0);
-}
-void btn2_cb(lv_event_t *e)
-{
-	lv_event_code_t code = lv_event_get_code(e);
-	if(code == LV_EVENT_PRESSED)
-	{
-		lv_scr_load(display1);
-	}
-}
-void btn3_cb(lv_event_t *e)
-{
-	lv_event_code_t code = lv_event_get_code(e);
-	if(code == LV_EVENT_PRESSED)
-		lv_scr_load(display2);
+	if (lv_event_get_code(e) == LV_EVENT_PRESSED)
+		lv_scr_load((lv_obj_t *)lv_event_get_user_data(e));
 }
 void kb_show_cb(lv_event_t *e)
 {
@@ -533,18 +478,7 @@ void kb_show_cb(lv_event_t *e)
 	{
 		if (lv_obj_get_parent(ta) == display1)
 		{
-			for (int i = 0; i < SEARCH_LIST_LEN; i++)
-			{
-				if (search_result_show_label[i] != NULL || search_line_show_label[i] != NULL || search_line_transfer_show_label[i] != NULL)
-				{
-					lv_obj_del_async(search_result_show_label[i]);
-					search_result_show_label[i] = NULL;
-					lv_obj_del_async(search_line_show_label[i]);
-					search_line_show_label[i] = NULL;
-					lv_obj_del_async(search_line_transfer_show_label[i]);
-					search_line_transfer_show_label[i] = NULL;
-    			}
-			}
+			clear_search_result_labels();  //清除搜索结果标签
 			lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
         	lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
     	}
@@ -656,6 +590,11 @@ void top_search_result_click_cb(lv_event_t *e)
                     station_clicked[1].is_transfer = (int8_t)(i + 1);
                 }
 
+				if (lv_scr_act() != display0)
+				{
+					lv_scr_load(display0);
+				}
+				
                 pop_window_show(station_clicked, line_info_btns);
 				pop_window_move(station_clicked);
                 if (!is_station_clicked)
@@ -678,6 +617,34 @@ void top_search_result_click_cb(lv_event_t *e)
 	}
 }
 
+void top_ta_reset(void)
+{
+	if(ta)
+		{
+            lv_obj_del(ta);
+            ta = NULL; // 置空，防止悬空指针
+        }
+        //创建新的
+		if(ta_lb1) 
+		{
+			lv_obj_del(ta_lb1);
+			ta_lb1 = NULL; // 置空，防止悬空指针
+		}
+		if(ta_lb2) 
+		{
+			lv_obj_del(ta_lb2);
+			ta_lb2 = NULL; // 置空，防止悬空指针
+			for (int i = 0; i < SEARCH_LIST_LEN; i++) 
+			{
+        		top_search_station[i]   = NULL;
+        		top_search_line[i]      = NULL;
+        		top_search_transfer[i]  = NULL;
+    		}
+		}
+        creat_top_ta(lv_scr_act());
+		top_ta_result_lb_init(lv_layer_top());
+		top_ta_record_lb_init(lv_layer_top());
+}
 /**
  * @brief 通用 Label 创建工具实现
  */

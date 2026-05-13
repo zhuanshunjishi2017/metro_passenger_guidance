@@ -10,6 +10,7 @@ void btn4_cb(lv_event_t *e); // 确定按钮回调
 void cancelbtn_cb(lv_event_t *e); // 取消按钮回调
 void search_result_click_cb(lv_event_t *e); // 搜索结果点击回调
 void station_info_click_cb(lv_event_t *e); // 收藏站点信息点击回调
+void clear_top_search_result_labels(void); // 清除顶部搜索结果标签
 
 // 全局变量，用于跨界面传递路线信息
 Route route_result;
@@ -574,7 +575,36 @@ void favorite_station_show(void)
             lv_obj_move_foreground(favorite_station_line_transfer_show_lb[i]);
         }
     }
+    if (favorite_count == 0)
+    {
+        lv_obj_clear_flag(station_prompt, LV_OBJ_FLAG_HIDDEN);
+    }
+    else
+    {
+        lv_obj_add_flag(station_prompt, LV_OBJ_FLAG_HIDDEN);
+    }
 }
+
+void favorite_station_lb_style_reset(void)
+{
+    if (is_station_clicked)
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_MID_BLUE), 0);
+            lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_white(),0);
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
+            lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
+        }
+    }
+}
+
 //回调函数
 void start_ta_kb_show_cb(lv_event_t *e)
 {
@@ -583,18 +613,7 @@ void start_ta_kb_show_cb(lv_event_t *e)
     lv_event_code_t code = lv_event_get_code(e);
     if (code == LV_EVENT_CLICKED)
     {
-        for (int i = 0; i < SEARCH_LIST_LEN; i++)
-		{
-			if (top_search_station[i] != NULL || top_search_line[i] != NULL || top_search_transfer[i] != NULL)
-			{
-				lv_obj_del_async(top_search_station[i]);
-				top_search_station[i] = NULL;
-				lv_obj_del_async(top_search_line[i]);
-				top_search_line[i] = NULL;
-				lv_obj_del_async(top_search_transfer[i]);
-				top_search_transfer[i] = NULL;
-    		}
-		}
+        clear_top_search_result_labels();
         kb_show(kb,ta,lv_color_hex(0xffffff));
         lv_obj_set_style_bg_opa(transparent, 0, 0);
         lv_obj_move_foreground(ta);
@@ -603,11 +622,7 @@ void start_ta_kb_show_cb(lv_event_t *e)
         lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
 
         hide_pop_window();
-        for (int i = 0; i < 30; i++)
-            {
-                lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
-            }
-
+        favorite_station_lb_style_reset();
     }
 }
 void end_ta_kb_show_cb(lv_event_t *e)
@@ -617,18 +632,7 @@ void end_ta_kb_show_cb(lv_event_t *e)
     lv_event_code_t code = lv_event_get_code(e);
     if (code == LV_EVENT_CLICKED)
     {
-        for (int i = 0; i < SEARCH_LIST_LEN; i++)
-		{
-			if (top_search_station[i] != NULL || top_search_line[i] != NULL || top_search_transfer[i] != NULL)
-			{
-				lv_obj_del_async(top_search_station[i]);
-				top_search_station[i] = NULL;
-				lv_obj_del_async(top_search_line[i]);
-				top_search_line[i] = NULL;
-				lv_obj_del_async(top_search_transfer[i]);
-				top_search_transfer[i] = NULL;
-    		}
-		}
+        clear_top_search_result_labels();
         kb_show(kb,ta,lv_color_hex(0xffffff));
         lv_obj_set_style_bg_opa(transparent, 0, 0);
         lv_obj_move_foreground(ta);
@@ -637,10 +641,7 @@ void end_ta_kb_show_cb(lv_event_t *e)
         lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
 
         hide_pop_window();
-        for (int i = 0; i < 30; i++)
-            {
-                lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
-            }
+        favorite_station_lb_style_reset();
     }
 }
 
@@ -694,7 +695,6 @@ void station_info_click_cb(lv_event_t *e)
             station_clicked[1].is_transfer = station->line_belonged;
         }  //pop_window_show函数会根据station_clicked数组中的信息显示时间
         
-        lv_obj_set_parent(pop_window, lv_layer_top());
         pop_window_show(station_clicked, line_info_btns);
         lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
         
@@ -732,7 +732,6 @@ void station_info_click_cb(lv_event_t *e)
                 station_clicked[1].is_transfer = station->line_belonged;
             }  //pop_window_show函数会根据station_clicked数组中的信息显示时间
     
-            lv_obj_set_parent(pop_window, lv_layer_top());
             pop_window_show(station_clicked, line_info_btns);
             lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
     
@@ -802,7 +801,6 @@ void btn4_cb(lv_event_t *e)
         
     }
 }
-
 void cancelbtn_cb(lv_event_t *e)
 {
     lv_obj_del_async(pp_window);
@@ -821,4 +819,20 @@ void cancelbtn_cb(lv_event_t *e)
     is_end_selected = 0;
 
     create_metro_map();//强制重绘
+}
+
+void clear_top_search_result_labels(void) 
+{
+    for (int i = 0; i < SEARCH_LIST_LEN; i++)
+	{
+		if (top_search_station[i] != NULL || top_search_line[i] != NULL || top_search_transfer[i] != NULL)
+		{
+			lv_obj_del_async(top_search_station[i]);
+			top_search_station[i] = NULL;
+			lv_obj_del_async(top_search_line[i]);
+			top_search_line[i] = NULL;
+			lv_obj_del_async(top_search_transfer[i]);
+			top_search_transfer[i] = NULL;
+    	}
+	}
 }

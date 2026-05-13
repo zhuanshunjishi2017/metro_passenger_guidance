@@ -663,14 +663,14 @@ void line_info_btn_cb(lv_event_t * e)
     {
         transparent_init(lv_layer_top(),lv_color_hex(COLOR_MID_GRAY));
         lv_obj_set_style_bg_opa(transparent, 100, 0);
-        for (int i = 0; i < 30; i++)
-            {
-                lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
-                lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
-            }
+        hide_pop_window();
+        favorite_station_lb_style_reset();
+    }
+    if (is_station_info)
+    {
+        hide_pop_window();    
     }
     lv_obj_move_foreground(station_info_disp);
-    hide_pop_window();    
 }
 
 
@@ -678,10 +678,8 @@ void start_end_btn_cb(lv_event_t *e)
 {
     int8_t* mode = (int8_t *)lv_event_get_user_data(e);
     //lv_obj_t * btn = lv_event_get_target(e);//获取产生这个事件的对象
-    for (int i = 0; i < 30; i++)
-    {
-        lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
-    }
+    hide_pop_window();
+    favorite_station_lb_style_reset();
     if (pp_window != NULL)
 	{
 		lv_obj_del_async(pp_window);
@@ -736,8 +734,7 @@ void start_end_btn_cb(lv_event_t *e)
             pop_search_result_window_show(&route_result);
         } 
     } 
-
-    hide_pop_window();
+    create_metro_map();
 }
 
 void hide_pop_window(void)

@@ -20,6 +20,7 @@ size_t favorite_count = 0; //用来计数有多少个收藏的车站
 static FavoriteBtn bindings[MAX_FAVORITES_BUTTONS]; 
 static bool favorites_ready = false;
 extern lv_obj_t* favorite_station_show_lb[30];
+extern lv_obj_t* station_prompt,*route_prompt;
 
 static bool favorites_contains(uint16_t only_id) //判断这个唯一id的车站是否被收藏了
 {
@@ -36,16 +37,18 @@ static void favorites_refresh_button(const FavoriteBtn *binding) //检查这个�
     if (!binding || !binding->valid || !binding->btn || !binding->label) {
         return;
     }
-    if (favorites_contains(binding->only_id)) 
+    if (favorites_contains(binding->only_id))
     {
-        //lv_obj_remove_style_all(binding->btn);
+        lv_obj_remove_style(binding->btn, &blue_button_style, 0);
+        lv_obj_remove_style(binding->btn, &btn_style, 0);
         lv_obj_add_style(binding->btn, &btn_style, 0);
         lv_label_set_text(binding->label, "已收藏");
         lv_obj_set_style_text_color(binding->label, lv_color_black(), 0);
-    } 
-    else 
+    }
+    else
     {
-        //lv_obj_remove_style_all(binding->btn);
+        lv_obj_remove_style(binding->btn, &blue_button_style, 0);
+        lv_obj_remove_style(binding->btn, &btn_style, 0);
         lv_obj_add_style(binding->btn, &blue_button_style, 0);
         lv_label_set_text(binding->label, "收藏");
         lv_obj_set_style_text_color(binding->label, lv_color_white(), 0);
@@ -232,11 +235,8 @@ void favorites_button_event_cb(lv_event_t *e)
 
     favorites_toggle(binding->only_id);
     favorites_refresh_all_buttons();
-
+    
     favorite_station_show(); //刷新收藏界面
-    for (int i = 0; i < 30; i++)
-	{
-		lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
-	}
     hide_pop_window(); //切换完收藏状态后关闭弹窗
+    favorite_station_lb_style_reset(); //重置收藏界面标签样式
 }
