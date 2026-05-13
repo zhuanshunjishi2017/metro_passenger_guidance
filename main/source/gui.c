@@ -29,7 +29,7 @@ extern lv_obj_t* display11,*display12;
 extern lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
 extern lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
-extern lv_obj_t* pp_window,*star_bt,* route_name,*cancel_btn;
+extern lv_obj_t* pp_window,*star_bt,*star_bt_label,*route_name,*cancel_btn;
 extern int8_t is_route_showing,is_station_clicked,is_line_showing;
 extern lv_obj_t* station_prompt;
 extern size_t favorite_count;
@@ -429,11 +429,13 @@ void screen_load_event_cb(lv_event_t *e)
 			lv_obj_add_flag(start_img,LV_OBJ_FLAG_HIDDEN);
 			if (pp_window != NULL)
 			{
+				favorites_route_invalidate_binding(star_bt);
 				lv_obj_del_async(pp_window);
 				pp_window = NULL;
 				route_name = NULL;
     			cancel_btn = NULL;
     			star_bt = NULL;
+				star_bt_label = NULL;
 				is_route_showing = 0;
     			is_start_selected = 0;
     			is_end_selected = 0;

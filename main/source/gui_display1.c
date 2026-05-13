@@ -30,18 +30,24 @@ lv_obj_t* start_img,*end_img;
 const char*  start_name,* end_name;
 const Station*  start_station,*end_station;
 lv_obj_t* pp_window;
+lv_obj_t* star_bt_label;
 lv_obj_t* star_bt,* route_name,*cancel_btn;
-lv_obj_t* favorite_station_show_disp;
+lv_obj_t* favorite_station_show_disp,*favorite_route_show_disp;
 lv_obj_t* favorite_station_show_lb[30];
 lv_obj_t* favorite_station_line_show_lb[30];
 lv_obj_t* favorite_station_line_transfer_show_lb[30];
 lv_obj_t* favorite_station_line_transfer_show_lb2[30];
+lv_obj_t* favorite_route_show_lb[10];
+lv_obj_t* favorite_route_dlt_btn[10];
+lv_obj_t* favorite_route_station_lb1[10];
+lv_obj_t* favorite_route_station_lb2[10];
 extern lv_obj_t* top_search_station[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_line[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
 extern lv_style_t flame_style,blue_button_style,blue_label_style, btn_style;
 extern uint16_t favorite_ids[MAX_FAVORITES];
-extern size_t favorite_count;
+extern FavoriteRouteID favorite_routes[MAX_ROUTES];
+extern size_t favorite_count,favorite_route_count;
 static lv_point_t line_points[] = {{352,55},{352,599}};
 extern LineinfoBtn line_info_btns[2];
 
@@ -382,8 +388,9 @@ void pop_search_result_window_init(void)
     lv_obj_add_style(star_bt, &blue_button_style, 0);
     lv_obj_set_pos(star_bt, 286, 12);
     lv_obj_set_size(star_bt, 73, 30);
+    lv_obj_add_event_cb(star_bt, favorites_route_button_event_cb, LV_EVENT_CLICKED, NULL);
 
-    lv_obj_t* star_bt_label = lv_label_create(star_bt);
+    star_bt_label = lv_label_create(star_bt);
     lv_label_set_text(star_bt_label, "收藏");
     lv_obj_center(star_bt_label);
     lv_obj_set_style_text_font(star_bt_label, &heiti_16, LV_PART_MAIN);
@@ -443,16 +450,9 @@ void pop_search_result_window_show(Route* route)
     is_start_selected = 1;
     is_end_selected = 1;
     is_route_showing = 1;
-        
-    //隐藏正在显示的车站
-    // if (is_station_clicked)
-    // {
-    //     lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
-    //     lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
-    //     is_station_clicked = 0;
-    // }
 
-    // create_metro_map();//强制重绘
+    favorites_route_bind_button(star_bt, star_bt_label,
+                                 route_show_result[0], route_show_result[flag]);
 }
 void favorite_station_init(void)
 {
@@ -584,7 +584,6 @@ void favorite_station_show(void)
         lv_obj_add_flag(station_prompt, LV_OBJ_FLAG_HIDDEN);
     }
 }
-
 void favorite_station_lb_style_reset(void)
 {
     if (is_station_clicked)
@@ -605,6 +604,113 @@ void favorite_station_lb_style_reset(void)
     }
 }
 
+void favorite_route_ui_init(void)
+{
+    favorite_route_show_disp = lv_obj_create(display11);
+    lv_obj_set_pos(favorite_route_show_disp, 350, 144);
+    lv_obj_set_size(favorite_route_show_disp, 285, 336);
+    lv_obj_set_style_bg_color(favorite_route_show_disp, lv_color_hex(0xffffff), 0);
+    lv_obj_set_style_border_width(favorite_route_show_disp, 0, 0);
+    lv_obj_set_scroll_dir(favorite_route_show_disp, LV_DIR_TOP | LV_DIR_BOTTOM);
+    lv_obj_set_style_bg_opa(favorite_route_show_disp, LV_OPA_0, 0);
+    lv_obj_set_style_pad_all(favorite_route_show_disp, 0, 0);
+    lv_obj_set_scrollbar_mode(favorite_route_show_disp, LV_SCROLLBAR_MODE_OFF);
+
+    for(int i = 0; i < 10; i++) 
+    {
+        favorite_route_show_lb[i] = lv_label_create(favorite_route_show_disp);
+        lv_obj_set_style_border_color(favorite_route_show_lb[i], lv_color_hex(COLOR_MID_BLUE), 0);
+        // lv_obj_set_style_text_color(favorite_route_show_lb[i], lv_color_black(),0);
+        lv_obj_set_style_bg_color(favorite_route_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
+        lv_obj_set_style_bg_opa(favorite_route_show_lb[i], LV_OPA_100, 0);
+        lv_obj_set_style_border_width(favorite_route_show_lb[i], 1, 0);
+        // lv_obj_set_style_pad_left(favorite_route_show_lb[i], 16, 0);
+        // lv_obj_set_style_pad_top(favorite_route_show_lb[i], 16, 0);
+        lv_obj_set_style_radius(favorite_route_show_lb[i],4,LV_PART_MAIN);
+
+        lv_obj_set_pos(favorite_route_show_lb[i], 0, i * 104);
+        lv_obj_set_size(favorite_route_show_lb[i], 285, 98);
+        lv_obj_add_flag(favorite_route_show_lb[i], LV_OBJ_FLAG_CLICKABLE);
+        // lv_obj_set_style_text_font(favorite_route_show_lb[i], &heiti_20, LV_PART_MAIN);
+        lv_label_set_text(favorite_route_show_lb[i], "");
+        lv_obj_add_flag(favorite_route_show_lb[i],LV_OBJ_FLAG_HIDDEN);
+
+        // lv_obj_add_event_cb(favorite_route_show_lb[i], route_info_click_cb, LV_EVENT_CLICKED, NULL);
+
+        lv_obj_t* qidian;
+        create_simple_label(&qidian,favorite_route_show_lb[i], 18, 22,33,18,"起点",&heiti_16);
+        lv_obj_set_style_text_color(qidian, lv_color_hex(COLOR_DARK_BLUE), 0);
+        lv_obj_t* zhongdian;
+        create_simple_label(&zhongdian,favorite_route_show_lb[i], 18, 56,33,18,"终点",&heiti_16);
+        lv_obj_set_style_text_color(zhongdian, lv_color_hex(COLOR_DARK_BLUE), 0);
+
+        favorite_route_dlt_btn[i] = lv_btn_create(favorite_route_show_lb[i]);
+        lv_obj_set_pos(favorite_route_dlt_btn[i], 222, 29);
+        lv_obj_set_size(favorite_route_dlt_btn[i], 42, 40);
+        lv_obj_set_style_border_color(favorite_route_dlt_btn[i], lv_color_hex(COLOR_DARK_BLUE), 0);
+        lv_obj_set_style_border_width(favorite_route_dlt_btn[i], 1, 0);
+        lv_obj_set_style_bg_color(favorite_route_dlt_btn[i], lv_color_hex(COLOR_LIGHT_BLUE), 0);
+        lv_obj_set_style_bg_opa(favorite_route_dlt_btn[i], LV_OPA_COVER, 0);
+        lv_obj_set_style_radius(favorite_route_dlt_btn[i], 4, 0);
+        lv_obj_add_flag(favorite_route_dlt_btn[i], LV_OBJ_FLAG_HIDDEN);
+
+        lv_obj_t* dlt_img = lv_img_create(favorite_route_dlt_btn[i]);
+        lv_img_set_src(dlt_img, "0:/trash_bin.bin");
+        lv_obj_center(dlt_img);
+
+        favorite_route_station_lb1[i] = lv_label_create(favorite_route_show_lb[i]);
+        lv_obj_set_pos(favorite_route_station_lb1[i], 67, 19);
+        lv_obj_set_size(favorite_route_station_lb1[i], 160, 23);
+        lv_label_set_text(favorite_route_station_lb1[i], "");
+        lv_obj_set_style_text_font(favorite_route_station_lb1[i], &heiti_20, LV_PART_MAIN);
+        lv_obj_add_flag(favorite_route_station_lb1[i], LV_OBJ_FLAG_HIDDEN);
+
+        favorite_route_station_lb2[i] = lv_label_create(favorite_route_show_lb[i]);
+        lv_obj_set_pos(favorite_route_station_lb2[i], 67, 54);
+        lv_obj_set_size(favorite_route_station_lb2[i], 160, 23);
+        lv_label_set_text(favorite_route_station_lb2[i], "");
+        lv_obj_set_style_text_font(favorite_route_station_lb2[i], &heiti_20, LV_PART_MAIN);
+        lv_obj_add_flag(favorite_route_station_lb2[i], LV_OBJ_FLAG_HIDDEN);
+    }
+}
+void favorite_route_show(void)
+{
+    for (int i = 0; i < 10; i++)
+    {
+        lv_obj_add_flag(favorite_route_show_lb[i], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(favorite_route_dlt_btn[i], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(favorite_route_station_lb1[i], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(favorite_route_station_lb2[i], LV_OBJ_FLAG_HIDDEN);
+    }
+
+    for (int i = 0; i < favorite_route_count && i < 10; i++)
+    {
+        const Station* station_temp1 = find_station_by_id(favorite_routes[i].start_id);
+        const Station* station_temp2 = find_station_by_id(favorite_routes[i].end_id);
+
+        if (station_temp1 == NULL || station_temp2 == NULL)
+        {
+            continue;
+        }
+
+        lv_label_set_text_fmt(favorite_route_station_lb1[i], "%s", station_temp1->name);
+        lv_label_set_text_fmt(favorite_route_station_lb2[i], "%s", station_temp2->name);
+
+        lv_obj_clear_flag(favorite_route_show_lb[i], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(favorite_route_dlt_btn[i], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(favorite_route_station_lb1[i], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(favorite_route_station_lb2[i], LV_OBJ_FLAG_HIDDEN);
+    }
+    
+    if (favorite_route_count == 0)
+    {
+        lv_obj_clear_flag(route_prompt, LV_OBJ_FLAG_HIDDEN);
+    }
+    else
+    {
+        lv_obj_add_flag(route_prompt, LV_OBJ_FLAG_HIDDEN);
+    }
+}
 //回调函数
 void start_ta_kb_show_cb(lv_event_t *e)
 {
@@ -793,11 +899,13 @@ void btn4_cb(lv_event_t *e)
 }
 void cancelbtn_cb(lv_event_t *e)
 {
+    favorites_route_invalidate_binding(star_bt);
     lv_obj_del_async(pp_window);
     pp_window = NULL;
     route_name = NULL;
     cancel_btn = NULL;
     star_bt = NULL;
+    star_bt_label = NULL;
     if (start_img != NULL && end_img != NULL)
     {
         lv_obj_add_flag(start_img, LV_OBJ_FLAG_HIDDEN);

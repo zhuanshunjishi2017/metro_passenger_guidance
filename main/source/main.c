@@ -24,6 +24,7 @@ int main(void)
 {
 	sys_init();
 	favorites_init();
+  favorites_route_init();
 	
 	rcu_periph_clock_enable(RCU_GPIOA);
 	gpio_init();
@@ -59,6 +60,9 @@ int main(void)
   display11_init();
   favorite_station_init();
   favorite_station_show();
+
+  favorite_route_ui_init();
+  favorite_route_show();
   lv_obj_move_foreground(display11);
   
 
