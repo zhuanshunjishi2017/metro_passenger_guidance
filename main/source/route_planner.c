@@ -4,7 +4,6 @@
 
 extern const MetroLine metro_lines[4];
 
-void station_copy(Station *dist,const Station *source);
 const Station* find_station_by_id(int station_id);
 
 

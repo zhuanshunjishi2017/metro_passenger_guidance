@@ -293,7 +293,7 @@ void start_end_pin_move(void)
 
 }
 
-//拷贝一个站点信息
+/* //拷贝一个站点信息
 void station_copy(Station *dist,const Station *source)
 {
     dist->geo_x = source->geo_x;
@@ -311,5 +311,5 @@ void station_copy(Station *dist,const Station *source)
 
     dist->name = source->name;
     dist->name_pinyin = source->name_pinyin;
-}
+} */
 

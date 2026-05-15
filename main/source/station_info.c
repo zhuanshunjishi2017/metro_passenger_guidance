@@ -723,11 +723,10 @@ void sta_click_canvas(lv_indev_t *indev, const MetroLine *line)
 
                 if (line->stations[i].id == showing_station->id && line->stations[i].is_transfer)
                 {
-                    int8_t transfer_line = line->stations[i].is_transfer;
-                    int8_t id = line->stations[i].transfer_id;
-                    if (transfer_line < 0) transfer_line = - transfer_line;
+                    const Station * transfer_sta;
+                    get_transfer_station(&line->stations[i], &transfer_sta);
 
-                    station_info_show(&(metro_lines[transfer_line - 1].stations[id - 1]),true);
+                    station_info_show(transfer_sta ,true);
                     return;
                 }
                 else if (line->stations[i].id != showing_station->id)
@@ -746,11 +745,10 @@ void sta_click_canvas(lv_indev_t *indev, const MetroLine *line)
             {
                 if (line->stations[i].id == showing_station->id && line->stations[i].is_transfer)
                 {
-                    int8_t transfer_line = line->stations[i].is_transfer;
-                    int8_t id = line->stations[i].transfer_id;
-                    if (transfer_line < 0) transfer_line = - transfer_line;
+                    const Station * transfer_sta;
+                    get_transfer_station(&line->stations[i], &transfer_sta);
 
-                    station_info_show(&(metro_lines[transfer_line - 1].stations[id - 1]),true);
+                    station_info_show(transfer_sta ,true);
                     return;
                 }
                 else if (line->stations[i].id != showing_station->id)
@@ -775,7 +773,7 @@ lv_coord_t sta_coord_trans(lv_coord_t pos, lv_coord_t origin)
 
 void station_info_show(const Station *sta, int8_t is_init)
 {
-    showing_station = sta;
+    showing_station = get_station(sta);
 
     lv_obj_add_flag(reminder_disp, LV_OBJ_FLAG_HIDDEN);
     

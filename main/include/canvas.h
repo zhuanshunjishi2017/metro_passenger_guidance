@@ -70,7 +70,6 @@ typedef struct {
 } LineinfoBtn;
 
 
-void station_copy(Station *dist,const Station *source);
 
 
 /*

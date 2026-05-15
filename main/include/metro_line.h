@@ -40,9 +40,8 @@
 #define COLOR_LINE4    0xBAD200  // 4号线 绿色
 
 typedef struct {
+    int8_t only_id;
     int8_t id;
-    char* name;
-    char* name_pinyin;
     lv_coord_t geo_x;
     lv_coord_t geo_y;
     int8_t is_transfer;        //是否为换乘站,数字表示换乘几号线，标记为负数说明已经出现过
@@ -50,8 +49,9 @@ typedef struct {
     int8_t vertical_offset;  //标签垂直偏移量，下为正
     int8_t is_draw_point;      //是否为端点
     int8_t line_belonged; //所属的线路
-    int8_t transfer_id;
-    int8_t only_id;
+    char* name;
+    char* name_pinyin;
+
 } Station;// 站点结构体
 
 
