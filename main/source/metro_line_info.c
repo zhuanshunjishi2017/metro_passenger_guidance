@@ -43,12 +43,12 @@ const Station line_1[32] = {
 
 
 const Station line_2[38] = {   
-    {1, "天河机场", "tianhejichang",          17, 0, 0, 1, 0, 1, 2, 0,32},
-    {2, "航空总部", "hangkongzongbu",         17, 2, 0, 1,-1, 1, 2, 0,33},
-    {3, "宋家岗", "songjiagang",              18, 3, 0, 1,-1, 0, 2, 0,34},
-    {4, "巨龙大道", "julongdadao",            19, 4, 0, 1,-1, 0, 2, 0,35},
-    {5, "盘龙城", "panlongcheng",             20, 5, 0, 1,-1, 1, 2, 0,36},
-    {6, "宏图大道", "hongtudadao",            20, 6, 3, 0, 1, 1,2, 24,37},
+    {1, "天河机场", "tianhejichang",          18, 1, 0, 1, 0, 1, 2, 0,32},
+    {2, "航空总部", "hangkongzongbu",         18, 2, 0, 1,-1, 1, 2, 0,33},
+    {3, "宋家岗", "songjiagang",              19, 3, 0, 1,-1, 0, 2, 0,34},
+    {4, "巨龙大道", "julongdadao",            20, 4, 0, 1,-1, 0, 2, 0,35},
+    {5, "盘龙城", "panlongcheng",             21, 5, 0, 1,-1, 1, 2, 0,36},
+    {6, "宏图大道", "hongtudadao",            21, 6, 3, 0, 1, 1,2, 24,37},
     {7, "常青城", "changqingcheng",           19, 6, 0,-1,-1, 1, 2, 0,38},
     {8, "金银潭", "jinyintan",                18, 7, 0,-1, 0, 1, 2, 0,39},
     {9, "常青花园", "changqinghuayuan",       18, 8, 0,-1, 0, 0, 2, 0,40},
@@ -93,10 +93,10 @@ const Station line_3[24] = {
     {8, "龙阳村", "longyangcun",             12, 20, 0, 1, 1, 0, 3, 0,77},
     {9, "王家湾", "wangjiawan",              13, 19, 4, 1, 0, 0, 3,14,78},
     {10, "宗关", "zongguan",                 15, 17,-1,-1, 0, 1, 3, 14,13},
-    {11, "双墩", "shuangdun",                15, 15, 0,-1,-1, 1, 3, 0,80},
-    {12, "武汉商务区", "wuhanshangwuqu",     16, 14, 0,-1,-1, 0, 3, 0,81},
-    {13, "云飞路", "yunfeilu",               17, 13, 0,-1,-1, 0, 3, 0,82},
-    {14, "范湖", "fanhu",                    18, 12,-2,-1,-1, 1, 3, 12,43},
+    {11, "双墩", "shuangdun",                15, 14, 0,-1,-1, 1, 3, 0,80},
+    {12, "武汉商务区", "wuhanshangwuqu",     16, 13, 0,-1,-1, 0, 3, 0,81},
+    {13, "云飞路", "yunfeilu",               17, 12, 0,-1,-1, 1, 3, 0,82},
+    {14, "范湖", "fanhu",                    18, 12,-2,-1,-1, 0, 3, 12,43},
     {15, "菱角湖", "lingjiaohu",             19, 12, 0, 0,-1, 0, 3, 0,83},
     {16, "香港路", "xiangganglu",            20, 12, 0, 1, 1, 1, 3, 0,84},
     {17, "惠济二路", "huijierlu",            21, 11, 0, 1, 1, 0, 3, 0,85},
@@ -105,8 +105,8 @@ const Station line_3[24] = {
     {20, "二七小路", "erqixiaolu",           24, 8,  0, 1, 1, 1, 3, 0,88},
     {21, "兴业路", "xingyelu",               24, 7,  0, 1, 0, 0, 3, 0,89},
     {22, "后湖大道", "houhudadao",           24, 6,  0, 1, 0, 1, 3, 0,90},
-    {23, "市民之家", "shiminzijia",          22, 6,  0, 0,-1, 0, 3, 0,91},
-    {24, "宏图大道", "hongtudadao",          20, 6, -2, 0, 1, 1, 3, 6,37}
+    {23, "市民之家", "shiminzijia",          23, 6,  0, 0,-1, 0, 3, 0,91},
+    {24, "宏图大道", "hongtudadao",          21, 6, -2, 0, 1, 1, 3, 6,37}
 };
 const Station line_4[37] = {
     {1, "柏林", "bailin",                    1, 17, 0,-1, 0, 1, 4, 0,92},
@@ -184,10 +184,71 @@ Timetable timetable_line_4 = {{6, 0 ,0}, {23, 0, 0}, 255};
 
 
 
-const MetroLine metro_lines[4] = {
-    {line_1, 32, COLOR_LINE1, 6 , 1, time_line_1, &timetable_line_1},
-    {line_2, 38, COLOR_LINE2, 17, 2, time_line_2, &timetable_line_2},
-    {line_3, 24, COLOR_LINE3, 8 , 3, time_line_3, &timetable_line_3},
-    {line_4, 37, COLOR_LINE4, 14, 4, time_line_4, &timetable_line_4},
+const MetroLine metro_lines[LINE_COUNT] = {
+    {line_1, 32, COLOR_LINE1, 1, time_line_1, &timetable_line_1},
+    {line_2, 38, COLOR_LINE2, 2, time_line_2, &timetable_line_2},
+    {line_3, 24, COLOR_LINE3, 3, time_line_3, &timetable_line_3},
+    {line_4, 37, COLOR_LINE4, 4, time_line_4, &timetable_line_4},
 };
+
+const MetroLine * get_metro_line(int8_t line_number)
+{
+    for (int8_t i = 0; i < LINE_COUNT; i++)
+    {
+        if (metro_lines[i].line_number == line_number)
+        {
+            return metro_lines + i;
+        }
+    }
+    return NULL;
+}
+
+const Station * get_station(const Station * sta)
+{
+    for (int8_t i = 0; i < LINE_COUNT; i++)
+    {
+        for (int j = 0; j < metro_lines[i].count; j++)
+        {
+            if( metro_lines[i].stations[j].only_id == sta->only_id
+                && metro_lines[i].stations[j].line_belonged == sta->line_belonged)
+                return &metro_lines[i].stations[j];
+        }
+    }
+    return NULL;
+
+}
+
+const Station * get_transfer_station(const Station * src, const Station ** first_dist)
+{
+    if(!src->is_transfer)
+    {
+        first_dist = NULL;
+        return NULL;
+    }
+
+    int8_t is_find_first = 0;
+    for (int8_t i = 0; i < LINE_COUNT; i++)
+    {
+        for (int j = 0; j < metro_lines[i].count; j++)
+        {
+            if( !is_find_first 
+                && metro_lines[i].stations[j].only_id == src->only_id
+                && metro_lines[i].stations[j].line_belonged != src->line_belonged)
+            {
+                *first_dist = &metro_lines[i].stations[j];
+                is_find_first = 1;
+            }
+            else if (is_find_first
+                && metro_lines[i].stations[j].only_id == src->only_id
+                && metro_lines[i].stations[j].line_belonged != src->line_belonged
+                && metro_lines[i].stations[j].line_belonged != (*first_dist)->line_belonged)
+            {
+                return &metro_lines[i].stations[j];
+            }
+        }
+    }
+    return NULL;
+
+}
+
 

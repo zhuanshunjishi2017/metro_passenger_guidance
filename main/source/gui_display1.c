@@ -584,23 +584,14 @@ void favorite_station_show(void)
         lv_obj_add_flag(station_prompt, LV_OBJ_FLAG_HIDDEN);
     }
 }
+
+
 void favorite_station_lb_style_reset(void)
 {
-    if (is_station_clicked)
+    for (int i = 0; i < 30; i++)
     {
-        for (int i = 0; i < 30; i++)
-        {
-            lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_MID_BLUE), 0);
-            lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_white(),0);
-        }
-    }
-    else
-    {
-        for (int i = 0; i < 30; i++)
-        {
-            lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
-            lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
-        }
+        lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
+        lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
     }
 }
 
@@ -793,8 +784,9 @@ void station_info_click_cb(lv_event_t *e)
         
         lv_obj_set_style_text_color(label, lv_color_white(),0);
 
-        station_clicked_fill(station, station->line_belonged);
 
+        station_clicked[0] = station;
+        station_clicked[2] = get_transfer_station(station, &station_clicked[1]);
 
         pop_window_show(station_clicked, line_info_btns);
         lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
@@ -825,8 +817,8 @@ void station_info_click_cb(lv_event_t *e)
             lv_obj_set_style_bg_color(label, lv_color_hex(COLOR_DARK_BLUE), 0);
             lv_obj_set_style_text_color(label, lv_color_white(),0);
 
-            station_clicked_fill(station, station->line_belonged);
-
+            station_clicked[0] = station;
+            station_clicked[2] = get_transfer_station(station, &station_clicked[1]);
 
             pop_window_show(station_clicked, line_info_btns);
             lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);

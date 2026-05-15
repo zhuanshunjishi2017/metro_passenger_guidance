@@ -34,7 +34,7 @@ int8_t is_start_selected, is_end_selected;
 
 
 
-Station station_clicked[2];
+const Station *station_clicked[MAX_TRANSFER];
 
 static void draw_route(lv_obj_t *canvas, const Route *route);
 
@@ -92,7 +92,7 @@ static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t stat
         }
     }
     //绘制线路
-    lv_canvas_draw_line(canvas, pts, line->draw_point_count, &dsc);
+    lv_canvas_draw_line(canvas, pts, j, &dsc);
     //绘制车站
     for (int i = 0; i < line->count; i++)
         draw_station(canvas, line->stations + i, lv_color_hex(line->line_color), state);

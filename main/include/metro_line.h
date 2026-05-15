@@ -30,6 +30,9 @@
 
 #define TOUCH_RANGE 15
 
+#define LINE_COUNT   4
+#define MAX_TRANSFER 3
+
 
 #define COLOR_LINE1    0x0066A4  // 1号线 蓝色
 #define COLOR_LINE2    0xE99CC0  // 2号线 粉色
@@ -63,7 +66,6 @@ typedef struct {
     const Station* stations;
     uint16_t count;
     uint32_t line_color;
-    uint8_t draw_point_count;
     uint8_t line_number;
     const uint16_t * station_period;
     Timetable * timetable;
@@ -72,6 +74,12 @@ typedef struct {
 
 
 extern const lv_font_t heiti_14;
+
+const MetroLine * get_metro_line(int8_t line_number);
+
+const Station * get_station(const Station * sta);
+
+const Station * get_transfer_station(const Station * src, const Station ** first_dist);
 
 
 //声明一些有关地图绘制的函数

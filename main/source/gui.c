@@ -443,10 +443,7 @@ void screen_load_event_cb(lv_event_t *e)
 		}
 		if (is_station_info)
         {
-            is_station_info = 0;
-            lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
-            lv_timer_del(station_timer);
-            station_timer = NULL;
+			hide_station_info();
         }
 		if(is_station_clicked)
 		{
@@ -511,15 +508,7 @@ void kb_hide_cb(lv_event_t *e)
 		}
 		if (is_station_info)
         {
-			if (is_reminder_set_showing)
-			{
-				is_reminder_set_showing = 0;
-				lv_obj_add_flag(reminder_disp, LV_OBJ_FLAG_HIDDEN);
-			}
-			is_station_info = 0;
-            lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
-            lv_timer_del(station_timer);
-            station_timer = NULL;
+			hide_station_info();
         }
 	}
 }		
@@ -575,7 +564,8 @@ void top_search_result_click_cb(lv_event_t *e)
                  //station_name = metro_lines[i].stations[j].name_pinyin;
                 station_name = metro_lines[i].stations[j].name;
 
-				station_clicked_fill(&metro_lines[i].stations[j], (int8_t)(i + 1));
+				station_clicked[0] = &metro_lines[i].stations[j];
+                station_clicked[2] = get_transfer_station(&metro_lines[i].stations[j], &station_clicked[1]);
 
 				if (lv_scr_act() != display0)
 				{

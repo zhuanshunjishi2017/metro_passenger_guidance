@@ -17,7 +17,7 @@ extern int8_t is_route_showing;
 extern lv_obj_t  *display0;
 
 extern int8_t is_station_clicked;
-extern Station station_clicked[2];
+extern const Station *station_clicked[MAX_TRANSFER];
 
 extern int8_t is_station_info ;
 
@@ -27,7 +27,7 @@ extern lv_coord_t origin_x, origin_y;
 extern uint16_t magnify_size;
 
 extern lv_style_t btn_style, black_label_style, blue_label_style;
-extern lv_style_t blue_button_style;
+extern lv_style_t blue_button_style, flame_style;
 
 extern lv_obj_t *location_image, *pop_window;
 
@@ -71,7 +71,7 @@ typedef struct {
 
 
 void station_copy(Station *dist,const Station *source);
-void station_clicked_fill(const Station *src, int8_t line);
+
 
 /*
 下面是有关画布的函数声明
@@ -95,14 +95,16 @@ void lines_selector_cb(lv_event_t * e);
 void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , MetroLine *line);
 void line_info_btn_init(lv_obj_t * obj, LineinfoBtn * btn, int8_t count);
 
-void pop_window_move(Station *sta);
-void pop_window_show(Station *sta, LineinfoBtn * btn);
+void pop_window_move(const Station **sta);
+void pop_window_show(const Station **sta, LineinfoBtn * btn);
 
 void line_info_btn_cb(lv_event_t * e);
 
 void hide_pop_window(void);
 
 void start_end_btn_cb(lv_event_t *e);
+
+void hide_station_info(void);
 
 
 /*
@@ -118,11 +120,11 @@ void sta_canvas_init(lv_obj_t * canvas);
 void timetable_label_init(lv_obj_t * obj,TimeLabel * tl);
 
 
-void sta_create_metro_line(lv_obj_t * canvas,MetroLine *line , Station *sta);
+void sta_create_metro_line(lv_obj_t * canvas,const MetroLine *line , const Station *sta);
 void station_name_text_show(lv_obj_t * canvas, lv_coord_t x, lv_draw_label_dsc_t* dsc,const Station *sta);
 lv_coord_t sta_coord_trans(lv_coord_t pos, lv_coord_t origin);
 
-void sta_click_canvas(lv_indev_t *indev, MetroLine *line);
+void sta_click_canvas(lv_indev_t *indev, const MetroLine *line);
 
 void station_info_show(const Station *sta, int8_t);
 
@@ -135,29 +137,31 @@ void remind_add_btn_cb(lv_event_t *e);
 void sta_canvas_cb(lv_event_t * e);
 void sta_pressing_canvas(lv_indev_t *);
 
-void timetable_show(MetroLine *line);
+void timetable_show(const MetroLine *line);
 void station_timer_cb(lv_timer_t * timer);
 
-void time_label_update(MetroLine *line, Station * sta);
+void time_label_update(const MetroLine *line, const Station * sta);
 
-void draw_train_icon(MetroLine *line, Station * sta, int8_t remain_sta_count, int remain_sec, int count);
+void draw_train_icon(const MetroLine *line, const Station * sta, int8_t remain_sta_count, int remain_sec, int count);
 
 
 void del_time_label_text(TimeLabel *tl);
 
 //获取某个站点某个方向的首末班车时间
-void get_first_last_train(Station *sta, char (*result)[7], int8_t direction);
+void get_first_last_train(const Station *sta, char (*result)[7], int8_t direction);
 
-int get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2);
+int get_station_interval(const MetroLine *line, int8_t id_1, int8_t id_2);
 
 /*
 提醒添加里面的函数声明
 */
 void remind_entry_init(lv_obj_t * obj);
 
-void reminder_set_show(Station *sta);
+void reminder_set_show(const Station *sta);
 
 void remind_cancel_btn_cb(lv_event_t * e);
+
+void confirm_remind_add_btn_cb(lv_event_t * e);
 
 /*
 gui里的函数声明

@@ -125,5 +125,22 @@ void transparent_init(lv_obj_t* display,lv_color_t bg_color);  //包含键盘隐
  */
 void btn4_cb(lv_event_t *e);
 
+/**
+ * @brief 隐藏一个顶层的消息弹窗
+ * @param obj 需要隐藏的窗口
+ **/
+void hide_msgbox(lv_obj_t **obj);
+
+/**
+ * @brief 显示一个顶层的消息弹窗
+ * @param obj 需要显示的窗口
+ * @param obj_init 初始化窗口的函数
+ **/
+
+void show_msgbox(lv_obj_t **obj);
+
+void remind_add_msg_init(lv_obj_t **obj, const char * text);
+
+
 #endif
 

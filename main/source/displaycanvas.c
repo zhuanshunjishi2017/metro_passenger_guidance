@@ -18,15 +18,15 @@ int8_t para_numbers[5] = {0,1,2,3,4};  //妥协之举，传参只能传地址
 lv_obj_t *btn_plus , *btn_minus;
 lv_obj_t *lines_container;
 lv_obj_t * label_plus, *label_minus;
-lv_obj_t line_btns[4];
-lv_obj_t line_labels[4][2];
+lv_obj_t line_btns[LINE_COUNT];
+lv_obj_t line_labels[LINE_COUNT][2];
 lv_obj_t * location_image;//位置的图标
 lv_obj_t * pop_window;//弹出的窗口
 
 lv_obj_t * start_btn, *end_btn, *start_label, *end_label;
 lv_obj_t * collect_btn, *collect_label, *pop_top_label;
 
-LineinfoBtn line_info_btns[2] = {0};
+LineinfoBtn line_info_btns[MAX_TRANSFER] = {0};
 
 
 
@@ -40,6 +40,8 @@ extern lv_obj_t* pp_window,*star_bt,* route_name,*cancel_btn;
 extern lv_obj_t* display11,*start_ta,*end_ta;
 extern lv_obj_t* favorite_station_show_lb[30];
 extern int is_both_ta_filled;
+
+
 void canvas_init(lv_obj_t *canvas)
 {
     lv_obj_clear_flag(canvas, LV_OBJ_FLAG_SCROLLABLE);
@@ -223,16 +225,7 @@ void canvas_cb(lv_event_t * e)
             clicked_canvas(indev, metro_lines);
             if (is_station_info)
             {
-                if (is_reminder_set_showing)
-                {
-                    is_reminder_set_showing = 0;
-                    lv_obj_add_flag(reminder_disp, LV_OBJ_FLAG_HIDDEN);
-                }
-                is_station_info = 0;
-                lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
-                lv_timer_del(station_timer);
-                station_timer = NULL;
-                create_metro_map();
+                hide_station_info();
             }
             break;
         default:
@@ -318,7 +311,8 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
             if ((pos.x - x < TOUCH_RANGE && pos.x - x > -TOUCH_RANGE) && 
                 (pos.y - y < TOUCH_RANGE && pos.y - y > -TOUCH_RANGE))
             {
-                station_clicked_fill(&lines[i].stations[j], (int8_t)(i + 1));
+                station_clicked[0] = &lines[i].stations[j];
+                station_clicked[2] = get_transfer_station(&lines[i].stations[j], &station_clicked[1]);
 
                 pop_window_show(station_clicked, line_info_btns);
                 pop_window_move(station_clicked);
@@ -335,9 +329,7 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
     }
     if (is_station_clicked)
     {
-        lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
-        is_station_clicked = 0;
+        hide_pop_window();
     }
 }
 
@@ -418,7 +410,7 @@ void pop_window_init(lv_obj_t * obj)
 
 
     //初始化两个站牌
-    for (int8_t i = 0; i < 2; i++)
+    for (int8_t i = 0; i < MAX_TRANSFER; i++)
         line_info_btn_init(pop_window, line_info_btns + i , i);
     
 
@@ -517,7 +509,7 @@ void line_info_btn_init(lv_obj_t * obj, LineinfoBtn * btn, int8_t count)
 
     if (count) lv_obj_add_flag(btn->line_info_btn, LV_OBJ_FLAG_HIDDEN);
 
-    lv_obj_add_event_cb(btn->line_info_btn, line_info_btn_cb, LV_EVENT_CLICKED, station_clicked + count);
+    lv_obj_add_event_cb(btn->line_info_btn, line_info_btn_cb, LV_EVENT_CLICKED, para_numbers + count);
 
     // lv_label_set_text(dire_label1 , "佛祖岭 方向");
     // lv_label_set_text(dire_label2 , "天河机场 方向");
@@ -527,14 +519,14 @@ void line_info_btn_init(lv_obj_t * obj, LineinfoBtn * btn, int8_t count)
     
 }
 
-void pop_window_move(Station *sta)
+void pop_window_move(const Station **sta)
 {
-    lv_coord_t x = geo_to_screen(sta->geo_x, origin_x);
-    lv_coord_t y = geo_to_screen(sta->geo_y, origin_y);
+    lv_coord_t x = geo_to_screen(sta[0]->geo_x, origin_x);
+    lv_coord_t y = geo_to_screen(sta[0]->geo_y, origin_y);
 
     lv_obj_set_pos(location_image, x - 38, y - 75);
     x += 25;
-    if (sta->is_transfer)
+    if (sta[0]->is_transfer)
     {
         y -= 70 + POP_WINDOW_H_TRANS;
         if (y > CANVAS_H - 10 - POP_WINDOW_H_TRANS)
@@ -558,10 +550,10 @@ void pop_window_move(Station *sta)
     
 }
     
-void pop_window_show(Station *sta, LineinfoBtn * btn)
+void pop_window_show(const Station **sta, LineinfoBtn * btn)
 {
 
-    if (sta->is_transfer)
+    if (sta[0]->is_transfer)
     {
         lv_obj_set_size(pop_window, POP_WINDOW_W,POP_WINDOW_H_TRANS);
         lv_obj_set_y(start_btn, BOTTOM_BTN_Y_TRANS);
@@ -577,15 +569,18 @@ void pop_window_show(Station *sta, LineinfoBtn * btn)
     }
 
 
-    lv_label_set_text(pop_top_label, sta->name);
-    favorites_bind_button(collect_btn, collect_label, sta);
+    lv_label_set_text(pop_top_label, sta[0]->name);
+    favorites_bind_button(collect_btn, collect_label, sta[0]);
 
 
-    int8_t line_number = sta->line_belonged;
-    for (int8_t i = 0; i < 2 ;i++)
+    for (int8_t i = 0; i < MAX_TRANSFER ;i++)
     {
-        char * sta1 = metro_lines[line_number - 1].stations[0].name;
-        char * sta2 = metro_lines[line_number - 1].stations[metro_lines[line_number - 1].count - 1].name;
+        if (!sta[i]) return;
+
+        int8_t line_number = sta[i]->line_belonged;
+
+        char * sta1 = get_metro_line(line_number)->stations[0].name;
+        char * sta2 = get_metro_line(line_number)->stations[get_metro_line(line_number)->count - 1].name;
         char line_str[10], sta1_str[24], sta2_str[24];
         snprintf(line_str, sizeof(line_str), "%d号线",line_number);
         snprintf(sta1_str, sizeof(sta1_str), "%s 方向",sta1);
@@ -593,24 +588,7 @@ void pop_window_show(Station *sta, LineinfoBtn * btn)
 
         lv_label_set_text(btn[i].line_number_label, line_str);
 
-        lv_color_t color;
-        switch (line_number)
-        {
-            case 1:
-                color = lv_color_hex(COLOR_LINE1);
-                break;
-            case 2:
-                color = lv_color_hex(COLOR_LINE2);
-                break;
-            case 3:
-                color = lv_color_hex(COLOR_LINE3);
-                break;
-            case 4:
-                color = lv_color_hex(COLOR_LINE4);
-                break;
-            default:
-                break;
-        }
+        lv_color_t color = get_line_color(line_number);
 
         lv_obj_set_style_bg_color(btn[i].line_number_label, color, 0);
 
@@ -619,8 +597,8 @@ void pop_window_show(Station *sta, LineinfoBtn * btn)
 
         char first_last_time[2][2][7], first_last_time_str[2][40];
 
-        get_first_last_train(station_clicked + i, first_last_time[0], 0);
-        get_first_last_train(station_clicked + i, first_last_time[1], 1);
+        get_first_last_train(station_clicked[i], first_last_time[0], 0);
+        get_first_last_train(station_clicked[i], first_last_time[1], 1);
         
         sprintf(first_last_time_str[0], "首班 %s  末班 %s", first_last_time[0][0], first_last_time[0][1]);
         sprintf(first_last_time_str[1], "首班 %s  末班 %s", first_last_time[1][0], first_last_time[1][1]);
@@ -628,34 +606,25 @@ void pop_window_show(Station *sta, LineinfoBtn * btn)
         lv_label_set_text(btn[i].time_label1 , first_last_time_str[0]);
         lv_label_set_text(btn[i].time_label2 , first_last_time_str[1]);
 
-
-        if (!sta->is_transfer) break;
-        else{
-           line_number = sta->is_transfer; 
-        } 
     }
 }
 
 void line_info_btn_cb(lv_event_t * e)
 {
-    //lv_obj_t * obj = lv_event_get_target(e);//获取产生这个事件的对象
-    Station * sta = (Station *)lv_event_get_user_data(e);
+    int8_t * count = (int8_t *)lv_event_get_user_data(e);
 
     is_station_info = 1;
 
-    station_info_show(sta, true);
     if (lv_scr_act() != display0 && is_station_info)
     {
         transparent_init(lv_layer_top(),lv_color_hex(COLOR_MID_GRAY));
         lv_obj_set_style_bg_opa(transparent, 100, 0);
-        hide_pop_window();
         favorite_station_lb_style_reset();
     }
-    if (is_station_info)
-    {
-        hide_pop_window();    
-    }
-    lv_obj_move_foreground(station_info_disp);
+    
+    station_info_show(get_station(station_clicked[*count]), true);
+    hide_pop_window();    
+    
 }
 
 
@@ -673,10 +642,10 @@ void start_end_btn_cb(lv_event_t *e)
     	cancel_btn = NULL;
     	star_bt = NULL;
     }
-
+    //这是填充结束的车站
     if (*mode == 1)
     {    
-        end_station = find_station_by_id(station_clicked[0].only_id);
+        end_station = find_station_by_id(station_clicked[0]->only_id);
         is_end_selected = 1; 
         lv_obj_clear_flag(end_img, LV_OBJ_FLAG_HIDDEN);
         lv_obj_move_foreground(end_img);
@@ -686,9 +655,10 @@ void start_end_btn_cb(lv_event_t *e)
         }
 
     }    
+    //这是填充开始的车站
     else if (*mode == 0)
     {    
-        start_station = find_station_by_id(station_clicked[0].only_id);
+        start_station = find_station_by_id(station_clicked[0]->only_id);
         is_start_selected = 1; 
         lv_obj_clear_flag(start_img, LV_OBJ_FLAG_HIDDEN);
         lv_obj_move_foreground(start_img);
@@ -722,7 +692,7 @@ void start_end_btn_cb(lv_event_t *e)
     create_metro_map();
 }
 
-void station_clicked_fill(const Station *src, int8_t line)
+/* void station_clicked_fill(const Station *src, int8_t line)
 {
     station_copy(&station_clicked[0], src);
     station_clicked[0].line_belonged = line;
@@ -732,7 +702,7 @@ void station_clicked_fill(const Station *src, int8_t line)
         station_clicked[1].id = src->transfer_id;
         station_clicked[1].is_transfer = station_clicked[0].line_belonged;
     }
-}
+} */
 
 void hide_pop_window(void)
 {
@@ -741,4 +711,19 @@ void hide_pop_window(void)
     is_station_clicked = 0;
 
     create_metro_map();
+}
+
+void hide_station_info(void)
+{
+    if (is_reminder_set_showing)
+    {
+        is_reminder_set_showing = 0;
+        lv_obj_add_flag(reminder_disp, LV_OBJ_FLAG_HIDDEN);
+    }
+    is_station_info = 0;
+    lv_obj_add_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
+    lv_timer_del(station_timer);
+    station_timer = NULL;
+    create_metro_map();
+
 }
