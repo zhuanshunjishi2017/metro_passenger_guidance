@@ -25,7 +25,7 @@ RemindInfo remind_info[MAX_REMIND];
 
 extern const Station *showing_station;
 
-static void close_msg_cb(lv_timer_t *t);
+void close_msg_cb(lv_timer_t *t);
 
 
 
@@ -262,7 +262,7 @@ void confirm_remind_add_btn_cb(lv_event_t * e)
     
 }
 
-static void close_msg_cb(lv_timer_t *t)
+void close_msg_cb(lv_timer_t *t)
 {
     lv_obj_t ** obj = (lv_obj_t **) t->user_data;
     hide_msgbox(obj);

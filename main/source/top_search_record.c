@@ -99,24 +99,6 @@ void search_record_add(uint16_t only_id) //添加一个搜索记录
     }
     search_record_save_to_sd();
 }
-void search_record_clear(void) //清除搜索记录
-{
-    search_record_count = 0;
-    memset(search_record_ids, 0, sizeof(search_record_ids));
-    search_record_save_to_sd();
-
-    for(int i = 0; i < SEARCH_LIST_LEN; i++) 
-    {
-        lv_label_set_text(top_search_record_station[i], "");
-        lv_obj_add_flag(top_search_record_station[i],LV_OBJ_FLAG_HIDDEN);
-
-        lv_label_set_text(top_search_record_line[i], "");
-        lv_obj_add_flag(top_search_record_line[i],LV_OBJ_FLAG_HIDDEN);
-
-        lv_label_set_text(top_search_record_transfer[i], "");
-        lv_obj_add_flag(top_search_record_transfer[i],LV_OBJ_FLAG_HIDDEN);
-    }
-}
 
 void search_record_refresh(const char * text)
 {

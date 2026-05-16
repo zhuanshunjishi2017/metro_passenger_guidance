@@ -12,6 +12,7 @@ void search_result_click_cb(lv_event_t *e); // 搜索结果点击回调
 void station_info_click_cb(lv_event_t *e); // 收藏站点信息点击回调
 void route_info_click_cb(lv_event_t *e); // 收藏路线信息点击回调
 void route_info_delete_click_cb(lv_event_t *e); // 收藏路线删除按钮点击回调
+void close_msg_cb(lv_timer_t *t); // 关闭消息框回调
 void clear_top_search_result_labels(void); // 清除顶部搜索结果标签
 void del_pp_window(void);
 // 全局变量，用于跨界面传递路线信息
@@ -43,6 +44,7 @@ lv_obj_t* favorite_route_show_lb[10];
 lv_obj_t* favorite_route_dlt_btn[10];
 lv_obj_t* favorite_route_station_lb1[10];
 lv_obj_t* favorite_route_station_lb2[10];
+lv_obj_t* warning_label;
 extern lv_obj_t* top_search_station[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_line[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
@@ -52,6 +54,7 @@ extern FavoriteRouteID favorite_routes[MAX_ROUTES];
 extern size_t favorite_count,favorite_route_count;
 static lv_point_t line_points[] = {{352,55},{352,599}};
 extern LineinfoBtn line_info_btns[2];
+extern lv_timer_t * msg_hide_timer;
 
 int is_both_ta_filled = 0;
 void ui_init(void)
@@ -904,22 +907,18 @@ void btn4_cb(lv_event_t *e)
             } 
             else 
             {
-                // // 显示未找到路径提示
-                // lv_obj_add_flag(display11, LV_OBJ_FLAG_HIDDEN);
-                // lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
-    
-                // lv_obj_t* error_display = lv_obj_create(display1);
-                // lv_obj_set_size(error_display, 672, 545);
-                // lv_obj_set_pos(error_display, 352, 55);
-                // lv_obj_set_style_bg_color(error_display, lv_color_hex(0xffffff), 0);
-    
-                // lv_obj_t* error_label = lv_label_create(error_display);
-                // lv_obj_set_pos(error_label, 10, 250);
-                // lv_obj_set_size(error_label, 652, 50);
-                // lv_obj_set_style_text_color(error_label, lv_color_hex(COLOR_DARK_BLUE), 0);
-                // lv_obj_set_style_text_font(error_label, &heiti_20, 0);
-                // lv_label_set_text(error_label, "未找到有效路径，请检查站点名称");
-                return;
+                remind_add_msg_init(&warning_label,"无线路!");
+                show_msgbox(&warning_label);
+                if (!msg_hide_timer)
+                {
+                    msg_hide_timer = lv_timer_create(close_msg_cb, 1000, &warning_label);
+                }
+                is_reminder_set_showing = 0;
+
+                lv_textarea_set_text(start_ta, "");
+                lv_textarea_set_text(end_ta, "");
+                lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(display11, LV_OBJ_FLAG_HIDDEN);
             }
         }
         else

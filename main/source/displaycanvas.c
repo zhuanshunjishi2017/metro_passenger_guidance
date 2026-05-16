@@ -553,6 +553,7 @@ void pop_window_move(const Station **sta)
 void pop_window_show(const Station **sta, LineinfoBtn * btn)
 {
 
+    lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
     if (sta[0]->is_transfer)
     {
         lv_obj_set_size(pop_window, POP_WINDOW_W,POP_WINDOW_H_TRANS);

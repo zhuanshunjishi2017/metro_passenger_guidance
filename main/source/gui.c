@@ -8,7 +8,9 @@ void screen_load_event_cb(lv_event_t *e);
 void top_search_result_click_cb(lv_event_t *e);
 void top_ta_reset(void);
 void search_record_refresh(const char * text);
-
+void search_record_clear_cb(lv_event_t *e);
+void tab_search_btn_cb(lv_event_t *e);
+void close_msg_cb(lv_timer_t *t); // 关闭消息框回调
 lv_obj_t* label_left,*label_top;
 lv_obj_t* lb_t1;
 lv_obj_t* btn1,*btn2,*btn3,*btn_search;
@@ -27,6 +29,7 @@ lv_obj_t* top_search_record_station[SEARCH_LIST_LEN];
 lv_obj_t* top_search_record_line[SEARCH_LIST_LEN];
 lv_obj_t* top_search_record_transfer[SEARCH_LIST_LEN];
 lv_obj_t* ta_lb1_btn;
+lv_obj_t* warning_label2;
 extern lv_obj_t* start_ta,*end_ta;
 extern lv_obj_t* start_img,*end_img;
 extern lv_obj_t* display11,*display12;
@@ -42,6 +45,7 @@ extern uint16_t search_record_ids[SEARCH_LIST_LEN];
 extern int search_record_count;
 static char time_buf[48];
 extern int is_both_ta_filled;
+extern lv_timer_t * msg_hide_timer;
 
 extern LineinfoBtn line_info_btns[2];
 
@@ -116,6 +120,7 @@ void create_buttons(lv_obj_t* display,int judge)
 	create_simple_label(&bell_lb,display,13,261,33,19,"提醒",&heiti_16);
 
 	create_simple_btn(&btn_search,display,544,8,73,39,lv_color_hex(0x3f6ead));
+	lv_obj_add_event_cb(btn_search,tab_search_btn_cb,LV_EVENT_CLICKED,display12);
 	search_lb = lv_label_create(btn_search);
 	lv_obj_set_flex_align(btn_search, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	lv_label_set_text(search_lb,"搜索");
@@ -265,6 +270,7 @@ void top_ta_record_lb_init(lv_obj_t* display)  //初始化历史记录框
 	lv_obj_set_style_pad_top(ta_lb1, 0, 0);
 	lv_obj_set_style_pad_bottom(ta_lb1, 0, 0);
 	lv_obj_move_foreground(ta_lb1);
+	lv_obj_set_scrollbar_mode(ta_lb1, LV_SCROLLBAR_MODE_OFF);
 
 	create_simple_label(&ta_lb1_lb1,ta_lb1,16,16,80,23,"历史记录",&heiti_20);
 	lv_obj_set_style_text_color(ta_lb1_lb1,lv_color_hex(COLOR_DARK_BLUE), 0);
@@ -279,6 +285,8 @@ void top_ta_record_lb_init(lv_obj_t* display)  //初始化历史记录框
 	lv_obj_set_style_border_opa(ta_lb1_btn, LV_OPA_100, 0);
 	lv_obj_set_style_text_font(btn_text, &heiti_16, LV_PART_MAIN);
 	lv_label_set_text(btn_text, "清空");
+
+	lv_obj_add_event_cb(ta_lb1_btn, search_record_clear_cb, LV_EVENT_CLICKED, NULL);  //清空搜索记录回调创建
 }
 void top_ta_result_lb_init(lv_obj_t* display)
 {
@@ -296,6 +304,7 @@ void top_ta_result_lb_init(lv_obj_t* display)
 	lv_obj_set_style_pad_top(ta_lb2, 0, 0);
 	lv_obj_set_style_pad_bottom(ta_lb2, 0, 0);
 	lv_obj_move_foreground(ta_lb2);
+	lv_obj_set_scrollbar_mode(ta_lb2, LV_SCROLLBAR_MODE_OFF);
 
 	create_simple_label(&ta_lb2_lb1,ta_lb2,16,16,80,23,"搜索结果",&heiti_20);
 	lv_obj_set_style_text_color(ta_lb2_lb1,lv_color_hex(COLOR_DARK_BLUE), 0);
@@ -433,7 +442,7 @@ void top_search_record_init(void)
             lv_label_set_text(top_search_record_station[i], "");
             lv_obj_add_flag(top_search_record_station[i],LV_OBJ_FLAG_HIDDEN);
 
-			//lv_obj_add_event_cb(top_search_record_station[i], top_search_result_click_cb, LV_EVENT_CLICKED, NULL);
+			lv_obj_add_event_cb(top_search_record_station[i], top_search_result_click_cb, LV_EVENT_CLICKED, NULL);
 
             top_search_record_line[i] = lv_label_create(ta_lb1);
             lv_obj_set_pos(top_search_record_line[i], 323, 69 + i * 50);
@@ -562,8 +571,16 @@ void kb_show_cb(lv_event_t *e)
 	if (code == LV_EVENT_VALUE_CHANGED)
 	{
 		lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_move_foreground(ta_lb2);
+		const char *txt = lv_textarea_get_text(ta);
+		if (txt && txt[0] != '\0') 
+		{
+			lv_obj_clear_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_move_foreground(ta_lb2);
+		} 
+		else 
+		{
+			lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+		}
 	}
 }
 void kb_hide_cb(lv_event_t *e)
@@ -599,7 +616,9 @@ void keyBoard_event_cb(lv_event_t *e)
 		{
 			lv_obj_scroll_to_y(ta_lb1, 0, LV_ANIM_OFF);
 			lv_obj_scroll_to_y(ta_lb2, 0, LV_ANIM_OFF);
-			top_search_result_text(lv_textarea_get_text(current_ta));
+			const char *ta_text = lv_textarea_get_text(current_ta);
+			if (ta_text && ta_text[0] != '\0')
+				top_search_result_text(ta_text);
 		}
 		if ((current_ta == start_ta || current_ta == end_ta) && strcmp(text, LV_SYMBOL_OK) != 0)
 		{
@@ -610,17 +629,16 @@ void keyBoard_event_cb(lv_event_t *e)
 		
 		if (strcmp(text, LV_SYMBOL_OK) == 0)
 		{
-			lv_obj_t * current_ta = lv_keyboard_get_textarea(kb);
-			const char *ta_text = lv_textarea_get_text(current_ta);
-			if(ta_text == NULL) ta_text = "";
-			// ...
 			kb_hide(kb);
-			if (current_ta == ta)
+			lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
+			if(!lv_obj_has_flag(ta_lb2,LV_OBJ_FLAG_HIDDEN))
 			{
-				lv_textarea_set_text(current_ta, "");
 				lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
-				lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
 			}
+			if (is_station_info)
+        	{
+				hide_station_info();
+        	}
 		}
 	}
 }
@@ -629,14 +647,28 @@ void top_search_result_click_cb(lv_event_t *e)
 {
 	lv_obj_t* label = lv_event_get_target(e);
     const char* station_name = lv_label_get_text(label);
-    for (int i = 0; i < 4; i++)
+	lv_textarea_set_text(ta, station_name);
+
+	kb_hide(kb);
+	lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
+	if(!lv_obj_has_flag(ta_lb2,LV_OBJ_FLAG_HIDDEN))
+	{
+		lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+	}
+}
+
+void tab_search_btn_cb(lv_event_t *e)
+{
+	const char* station_name = lv_textarea_get_text(ta);
+    
+	int done = 0;
+	for (int i = 0; i < 4 && !done; i++)
     {
         for (int j = 0; j < metro_lines[i].count; j++)
         {
-            if (!strcmp(metro_lines[i].stations[j].name, station_name))
+            if (!strcmp(metro_lines[i].stations[j].name, station_name) 
+				|| !strcmp(metro_lines[i].stations[j].name_pinyin, station_name))
             {
-                 //station_name = metro_lines[i].stations[j].name_pinyin;
-                station_name = metro_lines[i].stations[j].name;
 
 				station_clicked[0] = &metro_lines[i].stations[j];
                 station_clicked[2] = get_transfer_station(&metro_lines[i].stations[j], &station_clicked[1]);
@@ -648,27 +680,33 @@ void top_search_result_click_cb(lv_event_t *e)
 				
                 pop_window_show(station_clicked, line_info_btns);
 				pop_window_move(station_clicked);
-                if (!is_station_clicked)
+				if (!is_station_clicked)
                 {
                     lv_obj_clear_flag(location_image, LV_OBJ_FLAG_HIDDEN);
                     lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
                     is_station_clicked = 1;
                 }
+				done = 1;
                 break;
             }
         }
     }
-    lv_textarea_set_text(ta, station_name);
-	search_record_refresh(station_name);
-
-	kb_hide(kb);
-	lv_obj_add_flag(ta_lb1, LV_OBJ_FLAG_HIDDEN);
-	if(!lv_obj_has_flag(ta_lb2,LV_OBJ_FLAG_HIDDEN))
+	if (done == 0)
 	{
-		lv_obj_add_flag(ta_lb2, LV_OBJ_FLAG_HIDDEN);
+		remind_add_msg_init(&warning_label2,"无站点!");
+        show_msgbox(&warning_label2);
+        if (!msg_hide_timer)
+        {
+            msg_hide_timer = lv_timer_create(close_msg_cb, 1000, &warning_label2);
+        }
+        is_reminder_set_showing = 0;
+		lv_textarea_set_text(ta, ""); // 清空输入框
+		return; // 如果输入框为空，直接返回
 	}
+	
+	search_record_refresh(station_name);
+	lv_textarea_set_text(ta, ""); // 清空输入框
 }
-
 void top_ta_reset(void)
 {
 	if(ta)
@@ -690,6 +728,25 @@ void top_ta_reset(void)
 		lv_obj_scroll_to_y(ta_lb2, 0, LV_ANIM_OFF);
 
         creat_top_ta(lv_scr_act());
+}
+
+void search_record_clear_cb(lv_event_t *e)
+{
+	search_record_count = 0;
+    memset(search_record_ids, 0, sizeof(search_record_ids));
+    search_record_save_to_sd();
+
+    for(int i = 0; i < SEARCH_LIST_LEN; i++) 
+    {
+        lv_label_set_text(top_search_record_station[i], "");
+        lv_obj_add_flag(top_search_record_station[i],LV_OBJ_FLAG_HIDDEN);
+
+        lv_label_set_text(top_search_record_line[i], "");
+        lv_obj_add_flag(top_search_record_line[i],LV_OBJ_FLAG_HIDDEN);
+
+        lv_label_set_text(top_search_record_transfer[i], "");
+        lv_obj_add_flag(top_search_record_transfer[i],LV_OBJ_FLAG_HIDDEN);
+    }
 }
 /**
  * @brief 通用 Label 创建工具实现
