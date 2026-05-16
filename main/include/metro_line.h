@@ -30,6 +30,9 @@
 
 #define TOUCH_RANGE 15
 
+#define LINE_COUNT   4
+#define MAX_TRANSFER 3
+
 
 #define COLOR_LINE1    0x0066A4  // 1号线 蓝色
 #define COLOR_LINE2    0xE99CC0  // 2号线 粉色
@@ -37,9 +40,8 @@
 #define COLOR_LINE4    0xBAD200  // 4号线 绿色
 
 typedef struct {
+    int8_t only_id;
     int8_t id;
-    char* name;
-    char* name_pinyin;
     lv_coord_t geo_x;
     lv_coord_t geo_y;
     int8_t is_transfer;        //是否为换乘站,数字表示换乘几号线，标记为负数说明已经出现过
@@ -47,8 +49,9 @@ typedef struct {
     int8_t vertical_offset;  //标签垂直偏移量，下为正
     int8_t is_draw_point;      //是否为端点
     int8_t line_belonged; //所属的线路
-    int8_t transfer_id;
-    int8_t only_id;
+    char* name;
+    char* name_pinyin;
+
 } Station;// 站点结构体
 
 
@@ -63,7 +66,6 @@ typedef struct {
     const Station* stations;
     uint16_t count;
     uint32_t line_color;
-    uint8_t draw_point_count;
     uint8_t line_number;
     const uint16_t * station_period;
     Timetable * timetable;
@@ -72,6 +74,12 @@ typedef struct {
 
 
 extern const lv_font_t heiti_14;
+
+const MetroLine * get_metro_line(int8_t line_number);
+
+const Station * get_station(const Station * sta);
+
+const Station * get_transfer_station(const Station * src, const Station ** first_dist);
 
 
 //声明一些有关地图绘制的函数

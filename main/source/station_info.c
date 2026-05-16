@@ -46,7 +46,7 @@ int8_t is_reminder_set_showing = 0;
 
 lv_timer_t * station_timer = NULL;
 
-static Station showing_station;
+const Station *showing_station = NULL;
 
 static TimeStruct time_set[6] = {{6,0,0},{9,0,0},{12,0,0},{16,0,0},{20,0,0},{23,0,0}};
 
@@ -393,7 +393,7 @@ void sta_canvas_init(lv_obj_t * canvas)
  * @brief 显示画布上的线路和车站
 **/
 
-void sta_create_metro_line(lv_obj_t * canvas,MetroLine *line , Station *sta)
+void sta_create_metro_line(lv_obj_t * canvas,const MetroLine *line ,const Station *sta)
 {
     lv_draw_line_dsc_t dsc_before, dsc_after;
 
@@ -661,7 +661,7 @@ void sta_canvas_cb(lv_event_t * e)
             sta_pressing_canvas(indev);
             break;
         case LV_EVENT_SHORT_CLICKED:
-            sta_click_canvas(indev, &metro_lines[showing_station.line_belonged - 1]);
+            sta_click_canvas(indev, get_metro_line(showing_station->line_belonged));
             break;
         default:
             break;
@@ -672,7 +672,7 @@ void sta_canvas_cb(lv_event_t * e)
 
 void sta_pressing_canvas(lv_indev_t * indev)
 {
-    int8_t line_len = metro_lines[showing_station.line_belonged - 1].count;
+    int8_t line_len = get_metro_line(showing_station->line_belonged)->count;
     
     lv_point_t vect;
     lv_indev_get_vect(indev, &vect);
@@ -697,10 +697,10 @@ void sta_pressing_canvas(lv_indev_t * indev)
         lv_obj_set_x(train_icon[i], x_pos[i] + (sta_origin_x - pre_origin_x));
     }
 
-    sta_create_metro_line(sta_line_canvas ,&metro_lines[showing_station.line_belonged - 1] , &showing_station);
+    sta_create_metro_line(sta_line_canvas ,get_metro_line(showing_station->line_belonged) , showing_station);
 }
 
-void sta_click_canvas(lv_indev_t *indev, MetroLine *line)
+void sta_click_canvas(lv_indev_t *indev, const MetroLine *line)
 {
     lv_point_t pos;
     lv_indev_get_point(indev, &pos);
@@ -721,16 +721,15 @@ void sta_click_canvas(lv_indev_t *indev, MetroLine *line)
             if((pos.y >= STATION_Y && pos.y < 156) && (pos.x - x < TOUCH_RANGE && pos.x - x > -TOUCH_RANGE))
             {
 
-                if (line->stations[i].id == showing_station.id && line->stations[i].is_transfer)
+                if (line->stations[i].id == showing_station->id && line->stations[i].is_transfer)
                 {
-                    int8_t transfer_line = line->stations[i].is_transfer;
-                    int8_t id = line->stations[i].transfer_id;
-                    if (transfer_line < 0) transfer_line = - transfer_line;
+                    const Station * transfer_sta;
+                    get_transfer_station(&line->stations[i], &transfer_sta);
 
-                    station_info_show(&(metro_lines[transfer_line - 1].stations[id - 1]),true);
+                    station_info_show(transfer_sta ,true);
                     return;
                 }
-                else if (line->stations[i].id != showing_station.id)
+                else if (line->stations[i].id != showing_station->id)
                 {
                     station_info_show(&(line->stations[i]), false);
                     return;
@@ -744,16 +743,15 @@ void sta_click_canvas(lv_indev_t *indev, MetroLine *line)
             lv_coord_t x = sta_coord_trans(line->count - i, sta_origin_x);
             if((pos.y >= STATION_Y && pos.y < 156) && (pos.x - x < TOUCH_RANGE && pos.x - x > -TOUCH_RANGE))
             {
-                if (line->stations[i].id == showing_station.id && line->stations[i].is_transfer)
+                if (line->stations[i].id == showing_station->id && line->stations[i].is_transfer)
                 {
-                    int8_t transfer_line = line->stations[i].is_transfer;
-                    int8_t id = line->stations[i].transfer_id;
-                    if (transfer_line < 0) transfer_line = - transfer_line;
+                    const Station * transfer_sta;
+                    get_transfer_station(&line->stations[i], &transfer_sta);
 
-                    station_info_show(&(metro_lines[transfer_line - 1].stations[id - 1]),true);
+                    station_info_show(transfer_sta ,true);
                     return;
                 }
-                else if (line->stations[i].id != showing_station.id)
+                else if (line->stations[i].id != showing_station->id)
                 {
                     station_info_show(&(line->stations[i]), false);
                     return;
@@ -775,19 +773,19 @@ lv_coord_t sta_coord_trans(lv_coord_t pos, lv_coord_t origin)
 
 void station_info_show(const Station *sta, int8_t is_init)
 {
-    showing_station.name = sta->name;
-    showing_station.line_belonged = sta->line_belonged;
-    showing_station.id = sta->id;
+    showing_station = get_station(sta);
 
     lv_obj_add_flag(reminder_disp, LV_OBJ_FLAG_HIDDEN);
     
     lv_obj_clear_flag(station_info_disp, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_move_foreground(station_info_disp);
+
 
     lv_label_set_text(sta_name_label, sta->name);
     favorites_bind_button(sta_favorite_btn, sta_favorite_label, sta);
 
 
-    int8_t line_number = showing_station.line_belonged;
+    int8_t line_number = showing_station->line_belonged;
 
     lv_color_t color =get_line_color(line_number);
 
@@ -800,7 +798,7 @@ void station_info_show(const Station *sta, int8_t is_init)
 
 void station_info_refresh(int8_t is_init)
 {
-    int8_t line_number = showing_station.line_belonged;
+    int8_t line_number = showing_station->line_belonged;
     char * sta1 = metro_lines[line_number - 1].stations[0].name;
     char * sta2 = metro_lines[line_number - 1].stations[metro_lines[line_number - 1].count - 1].name;
     char line_str[10], sta1_str[24], sta2_str[24];
@@ -813,16 +811,16 @@ void station_info_refresh(int8_t is_init)
     //调整原点使得目标车站显示在适当位置(如果需要)
     if (is_init)
     {
-        int8_t line_len = metro_lines[showing_station.line_belonged - 1].count;
+        int8_t line_len = metro_lines[showing_station->line_belonged - 1].count;
         if (direction_state) 
         {
             lv_label_set_text(sta_direction_label, sta1_str);
-            sta_origin_x = - (line_len - showing_station.id) * STATION_DIST + 250;
+            sta_origin_x = - (line_len - showing_station->id) * STATION_DIST + 250;
         }
         else 
         {
             lv_label_set_text(sta_direction_label, sta2_str);
-            sta_origin_x = - (showing_station.id - 1) * STATION_DIST + 250;
+            sta_origin_x = - (showing_station->id - 1) * STATION_DIST + 250;
         }
         if (sta_origin_x > 30) sta_origin_x = 30;
         else if (sta_origin_x < - line_len * STATION_DIST + STATION_INFO_W - 10)
@@ -833,7 +831,7 @@ void station_info_refresh(int8_t is_init)
 
     char first_last_time[2][7], first_last_time_str[2][20];
 
-    get_first_last_train(&showing_station, first_last_time, direction_state);
+    get_first_last_train(showing_station, first_last_time, direction_state);
     
     sprintf(first_last_time_str[0], "首班 %s", first_last_time[0]);
     sprintf(first_last_time_str[1], "末班 %s", first_last_time[1]);
@@ -852,7 +850,7 @@ void station_info_refresh(int8_t is_init)
 
 
 
-    timetable_show(&metro_lines[showing_station.line_belonged - 1]);
+    timetable_show(&metro_lines[showing_station->line_belonged - 1]);
     //默认不打开时间表
     if (is_timetable_showing)
     {
@@ -866,11 +864,11 @@ void station_info_refresh(int8_t is_init)
 
         lv_obj_add_flag(sta_timetable_frame, LV_OBJ_FLAG_HIDDEN);
 
-        lv_label_set_text(sta_name_label, showing_station.name);
+        lv_label_set_text(sta_name_label, showing_station->name);
 
     } 
     //绘制地铁线路
-    sta_create_metro_line(sta_line_canvas ,&metro_lines[showing_station.line_belonged - 1] , &showing_station);
+    sta_create_metro_line(sta_line_canvas ,get_metro_line(showing_station->line_belonged) , showing_station);
 
 }
 
@@ -890,7 +888,7 @@ void change_btn_cb(lv_event_t * e)
 
         lv_obj_add_flag(sta_timetable_frame, LV_OBJ_FLAG_HIDDEN);
 
-        lv_label_set_text(sta_name_label, showing_station.name);
+        lv_label_set_text(sta_name_label, showing_station->name);
 
     }
     station_info_refresh(true);
@@ -911,7 +909,7 @@ void timetable_btn_cb(lv_event_t * e)
 
         lv_obj_add_flag(sta_timetable_frame, LV_OBJ_FLAG_HIDDEN);
 
-        lv_label_set_text(sta_name_label, showing_station.name);
+        lv_label_set_text(sta_name_label, showing_station->name);
 
         
        // lv_obj_clear_flag(station_info_disp, LV_OBJ_FLAG_SCROLLABLE);
@@ -947,13 +945,13 @@ void remind_add_btn_cb(lv_event_t *e)
     lv_obj_move_foreground(reminder_disp);
 
 
-    reminder_set_show(&showing_station);
+    reminder_set_show(showing_station);
 
 }
 
 
 
-void timetable_show(MetroLine *line)
+void timetable_show(const MetroLine *line)
 {
     char depart_time_str[5][512] = {0};
     
@@ -963,13 +961,13 @@ void timetable_show(MetroLine *line)
     timeAdd(&(line->timetable->first_train_time),&zero, &depart_time);
     secondsToTimeStruct(line->timetable->depart_period, &time_interval);
 
-    int8_t line_number = showing_station.line_belonged;
+    int8_t line_number = showing_station->line_belonged;
     char * sta1 = metro_lines[line_number - 1].stations[0].name;
     char * sta2 = metro_lines[line_number - 1].stations[metro_lines[line_number - 1].count - 1].name;
 
     char remind_str[64];
     sprintf(remind_str, "%d号线列车从%s站的预计发车时间",
-            showing_station.line_belonged,
+            showing_station->line_belonged,
             (direction_state?sta2:sta1));
 
     lv_label_set_text(timetable_labels[0].train_direction_label,remind_str);
@@ -1010,14 +1008,14 @@ void timetable_show(MetroLine *line)
 }
 void station_timer_cb(lv_timer_t * timer)
 {
-    time_label_update(metro_lines + (showing_station.line_belonged - 1), &showing_station);
+    time_label_update(get_metro_line(showing_station->line_belonged), showing_station);
 }
 
 
-void time_label_update(MetroLine *line, Station * sta)
+void time_label_update(const MetroLine *line, const Station * sta)
 {
     
-    int8_t line_number = showing_station.line_belonged;
+    int8_t line_number = showing_station->line_belonged;
     char * sta1 = metro_lines[line_number - 1].stations[0].name;
     char * sta2 = metro_lines[line_number - 1].stations[metro_lines[line_number - 1].count - 1].name;
     char sta1_str[24], sta2_str[24];
@@ -1042,7 +1040,7 @@ void time_label_update(MetroLine *line, Station * sta)
     //获取列车从始发站到选定车站需要多长时间
     if (!direction_state)
     {
-        for (int i = 0; i < showing_station.id - 1; i++)
+        for (int i = 0; i < showing_station->id - 1; i++)
         {
             secondsToTimeStruct(line->station_period[i] + STATION_STOP_TIME ,&temp_time);
             timeAdd(&time_interval,&temp_time,&time_interval);
@@ -1054,7 +1052,7 @@ void time_label_update(MetroLine *line, Station * sta)
     }
     else
     {
-        for (int i = line->count - 2; i > showing_station.id - 2; i--)
+        for (int i = line->count - 2; i > showing_station->id - 2; i--)
         {
             secondsToTimeStruct(line->station_period[i] + STATION_STOP_TIME ,&temp_time);
             timeAdd(&time_interval,&temp_time,&time_interval);
@@ -1088,21 +1086,21 @@ void time_label_update(MetroLine *line, Station * sta)
             {
                 if (!direction_state)
                 {
-                    if ( interval_sec < line->station_period[showing_station.id - 2 - i] + STATION_STOP_TIME
-                        || showing_station.id - 2 - i <= 0)
+                    if ( interval_sec < line->station_period[showing_station->id - 2 - i] + STATION_STOP_TIME
+                        || showing_station->id - 2 - i <= 0)
                     {
                         break;
                     }
-                    interval_sec -= line->station_period[showing_station.id - 2 - i] + STATION_STOP_TIME;
+                    interval_sec -= line->station_period[showing_station->id - 2 - i] + STATION_STOP_TIME;
                 }
                 else
                 {
-                    if ( interval_sec < line->station_period[showing_station.id - 1 + i] + STATION_STOP_TIME 
-                        || showing_station.id - 1 + i >= line->count - 2)
+                    if ( interval_sec < line->station_period[showing_station->id - 1 + i] + STATION_STOP_TIME 
+                        || showing_station->id - 1 + i >= line->count - 2)
                     {
                         break;
                     }
-                    interval_sec -= line->station_period[showing_station.id - 1 + i] + STATION_STOP_TIME;
+                    interval_sec -= line->station_period[showing_station->id - 1 + i] + STATION_STOP_TIME;
                 }
                 remain_sta++;
             }
@@ -1140,8 +1138,8 @@ void time_label_update(MetroLine *line, Station * sta)
             //下面是处理剩余站数的部分
 
             //如果是始发站就不显示剩余站数
-            if ((!direction_state && showing_station.id == 1)||
-                (direction_state && showing_station.id == line->count))
+            if ((!direction_state && showing_station->id == 1)||
+                (direction_state && showing_station->id == line->count))
             {
                 lv_label_set_text(time_labels[i].remain_sta_label, "首发站");
 
@@ -1174,7 +1172,7 @@ void time_label_update(MetroLine *line, Station * sta)
 }
 
 
-void draw_train_icon(MetroLine *line, Station * sta, int8_t remain_sta_count, int remain_sec, int count)
+void draw_train_icon(const MetroLine *line, const Station * sta, int8_t remain_sta_count, int remain_sec, int count)
 {
     lv_coord_t x_pos;
     int8_t now_sta_id;
@@ -1221,7 +1219,7 @@ void draw_train_icon(MetroLine *line, Station * sta, int8_t remain_sta_count, in
 }
 
 //获取某个站点某个方向的首末班车时间
-void get_first_last_train(Station *sta, char (*result)[7], int8_t direction)
+void get_first_last_train(const Station *sta, char (*result)[7], int8_t direction)
 {
     TimeStruct origin_time[2],interval_time = {0,0,0}, zero = {0,0,0};
 
@@ -1257,7 +1255,7 @@ void get_first_last_train(Station *sta, char (*result)[7], int8_t direction)
 }
 
 //获取两站之间的时间
-int get_station_interval(MetroLine *line, int8_t id_1, int8_t id_2)
+int get_station_interval(const MetroLine *line, int8_t id_1, int8_t id_2)
 {
     int interval_sec = 0;//定义间隔的秒数
 
