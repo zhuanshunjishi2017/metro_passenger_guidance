@@ -36,7 +36,7 @@ lv_style_t blue_button_style;
 
 extern const Station* start_station, *end_station;
 extern const Station* find_station_by_id(int station_id);
-extern lv_obj_t* pp_window,*star_bt,* route_name,*cancel_btn;
+extern lv_obj_t* pp_window,*star_bt,*star_bt_label,* route_name,*cancel_btn;
 extern lv_obj_t* display11,*start_ta,*end_ta;
 extern lv_obj_t* favorite_station_show_lb[30];
 extern int is_both_ta_filled;
@@ -634,15 +634,8 @@ void start_end_btn_cb(lv_event_t *e)
     //lv_obj_t * btn = lv_event_get_target(e);//获取产生这个事件的对象
     hide_pop_window();
     favorite_station_lb_style_reset();
-    if (pp_window != NULL)
-	{
-		lv_obj_del_async(pp_window);
-		pp_window = NULL;
-		route_name = NULL;
-    	cancel_btn = NULL;
-    	star_bt = NULL;
-    }
-    //这是填充结束的车站
+    del_pp_window();
+
     if (*mode == 1)
     {    
         end_station = find_station_by_id(station_clicked[0]->only_id);
@@ -674,6 +667,7 @@ void start_end_btn_cb(lv_event_t *e)
         start_name = start_station->name;
         end_name = end_station->name;
 
+        del_pp_window();
         if (lv_scr_act() != display0)
         {
             is_both_ta_filled = 1;

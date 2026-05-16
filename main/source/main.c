@@ -52,6 +52,7 @@ int main(void)
   display_set(display2,2);
   top_ta_record_lb_init(lv_layer_top());
   top_ta_result_lb_init(lv_layer_top());
+  top_search_record_init();
 
   //display1_gui
   ui_init();

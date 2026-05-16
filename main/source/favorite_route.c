@@ -92,14 +92,16 @@ static void favorites_route_save_to_sd(void) //将收藏的路线保存至sd卡
 static void favorites_route_load_from_sd(void) //从sd卡中读取数据
 {
     FIL file;
-    if (f_open(&file, FAVORITE_ROUTES_FILE_PATH, FA_READ) != FR_OK) 
+    if (f_open(&file, FAVORITE_ROUTES_FILE_PATH, FA_READ) != FR_OK)
     {
         favorite_route_count = 0;
+        memset(favorite_routes, 0, sizeof(favorite_routes));
         return;
     }
 
-    char line[30]; //从文件中暂时存储路线信息的字符串缓冲区
+    char line[30];
     favorite_route_count = 0;
+    memset(favorite_routes, 0, sizeof(favorite_routes));
     while (f_gets(line, sizeof(line), &file) != NULL) //逐行读取，如果文件没有读取完
     {
         char *comma = strchr(line, ',');
@@ -171,6 +173,7 @@ static bool favorites_route_remove(uint16_t start_id, uint16_t end_id) //移除�
             for (size_t j = i + 1; j < favorite_route_count; j++) {
                 favorite_routes[j - 1] = favorite_routes[j];
             }
+            favorite_routes[favorite_route_count - 1] = (FavoriteRouteID){0, 0};
             favorite_route_count--;
             return true;
         }
@@ -210,7 +213,8 @@ void favorites_route_bind_button(lv_obj_t *btn, lv_obj_t *label, const Station *
     FavoriteRouteBtn *binding = favorites_route_find_binding(btn);
 
     //如果没有就绑定这个按钮
-    if (!binding) {
+    if (!binding) 
+    {
         for (size_t i = 0; i < MAX_FAVORITE_ROUTES_BUTTONS; i++) {
             if (!route_bindings[i].valid) //如果这个位置还没有被使用
             {
@@ -245,7 +249,6 @@ void favorites_route_button_event_cb(lv_event_t *e)
     favorites_route_toggle(binding->only_id_start, binding->only_id_end);
     favorites_route_refresh_all_buttons();
     favorite_route_show();
-    favorite_station_lb_style_reset();
 }
 
 
