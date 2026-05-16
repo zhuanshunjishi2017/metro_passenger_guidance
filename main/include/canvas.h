@@ -27,7 +27,7 @@ extern lv_coord_t origin_x, origin_y;
 extern uint16_t magnify_size;
 
 extern lv_style_t btn_style, black_label_style, blue_label_style;
-extern lv_style_t blue_button_style, flame_style;
+extern lv_style_t blue_button_style, flame_style, time_label_style;
 
 extern lv_obj_t *location_image, *pop_window;
 
@@ -169,6 +169,8 @@ gui里的函数声明
 void route_design_result(void);
 void pop_search_result_window_init(void);
 void pop_search_result_window_show(Route* route);
+
+
 
 
 #endif

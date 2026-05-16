@@ -39,6 +39,13 @@
 #define COLOR_LINE3    0xD7B665  // 3号线 橙色
 #define COLOR_LINE4    0xBAD200  // 4号线 绿色
 
+
+#define DEPARTURE 0   //始发站
+#define TERMINUS  1    //终点站
+
+#define DIRECTION_UP 0
+#define DIRECTION_DOWN 1
+
 typedef struct {
     int8_t only_id;
     int8_t id;
@@ -80,6 +87,8 @@ const MetroLine * get_metro_line(int8_t line_number);
 const Station * get_station(const Station * sta);
 
 const Station * get_transfer_station(const Station * src, const Station ** first_dist);
+
+const Station * get_first_station(int8_t line_number, int8_t direction);
 
 
 //声明一些有关地图绘制的函数

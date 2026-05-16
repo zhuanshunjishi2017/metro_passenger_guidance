@@ -263,3 +263,15 @@ const Station * get_transfer_station(const Station * src, const Station ** first
 }
 
 
+const Station * get_first_station(int8_t line_number, int8_t direction)
+{
+    if (direction == DIRECTION_UP)
+    {
+        return &get_metro_line(line_number)->stations[0];
+    }
+    else
+    {
+        return &get_metro_line(line_number)->stations[get_metro_line(line_number)->count - 1];
+    }
+}
+

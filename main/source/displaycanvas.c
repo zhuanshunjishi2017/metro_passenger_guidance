@@ -420,7 +420,7 @@ void pop_window_init(lv_obj_t * obj)
     
     lv_obj_set_pos(start_btn, 10 ,BOTTOM_BTN_Y_NORM);
     lv_obj_set_size(start_btn,BOTTOM_BTN_W, BOTTOM_BTN_H);
-    lv_obj_add_event_cb(start_btn, start_end_btn_cb, LV_EVENT_CLICKED, para_numbers);
+    lv_obj_add_event_cb(start_btn, start_end_btn_cb, LV_EVENT_SHORT_CLICKED, para_numbers);
 
     start_label = lv_label_create(start_btn);
     lv_label_set_text(start_label, "设为起点");
@@ -616,7 +616,7 @@ void line_info_btn_cb(lv_event_t * e)
 
     is_station_info = 1;
 
-    if (lv_scr_act() != display0 && is_station_info)
+    if (lv_scr_act() == display1 && is_station_info)
     {
         transparent_init(lv_layer_top(),lv_color_hex(COLOR_MID_GRAY));
         lv_obj_set_style_bg_opa(transparent, 100, 0);

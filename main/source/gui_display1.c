@@ -75,7 +75,7 @@ void ui_init(void)
 
     lv_obj_t * line1 = lv_line_create(display1);
     lv_line_set_points(line1, line_points, 2);
-    lv_obj_set_style_line_width(line1, 2, LV_PART_MAIN);
+    lv_obj_set_style_line_width(line1, 1, LV_PART_MAIN);
     lv_obj_set_style_line_color(line1, lv_color_hex(COLOR_MID_GRAY), LV_PART_MAIN);
     lv_obj_clear_flag(display1, LV_OBJ_FLAG_SCROLLABLE);
 }
@@ -463,7 +463,7 @@ void favorite_station_init(void)
 {
     favorite_station_show_disp = lv_obj_create(display11);
     lv_obj_set_pos(favorite_station_show_disp, 44, 144);
-    lv_obj_set_size(favorite_station_show_disp, 263, 336);
+    lv_obj_set_size(favorite_station_show_disp, 263, 399);
     lv_obj_set_style_bg_color(favorite_station_show_disp, lv_color_hex(0xffffff), 0);
     lv_obj_set_style_border_width(favorite_station_show_disp, 0, 0);
     lv_obj_set_scroll_dir(favorite_station_show_disp, LV_DIR_TOP | LV_DIR_BOTTOM);
@@ -604,7 +604,7 @@ void favorite_route_ui_init(void)
 {
     favorite_route_show_disp = lv_obj_create(display11);
     lv_obj_set_pos(favorite_route_show_disp, 350, 144);
-    lv_obj_set_size(favorite_route_show_disp, 285, 336);
+    lv_obj_set_size(favorite_route_show_disp, 285, 399);
     lv_obj_set_style_bg_color(favorite_route_show_disp, lv_color_hex(0xffffff), 0);
     lv_obj_set_style_border_width(favorite_route_show_disp, 0, 0);
     lv_obj_set_scroll_dir(favorite_route_show_disp, LV_DIR_TOP | LV_DIR_BOTTOM);

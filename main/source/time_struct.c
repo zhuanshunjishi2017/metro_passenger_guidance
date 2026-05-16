@@ -66,7 +66,6 @@ void timeAdd(const TimeStruct* current, const TimeStruct* interval, TimeStruct* 
 /* 
 比较两个时间的大小，如果第一个时间大则返回大于0的结果
 */
-
 int timeCompare(const TimeStruct *t1, const TimeStruct *t2)
 {
     int sec1 = timeToSeconds(t1);

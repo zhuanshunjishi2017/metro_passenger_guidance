@@ -15,19 +15,26 @@ lv_obj_t * reminder_disp;
 
 lv_obj_t * remind_add_msg;
 
+lv_obj_t * reminder_dialog;
+lv_obj_t * confirm_btn, * overlook_btn, *reminder_remain_time_label;
+
 lv_obj_t * hour_entry, *min_entry ,* remind_time_entry;
 lv_obj_t * cancel_button, * add_button;
 lv_obj_t *line_num,*direc, *sta_name;
+
+int8_t is_reminder_dialog_showing = 0;
 
 lv_timer_t * msg_hide_timer = NULL;
 
 RemindInfo remind_info[MAX_REMIND];
 
+void remind_label_show(RemindLabel * remind_label,RemindInfo * info);
+
+void confirm_btn_cb(lv_event_t *e);
+
+void overlook_btn_cb(lv_event_t * e);
+
 extern const Station *showing_station;
-
-void close_msg_cb(lv_timer_t *t);
-
-
 
 
 
@@ -241,6 +248,8 @@ void confirm_remind_add_btn_cb(lv_event_t * e)
             remind_info[i].start_time = start_time_struct;
             remind_info[i].remind_sec = remind_sec;
             remind_info[i].flag = 1;
+
+            remind_label_show(remind_labels,remind_info);
             
             remind_add_msg_init(&remind_add_msg,"提醒添加成功!");
             show_msgbox(&remind_add_msg);
@@ -269,4 +278,155 @@ void close_msg_cb(lv_timer_t *t)
     msg_hide_timer = NULL;
 }
 
+void del_remind(int index)
+{
+    for (int i = index + 1; i < MAX_REMIND; i++)
+    {
+        remind_info[i - 1].station = remind_info[i].station;
+        remind_info[i - 1].direction = remind_info[i].direction;
+        remind_info[i - 1].start_time = remind_info[i].start_time;
+        remind_info[i - 1].remind_sec = remind_info[i].remind_sec;
+        remind_info[i - 1].flag = remind_info[i].flag;
+    }
+    
+    remind_info[MAX_REMIND - 1].flag = 0;
+
+}
+
+void reminder_dialog_show(RemindInfo *info, int index)
+{
+    reminder_dialog = lv_obj_create(lv_layer_top());
+
+    lv_obj_set_size(reminder_dialog,395, 231);
+    lv_obj_add_style(reminder_dialog, &flame_style, 0);
+    lv_obj_clear_flag(reminder_dialog, LV_OBJ_FLAG_SCROLLABLE);
+
+    lv_obj_t *dialog_top_label = lv_label_create(reminder_dialog);
+    lv_obj_set_size(dialog_top_label, 395, TOP_BAR_H);
+    lv_obj_set_pos(dialog_top_label,0 , 0);
+
+    lv_obj_set_style_bg_color(dialog_top_label, lv_color_hex(COLOR_LIGHT_BLUE), 0);
+    lv_obj_set_style_bg_opa(dialog_top_label, LV_OPA_COVER, 0);
+    lv_obj_set_style_text_align(dialog_top_label, LV_TEXT_ALIGN_LEFT, 0);
+    lv_obj_set_style_pad_top(dialog_top_label, 12, 0);
+    lv_obj_set_style_pad_left(dialog_top_label, 12 , 0);
+    lv_obj_set_style_text_font(dialog_top_label, &heiti_20, 0);
+
+    lv_label_set_text(dialog_top_label, "到站提醒");
+
+    lv_obj_t * sta_name = lv_label_create(reminder_dialog);
+    lv_obj_set_pos( sta_name, 102 , 74);
+    lv_obj_set_style_text_align(sta_name, LV_TEXT_ALIGN_LEFT, 0);
+    lv_obj_set_style_text_font( sta_name, &heiti_20, 0);
+
+    lv_label_set_text_fmt(sta_name, "%s", info->station->name);
+
+
+    int8_t line_number = info->station->line_belonged;
+
+    lv_obj_t * direc_name = lv_label_create(reminder_dialog);
+    lv_obj_set_pos( direc_name, 226 , 74);
+    lv_obj_set_size(direc_name, 146,18);
+    lv_obj_set_style_text_color(direc_name, lv_color_hex(COLOR_DARK_BLUE), 0);
+    lv_obj_set_style_text_align(direc_name, LV_TEXT_ALIGN_RIGHT, 0);
+    lv_obj_set_style_text_font( direc_name, &heiti_20, 0);
+
+    lv_label_set_text_fmt(direc_name, 
+        "%s 方向", get_first_station(line_number, !info->direction)->name);
+
+    lv_obj_t * line_label = lv_label_create(reminder_dialog);
+
+    lv_obj_set_pos(line_label, 19 , 70);
+    lv_obj_set_size(line_label, 63 , 30);
+    
+    lv_obj_set_style_bg_opa(line_label, LV_OPA_COVER, 0);
+    lv_obj_set_style_radius(line_label, BUTTON_RADIUS, 0);
+    lv_obj_set_style_text_color(line_label, lv_color_white(), 0);
+    lv_obj_set_style_text_font(line_label, &heiti_16, 0);
+    lv_obj_set_style_bg_color(line_label, get_line_color(line_number), 0);
+    lv_obj_set_style_pad_top(line_label, 6, 0);
+    lv_obj_set_style_text_align(line_label, LV_TEXT_ALIGN_CENTER, 0);
+
+    lv_label_set_text_fmt(line_label, "%d号线",line_number);  
+    
+    //这个用定时器刷新内容
+    reminder_remain_time_label = lv_label_create(reminder_dialog);
+    lv_obj_set_pos( reminder_remain_time_label, 19 , 121);
+    lv_obj_set_style_text_align(reminder_remain_time_label, LV_TEXT_ALIGN_LEFT, 0);
+    lv_obj_set_style_text_font( reminder_remain_time_label, &heiti_24, 0);
+
+    //lv_label_set_text_fmt(sta_name, "列车还有%s秒到站", info->station->name);
+
+
+    confirm_btn = lv_btn_create(reminder_dialog);
+
+    lv_obj_set_pos(confirm_btn, 285 ,170);
+    lv_obj_set_size(confirm_btn,90, 36);
+    lv_obj_add_event_cb(confirm_btn, confirm_btn_cb, LV_EVENT_CLICKED, (void *)index);
+
+
+    lv_obj_t *confirm_label = lv_label_create(confirm_btn);
+    lv_label_set_text(confirm_label, "确定");
+    lv_obj_set_style_text_font(confirm_label, &heiti_16, 0);
+    lv_obj_set_style_text_color(confirm_label, lv_color_white(), 0);
+    lv_obj_center(confirm_label);
+
+    lv_obj_add_style(confirm_btn, &blue_button_style, 0);
+
+
+
+    overlook_btn = lv_btn_create(reminder_dialog);
+
+    lv_obj_set_pos(overlook_btn, 176 ,170);
+    lv_obj_set_size(overlook_btn,90, 36);
+    lv_obj_add_event_cb(overlook_btn, overlook_btn_cb, LV_EVENT_CLICKED, NULL);
+
+
+    lv_obj_t *overlook_label = lv_label_create(overlook_btn);
+    lv_label_set_text(overlook_label, "忽略");
+    lv_obj_set_style_text_font(overlook_label, &heiti_16, 0);
+    lv_obj_set_style_text_color(overlook_label, lv_color_black(), 0);
+    lv_obj_center(overlook_label);
+
+    lv_obj_add_style(overlook_btn, &btn_style, 0);
+
+
+}
+
+void reminder_dialog_clear(void)
+{
+    confirm_btn = NULL;
+    overlook_btn = NULL;
+    reminder_remain_time_label = NULL;
+}
+
+void confirm_btn_cb(lv_event_t *e)
+{
+    int index = (int)lv_event_get_user_data(e);
+
+    hide_msgbox(&reminder_dialog);
+    reminder_dialog_clear();
+
+    del_remind(index);
+
+    remind_label_show(remind_labels,remind_info);
+
+
+}
+
+void overlook_btn_cb(lv_event_t * e)
+{
+
+    hide_msgbox(&reminder_dialog);
+    reminder_dialog_clear();
+
+    remind_add_msg_init(&remind_add_msg, "已忽略本班列车");
+    show_msgbox(&remind_add_msg);
+
+    if (!msg_hide_timer)
+    {
+        msg_hide_timer = lv_timer_create(close_msg_cb, 1000, &remind_add_msg);
+    }
+
+}
 

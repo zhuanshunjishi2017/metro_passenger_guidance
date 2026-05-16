@@ -14,7 +14,6 @@
 lv_obj_t * transparent_bg = NULL;
 
 
-
 /**
  * @brief 显示一个顶层的消息弹窗
  * @param obj 需要显示的窗口
@@ -39,10 +38,10 @@ void show_msgbox(lv_obj_t **obj)
 }
 
 
-/* 
+/**
  * @brief 隐藏一个顶层的消息弹窗
  * @param obj 需要隐藏的窗口
- */
+ **/
 void hide_msgbox(lv_obj_t **obj)
 {
     lv_obj_add_flag(*obj, LV_OBJ_FLAG_HIDDEN);
