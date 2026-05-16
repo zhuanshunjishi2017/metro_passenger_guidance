@@ -1,9 +1,7 @@
 #include "metro_line.h"
 #include "gui.h"
 #include "timestruct.h"
-#define FILL_ARRAY(arr, val, n) do{ \
-    for(size_t i = 0; i < (n); ++i) (arr)[i] = (val); \
-}while(0)
+
 
 const Station line_1[32] = {
 //onlyid  id   x    y   trans   x'   y' draw  line name             pinyin
@@ -202,6 +200,8 @@ const MetroLine metro_lines[LINE_COUNT] = {
     {line_4, 37, COLOR_LINE4, 4, time_line_4, &timetable_line_4},
 };
 
+
+
 const MetroLine * get_metro_line(int8_t line_number)
 {
     for (int8_t i = 0; i < LINE_COUNT; i++)
@@ -233,7 +233,7 @@ const Station * get_transfer_station(const Station * src, const Station ** first
 {
     if(!src->is_transfer)
     {
-        first_dist = NULL;
+        *first_dist = NULL;
         return NULL;
     }
 

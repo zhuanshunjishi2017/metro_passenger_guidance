@@ -223,33 +223,31 @@ void confirm_remind_add_btn_cb(lv_event_t * e)
         show_msgbox(&remind_add_msg);
     }
     
-    else  
+    else for (int i = 0; i < MAX_REMIND; i++)
     {
-        for (int i = 0; i < MAX_REMIND; i++)
+        if (!remind_info[i].flag)
         {
-            if (!remind_info[i].flag)
-            {
-                TimeStruct start_time_struct;
-                uint16_t hour, min, remind_sec;
-                hour = lv_dropdown_get_selected(hour_entry);
-                min = lv_dropdown_get_selected(min_entry);
+            TimeStruct start_time_struct;
+            uint16_t hour, min, remind_sec;
+            hour = lv_dropdown_get_selected(hour_entry);
+            min = lv_dropdown_get_selected(min_entry);
 
-                remind_sec =( lv_dropdown_get_selected(remind_time_entry) + 1) * 30;
+            remind_sec =( lv_dropdown_get_selected(remind_time_entry) + 1) * 30;
 
-                secondsToTimeStruct(hour * 3600 + min * 60, &start_time_struct);
+            secondsToTimeStruct(hour * 3600 + min * 60, &start_time_struct);
 
-                remind_info[i].station = get_station(showing_station);
-                remind_info[i].direction = direction_state;
-                remind_info[i].start_time = start_time_struct;
-                remind_info[i].remind_sec = remind_sec;
-                remind_info[i].flag = 1;
-                
-                remind_add_msg_init(&remind_add_msg,"提醒添加成功!");
-                show_msgbox(&remind_add_msg);
-                break;
-            }
+            remind_info[i].station = get_station(showing_station);
+            remind_info[i].direction = direction_state;
+            remind_info[i].start_time = start_time_struct;
+            remind_info[i].remind_sec = remind_sec;
+            remind_info[i].flag = 1;
+            
+            remind_add_msg_init(&remind_add_msg,"提醒添加成功!");
+            show_msgbox(&remind_add_msg);
+            break;
         }
     }
+    
         
     if (!msg_hide_timer)
     {
