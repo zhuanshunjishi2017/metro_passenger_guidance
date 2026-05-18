@@ -13,9 +13,9 @@
 #define SCREEN_H 600  // 屏幕分辨率
 
 #define GEO_X_MIN 0
-#define GEO_X_MAX 38
+#define GEO_X_MAX 50
 #define GEO_Y_MIN 0
-#define GEO_Y_MAX 33 // GeoGebra 坐标范围
+#define GEO_Y_MAX 36 // GeoGebra 坐标范围
 #define PAD_X 12
 #define PAD_Y 40  // 屏幕边距
 #define STATION_RADIUS 5 //半径
@@ -51,7 +51,7 @@
 #define DIRECTION_DOWN 1
 
 typedef struct {
-    int16_t       only_id;
+    uint16_t       only_id;
     int8_t       id;
     lv_coord_t   geo_x;
     lv_coord_t   geo_y;

@@ -91,7 +91,7 @@ void clicked_canvas(lv_indev_t *, MetroLine *);
 void lines_selector_init(lv_obj_t * , MetroLine *);
 void lines_selector_cb(lv_event_t * e);
 
-void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , MetroLine *line);
+void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas , int8_t);
 void line_info_btn_init(lv_obj_t * obj, LineinfoBtn * btn, int8_t count);
 
 void pop_window_move(const Station **sta);

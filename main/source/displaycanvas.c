@@ -12,7 +12,7 @@
 
 void *canvas_buf;//缓冲区
 
-int8_t para_numbers[LINE_COUNT+1] = {0,1,2,3,4};  //妥协之举，传参只能传地址
+int8_t para_numbers[LINE_COUNT+1] = {0,1,2,3,4,5,6,7,8,11,19};  //妥协之举，传参只能传地址
 
 
 lv_obj_t *btn_plus , *btn_minus;
@@ -145,23 +145,20 @@ void lines_selector_init(lv_obj_t *canvas, MetroLine *lines)
 
 
     lv_style_init(&line_style);
-    for (int i = 0; i < LINE_COUNT;i++)
+    for (int8_t i = 0; i < LINE_COUNT;i++)
     {
-        lines_btn_init(line_btns + i, line_labels[i], canvas, lines + i);
+        lines_btn_init(line_btns + i, line_labels[i], canvas, i);
     }
 
 }
 
 //绘制按钮
-void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas ,  MetroLine *line)
+void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas ,  int8_t count)
 {
-    char * str, longstr[10];
-    int8_t count = line->line_number;
-    sprintf(str, "%d", count);
     
     btn = lv_btn_create(canvas);
 
-    lv_obj_set_pos(btn, REC_X + 10 , REC_Y + 10 + 33 *(count -1));
+    lv_obj_set_pos(btn, REC_X + 10 , REC_Y + 10 + 33 *(count));
     lv_obj_set_size(btn, 84 , 24);
 
     lv_obj_add_style(btn, &selector_style, 0);
@@ -172,30 +169,28 @@ void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas ,  Metro
 
     lv_obj_set_style_text_font(labels, &heiti_16, 0);
     lv_obj_set_style_text_color(labels, lv_color_white(), 0);
-    lv_obj_set_style_bg_color(labels, lv_color_hex(line->line_color), 0);
+    lv_obj_set_style_bg_color(labels, lv_color_hex(metro_lines[count].line_color), 0);
     lv_obj_set_style_bg_opa(labels, LV_OPA_COVER, 0);
     lv_obj_set_style_radius(labels, 4, 0);
     lv_obj_set_style_text_align(labels, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_style_pad_top(labels, 4, 0);
     
     
-    lv_label_set_text(labels, str);
+    lv_label_set_text_fmt(labels, "%d", metro_lines[count].line_number );
 
     lv_obj_t * label2 = labels + 1;
 
     label2 = lv_label_create(btn);
     
     lv_obj_set_pos(label2, 14 ,-8);
-    lv_obj_set_size(label2, 48, 18);
+    lv_obj_set_size(label2, 60, 18);
     lv_obj_set_style_text_font(label2, &heiti_16, 0);
     lv_obj_set_style_text_color(label2, lv_color_black(), 0);
     lv_obj_set_style_text_align(label2, LV_TEXT_ALIGN_LEFT, 0);
 
+    lv_label_set_text_fmt(label2, "%d号线",metro_lines[count].line_number);
 
-    snprintf(longstr, sizeof(longstr), "%d号线",count);
-    lv_label_set_text(label2, longstr);
-
-    lv_obj_add_event_cb(btn, lines_selector_cb, LV_EVENT_PRESSED, para_numbers + count);
+    lv_obj_add_event_cb(btn, lines_selector_cb, LV_EVENT_PRESSED, para_numbers + (count + 1));
 
 }
 
