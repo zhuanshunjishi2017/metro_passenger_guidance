@@ -68,6 +68,8 @@ static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t stat
         {
             pts[j].x = geo_to_screen(line->stations[i].geo_x, origin_x);
             pts[j].y = geo_to_screen(line->stations[i].geo_y, origin_y);
+
+
             //处理中南路和洪山广场这一段并行线
             if (line->line_number == 2 && ((line->stations[i].id == 21)||(line->stations[i].id == 22)))
             {
@@ -88,6 +90,28 @@ static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t stat
                 pts[j].x = pts[j-1].x + 1;
                 pts[j].y = pts[j-1].y + 1;
             }
+            else if(line->line_number == 7 && (line->stations[i].id == 17))
+            {
+                j++;
+                pts[j].x = geo_to_screen(22, origin_x);
+                pts[j].y = geo_to_screen(12, origin_y);
+                j++;
+                pts[j].x = geo_to_screen(24, origin_x);
+                pts[j].y = geo_to_screen(14, origin_y);
+            }
+            else if(line->line_number == 8 && (line->stations[i].id == 7))
+            {
+                j++;
+                pts[j].x = geo_to_screen(26, origin_x);
+                pts[j].y = geo_to_screen(12, origin_y);
+            }
+            else if(line->line_number == 11 && (line->stations[i].id == 4))
+            {
+                j++;
+                pts[j].x = geo_to_screen(27, origin_x);
+                pts[j].y = geo_to_screen(26, origin_y);
+            }
+
             j++;
         }
     }
@@ -124,7 +148,36 @@ static void draw_route(lv_obj_t *canvas, const Route *route)
         pts[j].y = geo_to_screen(route->steps[i].sta->geo_y, origin_y);
 
         dsc.color = get_line_color(route->steps[i].line_number);
-
+/* 
+        if (line->line_number == 4 && (line->stations[i].id == 26))
+        {
+            pts[j].x -= 1;
+            pts[j].y -= 1;
+            j++;
+            pts[j].x = pts[j-1].x + 1;
+            pts[j].y = pts[j-1].y + 1;
+        }
+        else if(line->line_number == 7 && (line->stations[i].id == 17))
+        {
+            j++;
+            pts[j].x = geo_to_screen(22, origin_x);
+            pts[j].y = geo_to_screen(12, origin_y);
+            j++;
+            pts[j].x = geo_to_screen(24, origin_x);
+            pts[j].y = geo_to_screen(14, origin_y);
+        }
+        else if(line->line_number == 8 && (line->stations[i].id == 7))
+        {
+            j++;
+            pts[j].x = geo_to_screen(26, origin_x);
+            pts[j].y = geo_to_screen(12, origin_y);
+        }
+        else if(line->line_number == 11 && (line->stations[i].id == 4))
+        {
+            j++;
+            pts[j].x = geo_to_screen(27, origin_x);
+            pts[j].y = geo_to_screen(26, origin_y);
+        } */
         //绘制线路
         if (j > 0)
         {    
