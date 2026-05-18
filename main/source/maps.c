@@ -12,7 +12,7 @@
 extern void *canvas_buf;
 extern lv_obj_t * canvas;
 extern lv_obj_t * location_image;
-extern MetroLine metro_lines[4];
+extern MetroLine metro_lines[LINE_COUNT];
 
 extern const Station* start_station, *end_station;
 uint16_t magnify_size = 30;
@@ -143,7 +143,7 @@ static void draw_route(lv_obj_t *canvas, const Route *route)
 static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color, int8_t state)
 {
     //已经画过的就不画了
-    if (!state && s->is_transfer > 0) return;
+    if (!state && s->transfer_line[0] > 0) return;
 
     //设置站点样式
     lv_draw_rect_dsc_t rect_dsc;
@@ -154,7 +154,7 @@ static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color, i
     rect_dsc.bg_opa = LV_OPA_COVER;
 
     int8_t radius;
-    if (s->is_transfer) {
+    if (s->transfer_line[0]) {
         rect_dsc.outline_color = lv_color_black();
         radius = TRANSFER_STATION_RADIUS;
     } else {
@@ -208,13 +208,13 @@ void create_metro_map(void)
     memset(canvas_buf, 255, BUF_SIZE);
     //lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
     
-    for (int i = 0; i < 4; i++) 
+    for (int i = 0; i < LINE_COUNT; i++) 
         draw_metro_line(canvas, &metro_lines[i], NORMAL_STATE);
     
     if (is_line_showing)
     {
         draw_transparent_rect(canvas, lv_color_white());
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < LINE_COUNT; i++)
         {
             if (is_line_showing == metro_lines[i].line_number)
             {
@@ -293,23 +293,4 @@ void start_end_pin_move(void)
 
 }
 
-/* //拷贝一个站点信息
-void station_copy(Station *dist,const Station *source)
-{
-    dist->geo_x = source->geo_x;
-    dist->geo_y = source->geo_y;
-
-    dist->horizon_offset = source->horizon_offset;
-    dist->vertical_offset = source->vertical_offset;
-
-    dist->id = source->id;
-    dist->only_id = source->only_id;
-    dist->transfer_id = source->transfer_id;
-
-    dist->is_transfer = source->is_transfer;
-    dist->line_belonged = source->line_belonged;
-
-    dist->name = source->name;
-    dist->name_pinyin = source->name_pinyin;
-} */
 

@@ -180,10 +180,7 @@ void reminder_set_show(const Station *sta)
 {
     int8_t line_number =  sta->line_belonged;   
     lv_color_t color =get_line_color(sta->line_belonged);
-
-
-    char * sta1 = metro_lines[line_number - 1].stations[0].name;
-    char * sta2 = metro_lines[line_number - 1].stations[metro_lines[line_number - 1].count - 1].name;
+    
     
     TimeStruct current_time;
     char * hour_str, *min_str;
@@ -204,10 +201,7 @@ void reminder_set_show(const Station *sta)
 
     lv_label_set_text_fmt(line_num, "%d号线", line_number);
 
-    if (direction_state)
-        lv_label_set_text_fmt(direc, "%s 方向", sta1);
-    else
-        lv_label_set_text_fmt(direc, "%s 方向", sta2);
+    lv_label_set_text_fmt(direc, "%s 方向", get_first_station(line_number,!direction_state)->name);
 
     lv_label_set_text(sta_name, sta->name);
 

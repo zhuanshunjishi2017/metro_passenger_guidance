@@ -124,10 +124,10 @@ void search_record_refresh(const char * text)
     lv_obj_set_style_bg_color(top_search_record_line[search_record_count - 1], get_line_color(station->line_belonged), 0);
     lv_obj_clear_flag(top_search_record_line[search_record_count - 1], LV_OBJ_FLAG_HIDDEN);
 
-    if (station->is_transfer > 0) 
+    if (station->transfer_line[0] > 0) 
     {
-        lv_label_set_text_fmt(top_search_record_transfer[search_record_count - 1], "%d号线", station->is_transfer);
-        lv_obj_set_style_bg_color(top_search_record_transfer[search_record_count - 1], get_line_color(station->is_transfer), 0);
+        lv_label_set_text_fmt(top_search_record_transfer[search_record_count - 1], "%d号线", station->transfer_line[0]);
+        lv_obj_set_style_bg_color(top_search_record_transfer[search_record_count - 1], get_line_color(station->transfer_line[0]), 0);
         lv_obj_clear_flag(top_search_record_transfer[search_record_count - 1], LV_OBJ_FLAG_HIDDEN);
     }
     

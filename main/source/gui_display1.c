@@ -216,32 +216,28 @@ void search_result_show_label_set_text(char * text)
         return;
     }
     const char* text_cstr = text; // 确保text是以'\0'结尾的字符串
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < LINE_COUNT; i++)
     {
         for (int j = 0; j < metro_lines[i].count; j++)
         {
             if (!strncmp(metro_lines[i].stations[j].name_pinyin, text_cstr, strlen(text_cstr))
-                && metro_lines[i].stations[j].is_transfer >= 0) 
+                && metro_lines[i].stations[j].transfer_line[0] >= 0) 
             {
                 lv_obj_clear_flag(search_result_show_label[index], LV_OBJ_FLAG_HIDDEN);                
                 lv_label_set_text(search_result_show_label[index], metro_lines[i].stations[j].name);
 
-                lv_label_set_text(search_line_show_label[index], 
-                                            metro_lines[i].line_number == 1 ? "1号线" :
-                                            metro_lines[i].line_number == 2 ? "2号线" :
-                                            metro_lines[i].line_number == 3 ? "3号线" : "4号线");
-                lv_obj_set_style_bg_color(search_line_show_label[index], lv_color_hex(metro_lines[i].line_color), 0);
+                lv_label_set_text_fmt(search_line_show_label[index], "%d号线", metro_lines[i].line_number);
+
+                lv_obj_set_style_bg_color(search_line_show_label[index], get_line_color(metro_lines[i].line_number), 0);
                 lv_obj_clear_flag(search_line_show_label[index], LV_OBJ_FLAG_HIDDEN);
                 lv_obj_move_foreground(search_line_show_label[index]);
 
-                if (metro_lines[i].stations[j].is_transfer)
+                if (metro_lines[i].stations[j].transfer_line[0])
                 {
-                    int8_t transfer_line = metro_lines[i].stations[j].is_transfer;
-                    lv_label_set_text(search_line_transfer_show_label[index], 
-                                            transfer_line == 1 ? "1号线" :
-                                            transfer_line == 2 ? "2号线" :
-                                            transfer_line == 3 ? "3号线" : "4号线");
-                    lv_obj_set_style_bg_color(search_line_transfer_show_label[index], lv_color_hex(metro_lines[transfer_line-1].line_color), 0);
+                    int8_t transfer_line1 = metro_lines[i].stations[j].transfer_line[0];
+                    lv_label_set_text_fmt(search_line_transfer_show_label[index], "%d号线", metro_lines[i].stations[j].transfer_line[0]);
+
+                    lv_obj_set_style_bg_color(search_line_transfer_show_label[index], get_line_color(transfer_line1), 0);
                     lv_obj_clear_flag(search_line_transfer_show_label[index], LV_OBJ_FLAG_HIDDEN);
                     lv_obj_move_foreground(search_line_transfer_show_label[index]);
                 }
@@ -303,7 +299,7 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
     lv_obj_t* line_cl = lv_obj_create(lineinfo);
     lv_obj_set_size(line_cl, 6, 141);
     lv_obj_set_pos(line_cl, 30, 16);
-    lv_obj_set_style_bg_color(line_cl, lv_color_hex(metro_lines[linebelonged-1].line_color), 0);
+    lv_obj_set_style_bg_color(line_cl, lv_color_hex(get_metro_line(linebelonged)->line_color), 0);
     lv_obj_set_style_border_width(line_cl, 0, 0);    
     lv_obj_set_style_bg_opa(line_cl, LV_OPA_COVER, 0);
     lv_obj_set_style_radius(line_cl, 4, 0);
@@ -322,16 +318,13 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
     lv_obj_set_pos(line_lb, 50, 50);
     lv_obj_set_size(line_lb, 63, 29);
     lv_obj_set_style_radius(line_lb, 4, 0);
-    lv_obj_set_style_bg_color(line_lb, lv_color_hex(metro_lines[linebelonged-1].line_color), 0);
+    lv_obj_set_style_bg_color(line_lb, lv_color_hex(get_metro_line(linebelonged)->line_color), 0);
     lv_obj_set_style_bg_opa(line_lb, LV_OPA_COVER, 0);
     lv_obj_set_style_text_align(line_lb, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_style_pad_top(line_lb,5, 0);
     lv_obj_set_style_text_font(line_lb, &heiti_16, 0);
     lv_obj_set_style_text_color(line_lb,lv_color_hex(0xffffff), 0);
-    lv_label_set_text(line_lb, 
-                        metro_lines[linebelonged-1].line_number == 1 ? "1号线" :
-                        metro_lines[linebelonged-1].line_number == 2 ? "2号线" :
-                        metro_lines[linebelonged-1].line_number == 3 ? "3号线" : "4号线");
+    lv_label_set_text_fmt(line_lb, "%d号线", get_metro_line(linebelonged)->line_number);
     
     lv_obj_t* direction = lv_label_create(lineinfo);
     lv_obj_set_pos(direction, 130, 55);
@@ -339,33 +332,33 @@ void pop_search_result_window_lineinfo_init(const Station *st1, const Station *s
 
     
     int id1,id2;
-    for (int i = 0; i < metro_lines[linebelonged-1].count; i++)
+    for (int i = 0; i < get_metro_line(linebelonged)->count; i++)
     {
-        if (metro_lines[linebelonged-1].stations[i].name_pinyin == st1->name_pinyin)
+        if (get_metro_line(linebelonged)->stations[i].name_pinyin == st1->name_pinyin)
         {
-            id1 = metro_lines[linebelonged-1].stations[i].id;
+            id1 = get_metro_line(linebelonged)->stations[i].id;
         }
-        if (metro_lines[linebelonged-1].stations[i].name_pinyin == st2->name_pinyin)
+        if (get_metro_line(linebelonged)->stations[i].name_pinyin == st2->name_pinyin)
         {
-            id2 = metro_lines[linebelonged-1].stations[i].id;
+            id2 = get_metro_line(linebelonged)->stations[i].id;
         }
     }
     if (id2 > id1)
     {
         lv_label_set_text_fmt(direction, "%s 方向",
-        metro_lines[linebelonged-1].stations[metro_lines[linebelonged-1].count - 1].name);
+        get_metro_line(linebelonged)->stations[get_metro_line(linebelonged)->count - 1].name);
     }
     else
     {
         lv_label_set_text_fmt(direction, "%s 方向",
-        metro_lines[linebelonged-1].stations[0].name);
+        get_metro_line(linebelonged)->stations[0].name);
     }
 
     lv_obj_t* time_lb = lv_label_create(lineinfo);
     lv_obj_set_pos(time_lb, 50, 100);
     lv_obj_set_style_text_font(time_lb, &heiti_16, 0);
 
-    int sec = get_station_interval(&(metro_lines[linebelonged-1]), id1, id2);
+    int sec = get_station_interval( get_metro_line(linebelonged) , id1, id2);
     //timeToString(&period, period_str, MIN_MODE);
 
     lv_label_set_text_fmt(time_lb, "%d站 (%d分钟)",abs(id2 - id1), sec/60);
@@ -557,24 +550,21 @@ void favorite_station_show(void)
         int line_belonged = station_temp->line_belonged;
         if (line_belonged > 0) 
         {
-            lv_label_set_text(favorite_station_line_show_lb[i],
-                                        line_belonged == 1 ? "1号线" :
-                                        line_belonged == 2 ? "2号线" :
-                                        line_belonged == 3 ? "3号线" : "4号线");
-            lv_obj_set_style_bg_color(favorite_station_line_show_lb[i], lv_color_hex(metro_lines[line_belonged-1].line_color), 0);
+            lv_label_set_text_fmt(favorite_station_line_show_lb[i], "%d号线", line_belonged);
+            lv_obj_set_style_bg_color(favorite_station_line_show_lb[i], lv_color_hex(get_metro_line(line_belonged)->line_color), 0);
             lv_obj_clear_flag(favorite_station_line_show_lb[i], LV_OBJ_FLAG_HIDDEN);
             lv_obj_move_foreground(favorite_station_line_show_lb[i]);
         }
 
-        if (station_temp->is_transfer) 
+        if (station_temp->transfer_line[0] > 0) 
         {
-            int transfer_line = station_temp->is_transfer;
+            int transfer_line1 = station_temp->transfer_line[0];
             lv_obj_add_flag(favorite_station_line_show_lb[i], LV_OBJ_FLAG_HIDDEN);
 
-            lv_label_set_text_fmt(favorite_station_line_transfer_show_lb2[i], "%d", transfer_line);
+            lv_label_set_text_fmt(favorite_station_line_transfer_show_lb2[i], "%d", transfer_line1);
             lv_label_set_text_fmt(favorite_station_line_transfer_show_lb[i], "%d", line_belonged);
-            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb2[i], lv_color_hex(metro_lines[transfer_line-1].line_color), 0);
-            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb[i], lv_color_hex(metro_lines[line_belonged-1].line_color), 0);
+            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb2[i], get_line_color(line_belonged), 0);
+            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb[i], get_line_color(transfer_line1), 0);
             lv_obj_clear_flag(favorite_station_line_transfer_show_lb[i], LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(favorite_station_line_transfer_show_lb2[i], LV_OBJ_FLAG_HIDDEN);
             lv_obj_move_foreground(favorite_station_line_transfer_show_lb[i]);
@@ -754,7 +744,7 @@ void search_result_click_cb(lv_event_t *e)
 {
     lv_obj_t* label = lv_event_get_target(e);
     const char* station_name = lv_label_get_text(label);
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i <LINE_COUNT; i++)
     {
         for (int j = 0; j < metro_lines[i].count; j++)
         {

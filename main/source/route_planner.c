@@ -47,7 +47,7 @@ const Station* find_station_by_name(const char* station_name)
         return NULL;
     }
 
-    for (int line = 0; line < 4; line++) {
+    for (int line = 0; line < LINE_COUNT; line++) {
         for (int i = 0; i < metro_lines[line].count; i++) {
             if (strcmp(metro_lines[line].stations[i].name_pinyin, station_name) == 0
               ||strcmp(metro_lines[line].stations[i].name, station_name) == 0) 
@@ -66,7 +66,7 @@ const Station* find_station_by_name(const char* station_name)
  */
 const Station* find_station_by_id(int station_id)
 {
-    for (int line = 0; line < 4; line++) {
+    for (int line = 0; line < LINE_COUNT; line++) {
         for (int i = 0; i < metro_lines[line].count; i++) {
             if (metro_lines[line].stations[i].only_id == station_id) {
                 return &metro_lines[line].stations[i];
@@ -88,10 +88,10 @@ static int get_station_lines(int station_id, int* lines)
     int count = 0;
 
     // 遍历所有线路，找出包含该站点的线路
-    for (int line = 0; line < 4; line++) {
+    for (int line = 0; line < LINE_COUNT; line++) {
         for (int i = 0; i < metro_lines[line].count; i++) {
             if (metro_lines[line].stations[i].only_id == station_id) {
-                lines[count++] = line + 1; // 线路号从1开始
+                lines[count++] = metro_lines[line].line_number; // 线路号从1开始
                 break; // 避免重复添加
             }
         }
@@ -187,7 +187,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
                 if (station[i]) {
                     output_route->steps[output_route->step_count].station_name = (char*)station[i]->name_pinyin;
                     output_route->steps[output_route->step_count].line_number = node->line_id;
-                    output_route->steps[output_route->step_count].is_transfer = station[i]->is_transfer > 0;
+                    output_route->steps[output_route->step_count].is_transfer = station[i]->transfer_line[0] > 0;
 
                     output_route->steps[output_route->step_count].sta = station[i];
 

@@ -14,7 +14,7 @@
 
 RemindLabel remind_labels[MAX_REMIND];
 
-lv_obj_t * remind_label_container;
+lv_obj_t * remind_label_container,* no_remind_label;
 
 lv_timer_t * reminder_timer;
 
@@ -73,7 +73,18 @@ void display2_init(void)
 
     remind_label_init(remind_label_container, remind_labels);
 
+    no_remind_label = lv_label_create(remind_label_container);
+
+    lv_obj_set_style_text_align(no_remind_label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_style_text_font(no_remind_label, &heiti_16, 0);
+    lv_obj_set_style_text_color(no_remind_label, lv_color_hex(COLOR_MID_GRAY), 0);
+
+    lv_label_set_text(no_remind_label, "暂无提醒\n\n从车站详情界面添加提醒\n\n\n");
+
+    lv_obj_center(no_remind_label);
+
     remind_label_show(remind_labels,remind_info);
+
 
     reminder_timer = lv_timer_create(reminder_info_handler, 1000, NULL);
 
@@ -186,6 +197,12 @@ void remind_label_init(lv_obj_t * obj,RemindLabel * remind_label)
 
 void remind_label_show(RemindLabel * remind_label,RemindInfo * info)
 {
+    if (!info[0].flag){
+        lv_label_set_text(no_remind_label,  "暂无提醒\n\n从车站详情界面添加提醒\n\n\n");
+    }
+    else{
+        lv_label_set_text(no_remind_label, "");
+    }
     for (int i = 0; i < MAX_REMIND; i++)
     {
         if (!info[i].flag)
@@ -222,6 +239,7 @@ void remind_label_update(RemindLabel * remind_label,RemindInfo * info)
     { 
         if (!info[i].flag) return;
 
+        //如果还没到时间
         if (timeCompare(&current_time, &info[i].start_time) < 0)
         {
             char start_time_str[10];
@@ -279,7 +297,7 @@ void remind_label_update(RemindLabel * remind_label,RemindInfo * info)
                 is_find = 1;
 
                 //这里是处理弹窗
-                if (time_period < info[i].remind_sec && time_period >  2)
+                if (time_period < info[i].remind_sec && time_period >  1)
                 {
                     if (!is_reminder_dialog_showing)
                     {
@@ -292,7 +310,7 @@ void remind_label_update(RemindLabel * remind_label,RemindInfo * info)
                             "列车还有%d秒到站",time_period); 
                 }
                 //超时则关闭窗口并自动忽略
-                else if (time_period <=  2 && is_reminder_dialog_showing)
+                else if (time_period <=  1 && is_reminder_dialog_showing)
                 {
                     is_reminder_dialog_showing = 0;
                     //如果窗口还存在的话

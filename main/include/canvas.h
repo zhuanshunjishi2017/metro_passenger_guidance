@@ -110,8 +110,6 @@ void hide_station_info(void);
 下面是有关站点屏幕的函数声明
 */
 
-lv_color_t get_line_color(int8_t line_number);
-
 void station_info_init(lv_obj_t * canvas);
 void time_label_init(lv_obj_t * obj ,TimeLabel *tl, int8_t count);
 void sta_canvas_init(lv_obj_t * canvas);

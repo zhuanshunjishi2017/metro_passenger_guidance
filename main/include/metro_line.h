@@ -47,17 +47,17 @@
 #define DIRECTION_DOWN 1
 
 typedef struct {
-    int8_t only_id;
-    int8_t id;
-    lv_coord_t geo_x;
-    lv_coord_t geo_y;
-    int8_t is_transfer;        //是否为换乘站,数字表示换乘几号线，标记为负数说明已经出现过
-    int8_t horizon_offset;   //标签水平偏移量，右为正
-    int8_t vertical_offset;  //标签垂直偏移量，下为正
-    int8_t is_draw_point;      //是否为端点
-    int8_t line_belonged; //所属的线路
-    char* name;
-    char* name_pinyin;
+    int8_t       only_id;
+    int8_t       id;
+    lv_coord_t   geo_x;
+    lv_coord_t   geo_y;
+    int8_t       transfer_line[2];        //是否为换乘站,数字表示换乘几号线，标记为负数说明已经出现过
+    int8_t       horizon_offset;   //标签水平偏移量，右为正
+    int8_t       vertical_offset;  //标签垂直偏移量，下为正
+    int8_t       is_draw_point;      //是否为端点
+    int8_t       line_belonged; //所属的线路
+    char*        name;
+    char*        name_pinyin;
 
 } Station;// 站点结构体
 
@@ -89,6 +89,9 @@ const Station * get_station(const Station * sta);
 const Station * get_transfer_station(const Station * src, const Station ** first_dist);
 
 const Station * get_first_station(int8_t line_number, int8_t direction);
+
+lv_color_t get_line_color(int8_t line_number);
+
 
 
 //声明一些有关地图绘制的函数

@@ -12,7 +12,7 @@
 
 void *canvas_buf;//缓冲区
 
-int8_t para_numbers[5] = {0,1,2,3,4};  //妥协之举，传参只能传地址
+int8_t para_numbers[LINE_COUNT+1] = {0,1,2,3,4};  //妥协之举，传参只能传地址
 
 
 lv_obj_t *btn_plus , *btn_minus;
@@ -145,7 +145,7 @@ void lines_selector_init(lv_obj_t *canvas, MetroLine *lines)
 
 
     lv_style_init(&line_style);
-    for (int i = 0; i < 4;i++)
+    for (int i = 0; i < LINE_COUNT;i++)
     {
         lines_btn_init(line_btns + i, line_labels[i], canvas, lines + i);
     }
@@ -302,7 +302,7 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
     pos.x -= CANVAS_X;
     pos.y -= CANVAS_Y;
 
-    for (int8_t i = 0; i < 4; i++)
+    for (int8_t i = 0; i < LINE_COUNT; i++)
     {
         for (int8_t j = 0; j < lines[i].count; j++)
         {
@@ -420,7 +420,7 @@ void pop_window_init(lv_obj_t * obj)
     
     lv_obj_set_pos(start_btn, 10 ,BOTTOM_BTN_Y_NORM);
     lv_obj_set_size(start_btn,BOTTOM_BTN_W, BOTTOM_BTN_H);
-    lv_obj_add_event_cb(start_btn, start_end_btn_cb, LV_EVENT_SHORT_CLICKED, para_numbers);
+    lv_obj_add_event_cb(start_btn, start_end_btn_cb, LV_EVENT_CLICKED, para_numbers);
 
     start_label = lv_label_create(start_btn);
     lv_label_set_text(start_label, "设为起点");
@@ -526,7 +526,7 @@ void pop_window_move(const Station **sta)
 
     lv_obj_set_pos(location_image, x - 38, y - 75);
     x += 25;
-    if (sta[0]->is_transfer)
+    if (sta[0]->transfer_line[0])
     {
         y -= 70 + POP_WINDOW_H_TRANS;
         if (y > CANVAS_H - 10 - POP_WINDOW_H_TRANS)
@@ -554,7 +554,7 @@ void pop_window_show(const Station **sta, LineinfoBtn * btn)
 {
 
     lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
-    if (sta[0]->is_transfer)
+    if (sta[0]->transfer_line[0])
     {
         lv_obj_set_size(pop_window, POP_WINDOW_W,POP_WINDOW_H_TRANS);
         lv_obj_set_y(start_btn, BOTTOM_BTN_Y_TRANS);
@@ -616,7 +616,7 @@ void line_info_btn_cb(lv_event_t * e)
 
     is_station_info = 1;
 
-    if (lv_scr_act() == display1 && is_station_info)
+    if (lv_scr_act() != display0 && is_station_info)
     {
         transparent_init(lv_layer_top(),lv_color_hex(COLOR_MID_GRAY));
         lv_obj_set_style_bg_opa(transparent, 100, 0);
@@ -687,17 +687,6 @@ void start_end_btn_cb(lv_event_t *e)
     create_metro_map();
 }
 
-/* void station_clicked_fill(const Station *src, int8_t line)
-{
-    station_copy(&station_clicked[0], src);
-    station_clicked[0].line_belonged = line;
-    if (station_clicked[0].is_transfer > 0) {
-        station_clicked[1].line_belonged = station_clicked[0].is_transfer;
-        station_clicked[1].name = src->name;
-        station_clicked[1].id = src->transfer_id;
-        station_clicked[1].is_transfer = station_clicked[0].line_belonged;
-    }
-} */
 
 void hide_pop_window(void)
 {

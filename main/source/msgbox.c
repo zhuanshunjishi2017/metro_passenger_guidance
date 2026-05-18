@@ -44,13 +44,17 @@ void show_msgbox(lv_obj_t **obj)
  **/
 void hide_msgbox(lv_obj_t **obj)
 {
-    lv_obj_add_flag(*obj, LV_OBJ_FLAG_HIDDEN);
-
-    lv_obj_del_async(transparent_bg);
-    transparent_bg = NULL;
-
-    lv_obj_del_async(*obj);
-    *obj = NULL;
+    if (transparent_bg)
+    {
+        lv_obj_del_async(transparent_bg);
+        transparent_bg = NULL;
+    }
+    if (*obj)
+    {
+        lv_obj_add_flag(*obj, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_del_async(*obj);
+        *obj = NULL;
+    }
 }
 
 void remind_add_msg_init(lv_obj_t **obj, const char * text)

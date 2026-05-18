@@ -384,32 +384,28 @@ void top_search_result_text(const char * text)
         return;
     }
     const char* text_cstr = text; // 确保text是以'\0'结尾的字符串
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < LINE_COUNT; i++)
     {
         for (int j = 0; j < metro_lines[i].count; j++)
         {
             if (!strncmp(metro_lines[i].stations[j].name_pinyin, text_cstr, strlen(text_cstr))
-                && metro_lines[i].stations[j].is_transfer >= 0) 
+                && metro_lines[i].stations[j].transfer_line[0] >= 0) 
             {
                 lv_obj_clear_flag(top_search_station[index], LV_OBJ_FLAG_HIDDEN);                
                 lv_label_set_text(top_search_station[index], metro_lines[i].stations[j].name);
 
-                lv_label_set_text(top_search_line[index], 
-                                            metro_lines[i].line_number == 1 ? "1号线" :
-                                            metro_lines[i].line_number == 2 ? "2号线" :
-                                            metro_lines[i].line_number == 3 ? "3号线" : "4号线");
+                lv_label_set_text_fmt(top_search_line[index], "%d号线", metro_lines[i].line_number);
+
                 lv_obj_set_style_bg_color(top_search_line[index], lv_color_hex(metro_lines[i].line_color), 0);
                 lv_obj_clear_flag(top_search_line[index], LV_OBJ_FLAG_HIDDEN);
                 lv_obj_move_foreground(top_search_line[index]);
 
-                if (metro_lines[i].stations[j].is_transfer)
+                if (metro_lines[i].stations[j].transfer_line[0])
                 {
-                    int8_t transfer_line = metro_lines[i].stations[j].is_transfer;
-                    lv_label_set_text(top_search_transfer[index], 
-                                            transfer_line == 1 ? "1号线" :
-                                            transfer_line == 2 ? "2号线" :
-                                            transfer_line == 3 ? "3号线" : "4号线");
-                    lv_obj_set_style_bg_color(top_search_transfer[index], lv_color_hex(metro_lines[transfer_line-1].line_color), 0);
+                    int8_t transfer_line1 = metro_lines[i].stations[j].transfer_line[0];
+                    lv_label_set_text_fmt(top_search_transfer[index], "%d号线", metro_lines[i].stations[j].transfer_line[0]);
+
+                    lv_obj_set_style_bg_color(top_search_transfer[index], get_line_color(transfer_line1), 0);
                     lv_obj_clear_flag(top_search_transfer[index], LV_OBJ_FLAG_HIDDEN);
                     lv_obj_move_foreground(top_search_transfer[index]);
                 }
@@ -489,10 +485,10 @@ void top_search_record_init(void)
     	lv_obj_set_style_bg_color(top_search_record_line[i], get_line_color(station->line_belonged), 0);
     	lv_obj_clear_flag(top_search_record_line[i], LV_OBJ_FLAG_HIDDEN);
 
-    	if (station->is_transfer > 0) 
+    	if (station->transfer_line[0] > 0) 
     	{
-        	lv_label_set_text_fmt(top_search_record_transfer[i], "%d号线", station->is_transfer);
-        	lv_obj_set_style_bg_color(top_search_record_transfer[i], get_line_color(station->is_transfer), 0);
+        	lv_label_set_text_fmt(top_search_record_transfer[i], "%d号线", station->transfer_line[0]);
+        	lv_obj_set_style_bg_color(top_search_record_transfer[i], get_line_color(station->transfer_line[0]), 0);
         	lv_obj_clear_flag(top_search_record_transfer[i], LV_OBJ_FLAG_HIDDEN);
     	}
 	}
@@ -662,7 +658,7 @@ void tab_search_btn_cb(lv_event_t *e)
 	const char* station_name = lv_textarea_get_text(ta);
     
 	int done = 0;
-	for (int i = 0; i < 4 && !done; i++)
+	for (int i = 0; i < LINE_COUNT && !done; i++)
     {
         for (int j = 0; j < metro_lines[i].count; j++)
         {
