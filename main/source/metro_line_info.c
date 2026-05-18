@@ -366,13 +366,63 @@ const uint16_t time_line_4[36] = {
 
 Timetable timetable_line_4 = {{6, 0 ,0}, {23, 0, 0}, 255};
 
+const uint16_t time_line_5[26] = {
+    120, 120, 150, 120, 130, 140, 160, 110, 90, 
+    100, 95, 120, 135, 125, 130, 115, 120, 130, 
+    140, 125, 135, 120, 130, 140, 150, 160};
 
+Timetable timetable_line_5 = {{6, 0 ,0}, {23, 0, 0}, 361};
+
+const uint16_t time_line_6[31] = {
+    130, 120, 115, 120, 140, 130, 150, 125, 130, 120,
+    115, 125, 110, 120, 115, 110, 120, 125, 115, 120,
+    140, 110, 120, 130, 125, 130, 120, 135, 140, 150, 130
+};
+
+Timetable timetable_line_6 = {{6, 0, 0}, {23, 0, 0}, 602};
+
+const uint16_t time_line_7[35] = {
+    140, 220, 210, 200, 130, 125, 130, 120, 125, 135,
+    130, 140, 130, 125, 120, 115, 125, 130, 180, 125,
+    120, 115, 110, 125, 120, 115, 125, 120, 130, 140,
+    150, 135, 125, 120, 115
+};
+
+Timetable timetable_line_7 = {{6, 0, 0}, {23, 0, 0}, 241};
+
+const uint16_t time_line_8[25] = {
+    120, 125, 115, 120, 125, 130, 140, 125, 120, 115,
+    120, 125, 115, 120, 115, 120, 125, 115, 120, 115,
+    120, 115, 125, 150, 140
+};
+
+Timetable timetable_line_8 = {{6, 0, 0}, {23, 0, 0}, 421};
+
+const uint16_t time_line_11[22] = {
+    120, 130, 125, 135, 120, 115, 130, 125, 135, 120,
+    125, 120, 115, 125, 110, 120, 125, 140, 130, 125,
+    120, 135
+};
+
+Timetable timetable_line_11 = {{6, 0, 0}, {23, 0, 0}, 481};
+
+const uint16_t time_line_19[6] = {
+    240, 210, 230, 150, 300, 90
+};
+
+Timetable timetable_line_19 = {{6, 0, 0}, {22, 30, 0}, 901};
 
 const MetroLine metro_lines[LINE_COUNT] = {
     {line_1, 32, COLOR_LINE1, 1, time_line_1, &timetable_line_1},
     {line_2, 38, COLOR_LINE2, 2, time_line_2, &timetable_line_2},
     {line_3, 24, COLOR_LINE3, 3, time_line_3, &timetable_line_3},
     {line_4, 37, COLOR_LINE4, 4, time_line_4, &timetable_line_4},
+    {line_5, 26, COLOR_LINE5, 5, time_line_5, &timetable_line_5},
+    {line_6, 32, COLOR_LINE6, 6, time_line_6, &timetable_line_6},
+    {line_7, 36, COLOR_LINE7, 7, time_line_7, &timetable_line_7},
+    {line_8, 26, COLOR_LINE8, 8, time_line_8, &timetable_line_8},
+    {line_11, 23, COLOR_LINE11, 11, time_line_11, &timetable_line_11},
+    {line_19, 7, COLOR_LINE19, 19, time_line_19, &timetable_line_19}
 };
 
 

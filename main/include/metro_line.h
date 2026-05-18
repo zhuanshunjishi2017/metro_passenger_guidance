@@ -30,7 +30,7 @@
 
 #define TOUCH_RANGE 15
 
-#define LINE_COUNT   4
+#define LINE_COUNT   10
 #define MAX_TRANSFER 3
 
 
@@ -43,7 +43,7 @@
 #define COLOR_LINE7    0xED7600
 #define COLOR_LINE8    0x98AEAC
 #define COLOR_LINE11   0xFBCE00
-#define COlOR_LINE19   0x00A982
+#define COLOR_LINE19   0x00A982
 
 
 
