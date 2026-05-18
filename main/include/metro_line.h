@@ -51,7 +51,7 @@
 #define DIRECTION_DOWN 1
 
 typedef struct {
-    int8_t       only_id;
+    int16_t       only_id;
     int8_t       id;
     lv_coord_t   geo_x;
     lv_coord_t   geo_y;

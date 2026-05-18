@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-extern const MetroLine metro_lines[4];
+extern const MetroLine metro_lines[LINE_COUNT];
 
 const Station* find_station_by_id(int station_id);
 
@@ -17,12 +17,12 @@ typedef struct {
 } PathNode;
 
 // 全局变量
-static PathNode path_nodes[MAX_STATIONS * 4]; // 存储所有搜索过的节点
+static PathNode path_nodes[MAX_STATIONS * LINE_COUNT]; // 存储所有搜索过的节点
 static int path_node_count = 0; // 当前节点数量
-static int path_parent[MAX_STATIONS * 4]; // 用于回溯路径
-static int path_line[MAX_STATIONS * 4];   // 线路信息
-static int path_distance[MAX_STATIONS * 4]; // 距离信息
-static bool visited[MAX_STATIONS][5]; // 访问标记：visited[station_id][line_id]
+static int path_parent[MAX_STATIONS * LINE_COUNT]; // 用于回溯路径
+static int path_line[MAX_STATIONS * LINE_COUNT];   // 线路信息
+static int path_distance[MAX_STATIONS * LINE_COUNT]; // 距离信息
+static bool visited[MAX_STATIONS][LINE_COUNT]; // 访问标记：visited[station_id][line_id]
 
 /**
  * @brief 清空路径搜索状态
@@ -111,7 +111,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
     clear_search_state();
 
     // 获取起点和终点的所有线路
-    int start_lines[4], end_lines[4];
+    int start_lines[LINE_COUNT], end_lines[LINE_COUNT];
     int start_line_count = get_station_lines(start_id, start_lines);
     int end_line_count = get_station_lines(end_id, end_lines);
 
@@ -120,14 +120,14 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
     }
 
     // 使用队列进行BFS搜索
-    int queue[MAX_STATIONS * 4];
+    int queue[MAX_STATIONS * LINE_COUNT];
     int front = 0, rear = 0;
 
     // 将起点的所有线路加入队列
     for (int i = 0; i < start_line_count; i++) {
         int line = start_lines[i];
 
-        if (path_node_count >= MAX_STATIONS * 4 - 1) {
+        if (path_node_count >= MAX_STATIONS * LINE_COUNT - 1) {
             return;
         }
 
@@ -144,11 +144,11 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
     }
 
     // BFS搜索，设置最大搜索次数防止死循环
-    int max_searches = 500;
-    int search_count = 0;
+    // int max_searches = 500;
+    // int search_count = 0;
 
-    while (front < rear && search_count < max_searches) {
-        search_count++;
+    while (front < rear /*&& search_count < max_searches*/) {
+        // search_count++;
         int current_index = queue[front++]; //cureent_index = 0;front = 1;
         PathNode* current = &path_nodes[current_index];
 
@@ -218,7 +218,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
         }
 
         // 搜索相邻站点（只在当前线路）
-        const MetroLine* metro_line = &metro_lines[current->line_id - 1];
+        const MetroLine* metro_line = get_metro_line(current->line_id);
 
         // 查找当前站点位置
         int current_pos = -1;
@@ -241,7 +241,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
                         continue;
                     }
 
-                    if (path_node_count >= MAX_STATIONS * 4 - 1) {
+                    if (path_node_count >= MAX_STATIONS * LINE_COUNT - 1) {
                         return;
                     }
 
@@ -260,7 +260,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
         }
 
         // 检查换乘
-        int station_lines[4];
+        int station_lines[LINE_COUNT];
         int line_count = get_station_lines(current->station_id, station_lines);
 
         for (int i = 0; i < line_count; i++) {
@@ -274,7 +274,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
                 continue;
             }
 
-            if (path_node_count >= MAX_STATIONS * 4 - 1) {
+            if (path_node_count >= MAX_STATIONS * LINE_COUNT - 1) {
                 return;
             }
 

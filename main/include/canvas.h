@@ -9,7 +9,7 @@
 
 
 extern int8_t plus, minus;
-extern MetroLine metro_lines[4];
+extern MetroLine metro_lines[LINE_COUNT];
 
 extern int8_t is_line_showing;
 extern int8_t is_route_showing;
