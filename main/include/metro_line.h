@@ -38,10 +38,14 @@
 #define COLOR_LINE2    0xE99CC0  // 2号线 粉色
 #define COLOR_LINE3    0xD7B665  // 3号线 橙色
 #define COLOR_LINE4    0xBAD200  // 4号线 绿色
+#define COLOR_LINE5    0xA21F24
+#define COLOR_LINE6    0x007733
+#define COLOR_LINE7    0xED7600
+#define COLOR_LINE8    0x98AEAC
+#define COLOR_LINE11   0xFBCE00
+#define COlOR_LINE19   0x00A982
 
 
-#define DEPARTURE 0   //始发站
-#define TERMINUS  1    //终点站
 
 #define DIRECTION_UP 0
 #define DIRECTION_DOWN 1
@@ -58,7 +62,6 @@ typedef struct {
     int8_t       line_belonged; //所属的线路
     char*        name;
     char*        name_pinyin;
-
 } Station;// 站点结构体
 
 
@@ -97,6 +100,7 @@ lv_color_t get_line_color(int8_t line_number);
 //声明一些有关地图绘制的函数
 
 lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin);
+
 static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t state);
 static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color, int8_t state);
 
