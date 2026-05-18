@@ -29,7 +29,7 @@
 #define REC_X               896 - CANVAS_X
 #define REC_Y               74  - CANVAS_Y
 #define REC_W               102
-#define REC_H               143
+#define REC_H               346
 #define STEP                5 //缩放的步长
 
 #define POP_WINDOW_W        290
