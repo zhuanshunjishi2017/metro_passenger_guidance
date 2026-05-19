@@ -5,7 +5,7 @@
 #include <string.h>
 #include "gui.h"
 #define FAVORITES_FILE_PATH "0:/favorites.txt"
-#define MAX_FAVORITES 150
+#define MAX_FAVORITES 30
 #define MAX_FAVORITES_BUTTONS 4
 
 typedef struct {
@@ -19,7 +19,7 @@ uint16_t favorite_ids[MAX_FAVORITES]; //用来储存被收藏的站点的唯一i
 size_t favorite_count = 0; //用来计数有多少个收藏的车站
 static FavoriteBtn bindings[MAX_FAVORITES_BUTTONS]; 
 static bool favorites_ready = false;
-extern lv_obj_t* favorite_station_show_lb[30];
+extern lv_obj_t* favorite_station_show_lb[MAX_FAVORITES];
 extern lv_obj_t* station_prompt,*route_prompt;
 
 static bool favorites_contains(uint16_t only_id) //判断这个唯一id的车站是否被收藏了

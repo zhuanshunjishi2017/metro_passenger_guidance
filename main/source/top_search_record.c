@@ -8,7 +8,8 @@
 
 extern lv_obj_t* top_search_record_station[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_record_line[SEARCH_LIST_LEN];
-extern lv_obj_t* top_search_record_transfer[SEARCH_LIST_LEN];
+extern lv_obj_t* top_search_record_transfer1[SEARCH_LIST_LEN];
+extern lv_obj_t* top_search_record_transfer2[SEARCH_LIST_LEN];
 
 uint16_t search_record_ids[SEARCH_LIST_LEN]; //用来储存被收藏的站点的唯一id
 int search_record_count = 0; //用来计数有多少个搜索记录
@@ -126,9 +127,15 @@ void search_record_refresh(const char * text)
 
     if (station->transfer_line[0] > 0) 
     {
-        lv_label_set_text_fmt(top_search_record_transfer[search_record_count - 1], "%d号线", station->transfer_line[0]);
-        lv_obj_set_style_bg_color(top_search_record_transfer[search_record_count - 1], get_line_color(station->transfer_line[0]), 0);
-        lv_obj_clear_flag(top_search_record_transfer[search_record_count - 1], LV_OBJ_FLAG_HIDDEN);
+        lv_label_set_text_fmt(top_search_record_transfer1[search_record_count - 1], "%d号线", station->transfer_line[0]);
+        lv_obj_set_style_bg_color(top_search_record_transfer1[search_record_count - 1], get_line_color(station->transfer_line[0]), 0);
+        lv_obj_clear_flag(top_search_record_transfer1[search_record_count - 1], LV_OBJ_FLAG_HIDDEN);
+    }
+    if (station->transfer_line[1] > 0) 
+    {
+        lv_label_set_text_fmt(top_search_record_transfer2[search_record_count - 1], "%d号线", station->transfer_line[1]);
+        lv_obj_set_style_bg_color(top_search_record_transfer2[search_record_count - 1], get_line_color(station->transfer_line[1]), 0);
+        lv_obj_clear_flag(top_search_record_transfer2[search_record_count - 1], LV_OBJ_FLAG_HIDDEN);
     }
     
 }
