@@ -1,6 +1,6 @@
 #ifndef FAVORITES_H
 #define FAVORITES_H
-#define MAX_FAVORITES 150
+#define MAX_FAVORITES 30
 #define MAX_FAVORITES_BUTTONS 4
 #define MAX_ROUTES 10
 #include "canvas.h"

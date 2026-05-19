@@ -27,7 +27,8 @@ lv_obj_t* display11,*main_lb2,*station_lb,*route_lb;
 lv_obj_t* display12,*display12_lb1;
 lv_obj_t* search_result_show_label[SEARCH_LIST_LEN];
 lv_obj_t* search_line_show_label[SEARCH_LIST_LEN];
-lv_obj_t* search_line_transfer_show_label[SEARCH_LIST_LEN];
+lv_obj_t* search_line_transfer1_show_label[SEARCH_LIST_LEN];
+lv_obj_t* search_line_transfer2_show_label[SEARCH_LIST_LEN];
 lv_obj_t* start_img,*end_img;
 
 const char*  start_name,* end_name;
@@ -36,10 +37,11 @@ lv_obj_t* pp_window;
 lv_obj_t* star_bt_label;
 lv_obj_t* star_bt,* route_name,*cancel_btn;
 lv_obj_t* favorite_station_show_disp,*favorite_route_show_disp;
-lv_obj_t* favorite_station_show_lb[30];
-lv_obj_t* favorite_station_line_show_lb[30];
-lv_obj_t* favorite_station_line_transfer_show_lb[30];
-lv_obj_t* favorite_station_line_transfer_show_lb2[30];
+lv_obj_t* favorite_station_show_lb[MAX_FAVORITES];
+lv_obj_t* favorite_station_line_show_lb[MAX_FAVORITES];
+lv_obj_t* favorite_station_line_transfer_show_lb1[MAX_FAVORITES];
+lv_obj_t* favorite_station_line_transfer_show_lb2[MAX_FAVORITES];
+lv_obj_t* favorite_station_line_transfer_show_lb3[MAX_FAVORITES];
 lv_obj_t* favorite_route_show_lb[10];
 lv_obj_t* favorite_route_dlt_btn[10];
 lv_obj_t* favorite_route_station_lb1[10];
@@ -47,7 +49,8 @@ lv_obj_t* favorite_route_station_lb2[10];
 lv_obj_t* warning_label;
 extern lv_obj_t* top_search_station[SEARCH_LIST_LEN];
 extern lv_obj_t* top_search_line[SEARCH_LIST_LEN];
-extern lv_obj_t* top_search_transfer[SEARCH_LIST_LEN];
+extern lv_obj_t* top_search_transfer1[SEARCH_LIST_LEN];
+extern lv_obj_t* top_search_transfer2[SEARCH_LIST_LEN];
 extern lv_style_t flame_style,blue_button_style,blue_label_style, btn_style;
 extern uint16_t favorite_ids[MAX_FAVORITES];
 extern FavoriteRouteID favorite_routes[MAX_ROUTES];
@@ -136,12 +139,12 @@ void display12_init(void)
     lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
 }
 
-void search_result_show_label_init(lv_obj_t* display)
+void search_result_show_label_init(void)
 {
     if (search_result_show_label[0] == NULL || search_line_show_label[0] == NULL)
     {
         for(int i = 0; i < SEARCH_LIST_LEN; i++) {
-            search_result_show_label[i] = lv_label_create(display);
+            search_result_show_label[i] = lv_label_create(display12);
             lv_obj_set_style_border_color(search_result_show_label[i], lv_color_hex(COLOR_MID_GRAY), 0);
             lv_obj_set_style_border_width(search_result_show_label[i], 1, 0);
             lv_obj_set_style_pad_left(search_result_show_label[i], 16, 0);
@@ -156,7 +159,7 @@ void search_result_show_label_init(lv_obj_t* display)
 
             lv_obj_add_event_cb(search_result_show_label[i], search_result_click_cb, LV_EVENT_CLICKED, NULL);
 
-            search_line_show_label[i] = lv_label_create(display);
+            search_line_show_label[i] = lv_label_create(display12);
             lv_obj_set_pos(search_line_show_label[i], 590, 71 + i * 54);
             lv_obj_set_size(search_line_show_label[i], 63, 28);
             lv_obj_set_style_radius(search_line_show_label[i],4,LV_PART_MAIN);
@@ -170,19 +173,33 @@ void search_result_show_label_init(lv_obj_t* display)
             lv_label_set_text(search_line_show_label[i], "");
             lv_obj_set_style_text_color(search_line_show_label[i],lv_color_hex(0xffffff), 0);
 
-            search_line_transfer_show_label[i] = lv_label_create(display);
-            lv_obj_set_pos(search_line_transfer_show_label[i], 517, 71 + i * 54);
-            lv_obj_set_size(search_line_transfer_show_label[i], 63, 28);
-            lv_obj_set_style_radius(search_line_transfer_show_label[i],4,LV_PART_MAIN);
-            lv_obj_set_style_bg_color(search_line_transfer_show_label[i], lv_color_hex(0xffffff), 0);
-            lv_obj_set_style_bg_opa(search_line_transfer_show_label[i], LV_OPA_COVER, 0);
-            lv_obj_add_flag(search_line_transfer_show_label[i],LV_OBJ_FLAG_HIDDEN);
+            search_line_transfer1_show_label[i] = lv_label_create(display12);
+            lv_obj_set_pos(search_line_transfer1_show_label[i], 517, 71 + i * 54);
+            lv_obj_set_size(search_line_transfer1_show_label[i], 63, 28);
+            lv_obj_set_style_radius(search_line_transfer1_show_label[i],4,LV_PART_MAIN);
+            lv_obj_set_style_bg_color(search_line_transfer1_show_label[i], lv_color_hex(0xffffff), 0);
+            lv_obj_set_style_bg_opa(search_line_transfer1_show_label[i], LV_OPA_COVER, 0);
+            lv_obj_add_flag(search_line_transfer1_show_label[i],LV_OBJ_FLAG_HIDDEN);
             
-            lv_obj_set_style_text_align(search_line_transfer_show_label[i], LV_TEXT_ALIGN_CENTER, 0);
-            lv_obj_set_style_pad_top(search_line_transfer_show_label[i],4, 0);
-            lv_obj_set_style_text_font(search_line_transfer_show_label[i], &heiti_16, LV_PART_MAIN);
-            lv_label_set_text(search_line_transfer_show_label[i], "");
-            lv_obj_set_style_text_color(search_line_transfer_show_label[i],lv_color_hex(0xffffff), 0);
+            lv_obj_set_style_text_align(search_line_transfer1_show_label[i], LV_TEXT_ALIGN_CENTER, 0);
+            lv_obj_set_style_pad_top(search_line_transfer1_show_label[i],4, 0);
+            lv_obj_set_style_text_font(search_line_transfer1_show_label[i], &heiti_16, LV_PART_MAIN);
+            lv_label_set_text(search_line_transfer1_show_label[i], "");
+            lv_obj_set_style_text_color(search_line_transfer1_show_label[i],lv_color_hex(0xffffff), 0);
+
+            search_line_transfer2_show_label[i] = lv_label_create(display12);
+            lv_obj_set_pos(search_line_transfer2_show_label[i], 444, 71 + i * 54);
+            lv_obj_set_size(search_line_transfer2_show_label[i], 63, 28);
+            lv_obj_set_style_radius(search_line_transfer2_show_label[i],4,LV_PART_MAIN);
+            lv_obj_set_style_bg_color(search_line_transfer2_show_label[i], lv_color_hex(0xffffff), 0);
+            lv_obj_set_style_bg_opa(search_line_transfer2_show_label[i], LV_OPA_COVER, 0);
+            lv_obj_add_flag(search_line_transfer2_show_label[i],LV_OBJ_FLAG_HIDDEN);
+            
+            lv_obj_set_style_text_align(search_line_transfer2_show_label[i], LV_TEXT_ALIGN_CENTER, 0);
+            lv_obj_set_style_pad_top(search_line_transfer2_show_label[i],4, 0);
+            lv_obj_set_style_text_font(search_line_transfer2_show_label[i], &heiti_16, LV_PART_MAIN);
+            lv_label_set_text(search_line_transfer2_show_label[i], "");
+            lv_obj_set_style_text_color(search_line_transfer2_show_label[i],lv_color_hex(0xffffff), 0);
         }
     }
     else
@@ -193,14 +210,13 @@ void search_result_show_label_init(lv_obj_t* display)
             lv_obj_add_flag(search_result_show_label[i],LV_OBJ_FLAG_HIDDEN);
 
             lv_label_set_text(search_line_show_label[i], "");
-            // lv_obj_set_style_bg_color(search_line_show_label[i], lv_color_hex(0xffffff), 0);
-            // lv_obj_set_style_bg_opa(search_line_show_label[i], LV_OPA_COVER, 0);
             lv_obj_add_flag(search_line_show_label[i],LV_OBJ_FLAG_HIDDEN);
 
-            lv_label_set_text(search_line_transfer_show_label[i], "");
-            // lv_obj_set_style_bg_color(search_line_transfer_show_label[i], lv_color_hex(0xffffff), 0);
-            // lv_obj_set_style_bg_opa(search_line_transfer_show_label[i], LV_OPA_COVER, 0);
-            lv_obj_add_flag(search_line_transfer_show_label[i],LV_OBJ_FLAG_HIDDEN);
+            lv_label_set_text(search_line_transfer1_show_label[i], "");
+            lv_obj_add_flag(search_line_transfer1_show_label[i],LV_OBJ_FLAG_HIDDEN);
+
+            lv_label_set_text(search_line_transfer2_show_label[i], "");
+            lv_obj_add_flag(search_line_transfer2_show_label[i],LV_OBJ_FLAG_HIDDEN);
         }
     }
 }   
@@ -208,7 +224,7 @@ void search_result_show_label_init(lv_obj_t* display)
 void search_result_show_label_set_text(char * text)
 {
     int index = 0;
-    search_result_show_label_init(display12);
+    search_result_show_label_init();
 
     if (!*text){
         lv_obj_add_flag(display12, LV_OBJ_FLAG_HIDDEN);
@@ -235,12 +251,22 @@ void search_result_show_label_set_text(char * text)
                 if (metro_lines[i].stations[j].transfer_line[0])
                 {
                     int8_t transfer_line1 = metro_lines[i].stations[j].transfer_line[0];
-                    lv_label_set_text_fmt(search_line_transfer_show_label[index], "%d号线", metro_lines[i].stations[j].transfer_line[0]);
+                    lv_label_set_text_fmt(search_line_transfer1_show_label[index], "%d号线", metro_lines[i].stations[j].transfer_line[0]);
 
-                    lv_obj_set_style_bg_color(search_line_transfer_show_label[index], get_line_color(transfer_line1), 0);
-                    lv_obj_clear_flag(search_line_transfer_show_label[index], LV_OBJ_FLAG_HIDDEN);
-                    lv_obj_move_foreground(search_line_transfer_show_label[index]);
+                    lv_obj_set_style_bg_color(search_line_transfer1_show_label[index], get_line_color(transfer_line1), 0);
+                    lv_obj_clear_flag(search_line_transfer1_show_label[index], LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_move_foreground(search_line_transfer1_show_label[index]);
                 }
+                if (metro_lines[i].stations[j].transfer_line[1])
+                {
+                    int8_t transfer_line2 = metro_lines[i].stations[j].transfer_line[1];
+                    lv_label_set_text_fmt(search_line_transfer2_show_label[index], "%d号线", transfer_line2);
+
+                    lv_obj_set_style_bg_color(search_line_transfer2_show_label[index], get_line_color(transfer_line2), 0);
+                    lv_obj_clear_flag(search_line_transfer2_show_label[index], LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_move_foreground(search_line_transfer2_show_label[index]);
+                }
+                
 
                 index++;
                 if (index >= SEARCH_LIST_LEN) 
@@ -464,7 +490,7 @@ void favorite_station_init(void)
     lv_obj_set_style_pad_all(favorite_station_show_disp, 0, 0);
     lv_obj_set_scrollbar_mode(favorite_station_show_disp, LV_SCROLLBAR_MODE_OFF);
 
-    for(int i = 0; i < 30; i++) 
+    for(int i = 0; i < SEARCH_LIST_LEN; i++) 
     {
         favorite_station_show_lb[i] = lv_label_create(favorite_station_show_disp);
         lv_obj_set_style_border_color(favorite_station_show_lb[i], lv_color_hex(COLOR_MID_BLUE), 0);
@@ -498,18 +524,18 @@ void favorite_station_init(void)
         lv_label_set_text(favorite_station_line_show_lb[i], "");
         lv_obj_set_style_text_color(favorite_station_line_show_lb[i],lv_color_hex(0xffffff), 0);
 
-        favorite_station_line_transfer_show_lb[i] = lv_label_create(favorite_station_show_disp);
-        lv_obj_set_pos(favorite_station_line_transfer_show_lb[i], 182, 15 + i * 64);
-        lv_obj_set_size(favorite_station_line_transfer_show_lb[i], 29, 29);
-        lv_obj_set_style_radius(favorite_station_line_transfer_show_lb[i],4,LV_PART_MAIN);
-        lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb[i], lv_color_hex(0xffffff), 0);
-        lv_obj_set_style_bg_opa(favorite_station_line_transfer_show_lb[i], LV_OPA_COVER, 0);
+        favorite_station_line_transfer_show_lb1[i] = lv_label_create(favorite_station_show_disp);
+        lv_obj_set_pos(favorite_station_line_transfer_show_lb1[i], 182, 15 + i * 64);
+        lv_obj_set_size(favorite_station_line_transfer_show_lb1[i], 29, 29);
+        lv_obj_set_style_radius(favorite_station_line_transfer_show_lb1[i],4,LV_PART_MAIN);
+        lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb1[i], lv_color_hex(0xffffff), 0);
+        lv_obj_set_style_bg_opa(favorite_station_line_transfer_show_lb1[i], LV_OPA_COVER, 0);
         
-        lv_obj_set_style_text_align(favorite_station_line_transfer_show_lb[i], LV_TEXT_ALIGN_CENTER, 0);
-        lv_obj_set_style_pad_top(favorite_station_line_transfer_show_lb[i],4, 0);
-        lv_obj_set_style_text_font(favorite_station_line_transfer_show_lb[i], &heiti_16, LV_PART_MAIN);
-        lv_label_set_text(favorite_station_line_transfer_show_lb[i], "");
-        lv_obj_set_style_text_color(favorite_station_line_transfer_show_lb[i],lv_color_hex(0xffffff), 0);
+        lv_obj_set_style_text_align(favorite_station_line_transfer_show_lb1[i], LV_TEXT_ALIGN_CENTER, 0);
+        lv_obj_set_style_pad_top(favorite_station_line_transfer_show_lb1[i],4, 0);
+        lv_obj_set_style_text_font(favorite_station_line_transfer_show_lb1[i], &heiti_16, LV_PART_MAIN);
+        lv_label_set_text(favorite_station_line_transfer_show_lb1[i], "");
+        lv_obj_set_style_text_color(favorite_station_line_transfer_show_lb1[i],lv_color_hex(0xffffff), 0);
 
         favorite_station_line_transfer_show_lb2[i] = lv_label_create(favorite_station_show_disp);
         lv_obj_set_pos(favorite_station_line_transfer_show_lb2[i], 221, 15 + i * 64);
@@ -523,19 +549,33 @@ void favorite_station_init(void)
         lv_obj_set_style_text_font(favorite_station_line_transfer_show_lb2[i], &heiti_16, LV_PART_MAIN);
         lv_label_set_text(favorite_station_line_transfer_show_lb2[i], "");
         lv_obj_set_style_text_color(favorite_station_line_transfer_show_lb2[i],lv_color_hex(0xffffff), 0);
+
+        favorite_station_line_transfer_show_lb3[i] = lv_label_create(favorite_station_show_disp);
+        lv_obj_set_pos(favorite_station_line_transfer_show_lb3[i], 143, 15 + i * 64);
+        lv_obj_set_size(favorite_station_line_transfer_show_lb3[i], 29, 29);
+        lv_obj_set_style_radius(favorite_station_line_transfer_show_lb3[i],4,LV_PART_MAIN);
+        lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb3[i], lv_color_hex(0xffffff), 0);
+        lv_obj_set_style_bg_opa(favorite_station_line_transfer_show_lb3[i], LV_OPA_COVER, 0);
+        
+        lv_obj_set_style_text_align(favorite_station_line_transfer_show_lb3[i], LV_TEXT_ALIGN_CENTER, 0);
+        lv_obj_set_style_pad_top(favorite_station_line_transfer_show_lb3[i],4, 0);
+        lv_obj_set_style_text_font(favorite_station_line_transfer_show_lb3[i], &heiti_16, LV_PART_MAIN);
+        lv_label_set_text(favorite_station_line_transfer_show_lb3[i], "");
+        lv_obj_set_style_text_color(favorite_station_line_transfer_show_lb3[i],lv_color_hex(0xffffff), 0);
     }
 }
 void favorite_station_show(void)
 {
-    for (int i = 0; i < 30; i++)
+    for (int i = 0; i < SEARCH_LIST_LEN; i++)
     {
         lv_obj_add_flag(favorite_station_show_lb[i], LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(favorite_station_line_show_lb[i], LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(favorite_station_line_transfer_show_lb[i], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(favorite_station_line_transfer_show_lb1[i], LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(favorite_station_line_transfer_show_lb2[i], LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(favorite_station_line_transfer_show_lb3[i], LV_OBJ_FLAG_HIDDEN);
     }
 
-    for (int i = 0; i < favorite_count && i < 30; i++)
+    for (int i = 0; i < favorite_count && i < SEARCH_LIST_LEN; i++)
     {
         const Station* station_temp = find_station_by_id(favorite_ids[i]);
 
@@ -561,13 +601,25 @@ void favorite_station_show(void)
             int transfer_line1 = station_temp->transfer_line[0];
             lv_obj_add_flag(favorite_station_line_show_lb[i], LV_OBJ_FLAG_HIDDEN);
 
+            lv_label_set_text_fmt(favorite_station_line_transfer_show_lb1[i], "%d", line_belonged);
             lv_label_set_text_fmt(favorite_station_line_transfer_show_lb2[i], "%d", transfer_line1);
-            lv_label_set_text_fmt(favorite_station_line_transfer_show_lb[i], "%d", line_belonged);
+
+            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb1[i], get_line_color(transfer_line1), 0);
             lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb2[i], get_line_color(line_belonged), 0);
-            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb[i], get_line_color(transfer_line1), 0);
-            lv_obj_clear_flag(favorite_station_line_transfer_show_lb[i], LV_OBJ_FLAG_HIDDEN);
+
+            lv_obj_clear_flag(favorite_station_line_transfer_show_lb1[i], LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(favorite_station_line_transfer_show_lb2[i], LV_OBJ_FLAG_HIDDEN);
-            lv_obj_move_foreground(favorite_station_line_transfer_show_lb[i]);
+
+            lv_obj_move_foreground(favorite_station_line_transfer_show_lb1[i]);
+
+            if (station_temp->transfer_line[1] > 0) 
+            {
+                int transfer_line2 = station_temp->transfer_line[1];
+                lv_label_set_text_fmt(favorite_station_line_transfer_show_lb3[i], "%d", transfer_line2);
+                lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb3[i], get_line_color(transfer_line2), 0);
+                lv_obj_clear_flag(favorite_station_line_transfer_show_lb3[i], LV_OBJ_FLAG_HIDDEN);
+                lv_obj_move_foreground(favorite_station_line_transfer_show_lb3[i]);
+            }
         }
     }
     if (favorite_count == 0)
@@ -583,7 +635,7 @@ void favorite_station_show(void)
 
 void favorite_station_lb_style_reset(void)
 {
-    for (int i = 0; i < 30; i++)
+    for (int i = 0; i < SEARCH_LIST_LEN; i++)
     {
         lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
         lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
@@ -939,14 +991,16 @@ void clear_top_search_result_labels(void)
 {
     for (int i = 0; i < SEARCH_LIST_LEN; i++)
 	{
-		if (top_search_station[i] != NULL || top_search_line[i] != NULL || top_search_transfer[i] != NULL)
+		if (top_search_station[i] != NULL || top_search_line[i] != NULL || top_search_transfer1[i] != NULL || top_search_transfer2[i] != NULL)
 		{
 			lv_obj_del_async(top_search_station[i]);
 			top_search_station[i] = NULL;
 			lv_obj_del_async(top_search_line[i]);
 			top_search_line[i] = NULL;
-			lv_obj_del_async(top_search_transfer[i]);
-			top_search_transfer[i] = NULL;
+			lv_obj_del_async(top_search_transfer1[i]);
+			top_search_transfer1[i] = NULL;
+            lv_obj_del_async(top_search_transfer2[i]);
+            top_search_transfer2[i] = NULL;
     	}
 	}
 }

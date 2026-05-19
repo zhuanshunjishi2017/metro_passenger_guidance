@@ -5,8 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define MAX_STATIONS 1000       // 最大站点数
-#define MAX_PATH_LENGTH 200     // 最大路径长度
+#define MAX_STATIONS 300       // 最大站点数
+#define MAX_PATH_LENGTH 150     // 最大路径长度
 #define MAX_TRANSFER_COUNT 10  // 最大换乘次数
 
 // 路径步骤结构体
