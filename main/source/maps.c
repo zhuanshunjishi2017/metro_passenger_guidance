@@ -148,42 +148,55 @@ static void draw_route(lv_obj_t *canvas, const Route *route)
         pts[j].y = geo_to_screen(route->steps[i].sta->geo_y, origin_y);
 
         dsc.color = get_line_color(route->steps[i].line_number);
-/* 
-        if (line->line_number == 4 && (line->stations[i].id == 26))
-        {
-            pts[j].x -= 1;
-            pts[j].y -= 1;
-            j++;
-            pts[j].x = pts[j-1].x + 1;
-            pts[j].y = pts[j-1].y + 1;
-        }
-        else if(line->line_number == 7 && (line->stations[i].id == 17))
-        {
-            j++;
-            pts[j].x = geo_to_screen(22, origin_x);
-            pts[j].y = geo_to_screen(12, origin_y);
-            j++;
-            pts[j].x = geo_to_screen(24, origin_x);
-            pts[j].y = geo_to_screen(14, origin_y);
-        }
-        else if(line->line_number == 8 && (line->stations[i].id == 7))
-        {
-            j++;
-            pts[j].x = geo_to_screen(26, origin_x);
-            pts[j].y = geo_to_screen(12, origin_y);
-        }
-        else if(line->line_number == 11 && (line->stations[i].id == 4))
-        {
-            j++;
-            pts[j].x = geo_to_screen(27, origin_x);
-            pts[j].y = geo_to_screen(26, origin_y);
-        } */
+        
         //绘制线路
         if (j > 0)
         {    
             lv_canvas_draw_line(canvas, pts + j - 1, 2 , &dsc);
         }
         j++;
+
+        if (i < route->total_stations - 1)
+        {
+            const Station * now_sta = route->steps[i].sta;
+            const Station * next_sta = route->steps[i + 1].sta;
+            if ((now_sta->only_id == 84 && next_sta->only_id == 21)
+              ||(now_sta->only_id == 21 && next_sta->only_id == 84))
+            {
+                pts[j].x = geo_to_screen(22, origin_x);
+                pts[j].y = geo_to_screen(12, origin_y);
+                dsc.color = get_line_color( 7 );
+                lv_canvas_draw_line(canvas, pts + j - 1, 2 , &dsc);
+                j++;
+            }
+            else if ((now_sta->only_id == 141 && next_sta->only_id == 21)
+                   ||(now_sta->only_id == 21  && next_sta->only_id == 141))
+            {
+                pts[j].x = geo_to_screen(24, origin_x);
+                pts[j].y = geo_to_screen(14, origin_y);
+                dsc.color = get_line_color( 7 );
+                lv_canvas_draw_line(canvas, pts + j - 1, 2 , &dsc);
+                j++;
+            }
+            else if ((now_sta->only_id == 141 && next_sta->only_id == 22)
+                   ||(now_sta->only_id == 22  && next_sta->only_id == 141))
+            {
+                pts[j].x = geo_to_screen(24, origin_x);
+                pts[j].y = geo_to_screen(14, origin_y);
+                dsc.color = get_line_color( 8 );
+                lv_canvas_draw_line(canvas, pts + j - 1, 2 , &dsc);
+                j++;
+            }
+            else if ((now_sta->only_id == 250  && next_sta->only_id == 239)
+                   ||(now_sta->only_id == 239  && next_sta->only_id == 250))
+            {
+                pts[j].x = geo_to_screen(27, origin_x);
+                pts[j].y = geo_to_screen(26, origin_y);
+                dsc.color = get_line_color( 11 );
+                lv_canvas_draw_line(canvas, pts + j - 1, 2 , &dsc);
+                j++;
+            }
+        }
     }
     
     for (int i = 0; i < route->total_stations; i++)
