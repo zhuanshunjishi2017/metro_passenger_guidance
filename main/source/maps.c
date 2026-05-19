@@ -18,8 +18,8 @@ extern const Station* start_station, *end_station;
 uint16_t magnify_size = 30;
 
 //原点
-lv_coord_t origin_x = -250;
-lv_coord_t origin_y = -200;
+lv_coord_t origin_x = -200;
+lv_coord_t origin_y = -150;
 
 int8_t plus = 1;
 int8_t minus = -1;

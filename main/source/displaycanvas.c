@@ -521,7 +521,16 @@ void pop_window_move(const Station **sta)
 
     lv_obj_set_pos(location_image, x - 38, y - 75);
     x += 25;
-    if (sta[0]->transfer_line[0])
+
+
+    //  限定位置
+    if (sta[0]->transfer_line[1])
+    {
+        y -= 70 + POP_WINDOW_H_TRANS2;
+        if (y > CANVAS_H - 10 - POP_WINDOW_H_TRANS2)
+            y = CANVAS_H - 10 - POP_WINDOW_H_TRANS2;
+    }
+    else if (sta[0]->transfer_line[0])
     {
         y -= 70 + POP_WINDOW_H_TRANS;
         if (y > CANVAS_H - 10 - POP_WINDOW_H_TRANS)
@@ -549,12 +558,21 @@ void pop_window_show(const Station **sta, LineinfoBtn * btn)
 {
 
     lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
-    if (sta[0]->transfer_line[0])
+    if (sta[0]->transfer_line[1])
+    {
+        lv_obj_set_size(pop_window, POP_WINDOW_W,POP_WINDOW_H_TRANS2);
+        lv_obj_set_y(start_btn, BOTTOM_BTN_Y_TRANS2);
+        lv_obj_set_y(end_btn, BOTTOM_BTN_Y_TRANS2);
+        lv_obj_clear_flag(btn[1].line_info_btn, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(btn[2].line_info_btn, LV_OBJ_FLAG_HIDDEN);
+    }
+    else if (sta[0]->transfer_line[0])
     {
         lv_obj_set_size(pop_window, POP_WINDOW_W,POP_WINDOW_H_TRANS);
         lv_obj_set_y(start_btn, BOTTOM_BTN_Y_TRANS);
         lv_obj_set_y(end_btn, BOTTOM_BTN_Y_TRANS);
         lv_obj_clear_flag(btn[1].line_info_btn, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(btn[2].line_info_btn, LV_OBJ_FLAG_HIDDEN);
     }
     else 
     {
@@ -562,6 +580,7 @@ void pop_window_show(const Station **sta, LineinfoBtn * btn)
         lv_obj_set_y(start_btn, BOTTOM_BTN_Y_NORM);
         lv_obj_set_y(end_btn, BOTTOM_BTN_Y_NORM);
         lv_obj_add_flag(btn[1].line_info_btn, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(btn[2].line_info_btn, LV_OBJ_FLAG_HIDDEN);
     }
 
 
@@ -575,9 +594,9 @@ void pop_window_show(const Station **sta, LineinfoBtn * btn)
 
         int8_t line_number = sta[i]->line_belonged;
 
-        char * sta1 = get_metro_line(line_number)->stations[0].name;
-        char * sta2 = get_metro_line(line_number)->stations[get_metro_line(line_number)->count - 1].name;
-        char line_str[10], sta1_str[24], sta2_str[24];
+        char * sta1 = get_first_station(sta[i]->line_belonged, 0 )->name;
+        char * sta2 = get_first_station(sta[i]->line_belonged, 1 )->name;
+        char line_str[10], sta1_str[36], sta2_str[36];
         snprintf(line_str, sizeof(line_str), "%d号线",line_number);
         snprintf(sta1_str, sizeof(sta1_str), "%s 方向",sta1);
         snprintf(sta2_str, sizeof(sta2_str), "%s 方向",sta2);
