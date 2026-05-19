@@ -490,7 +490,7 @@ void favorite_station_init(void)
     lv_obj_set_style_pad_all(favorite_station_show_disp, 0, 0);
     lv_obj_set_scrollbar_mode(favorite_station_show_disp, LV_SCROLLBAR_MODE_OFF);
 
-    for(int i = 0; i < SEARCH_LIST_LEN; i++) 
+    for(int i = 0; i < MAX_FAVORITES; i++) 
     {
         favorite_station_show_lb[i] = lv_label_create(favorite_station_show_disp);
         lv_obj_set_style_border_color(favorite_station_show_lb[i], lv_color_hex(COLOR_MID_BLUE), 0);
@@ -566,7 +566,7 @@ void favorite_station_init(void)
 }
 void favorite_station_show(void)
 {
-    for (int i = 0; i < SEARCH_LIST_LEN; i++)
+    for (int i = 0; i < MAX_FAVORITES; i++)
     {
         lv_obj_add_flag(favorite_station_show_lb[i], LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(favorite_station_line_show_lb[i], LV_OBJ_FLAG_HIDDEN);
@@ -575,7 +575,8 @@ void favorite_station_show(void)
         lv_obj_add_flag(favorite_station_line_transfer_show_lb3[i], LV_OBJ_FLAG_HIDDEN);
     }
 
-    for (int i = 0; i < favorite_count && i < SEARCH_LIST_LEN; i++)
+    lv_obj_scroll_to_y(favorite_station_show_disp, 0, LV_ANIM_OFF);
+    for (int i = 0; i < favorite_count && i < MAX_FAVORITES; i++)
     {
         const Station* station_temp = find_station_by_id(favorite_ids[i]);
 
@@ -635,7 +636,7 @@ void favorite_station_show(void)
 
 void favorite_station_lb_style_reset(void)
 {
-    for (int i = 0; i < SEARCH_LIST_LEN; i++)
+    for (int i = 0; i < MAX_FAVORITES; i++)
     {
         lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
         lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
@@ -842,7 +843,7 @@ void station_info_click_cb(lv_event_t *e)
         lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
         
         lv_obj_set_x(pop_window, 681);
-        lv_obj_set_y(pop_window, 197);
+        lv_obj_set_y(pop_window, 127);
         is_station_clicked = 1;
     }
     else
@@ -858,7 +859,7 @@ void station_info_click_cb(lv_event_t *e)
         }
         else
         {
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < MAX_FAVORITES; i++)
             {
                 lv_obj_set_style_bg_color(favorite_station_show_lb[i], lv_color_hex(COLOR_BG_BLUE), 0);
                 lv_obj_set_style_text_color(favorite_station_show_lb[i], lv_color_black(),0);
@@ -874,7 +875,7 @@ void station_info_click_cb(lv_event_t *e)
             lv_obj_clear_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
     
             lv_obj_set_x(pop_window, 681);
-            lv_obj_set_y(pop_window, 197);
+            lv_obj_set_y(pop_window, 127);
             is_station_clicked = 1;
             
         }
