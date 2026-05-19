@@ -562,26 +562,53 @@ void station_name_text_show(lv_obj_t * canvas, lv_coord_t x, lv_draw_label_dsc_t
     {
         int8_t transfer_line1 = abs(sta->transfer_line[0]);
 
-        lv_color_t color = get_line_color(transfer_line1);
+        rect_dsc_line.bg_color = get_line_color(transfer_line1);
 
-        rect_dsc_line.bg_color = color;
+        if (sta->transfer_line[1])
+        {
+            int8_t transfer_line2 = abs(sta->transfer_line[1]);
+            lv_canvas_draw_rect(canvas, x+1, STATION_Y + 10,19,24,&rect_dsc_line);
 
-        lv_canvas_draw_rect(canvas, x+1, STATION_Y + 10,19,54,&rect_dsc_line);
+            rect_dsc_line.bg_color = get_line_color(transfer_line2);
 
-        char line_str[3];
-        snprintf(line_str, sizeof(line_str), "%d",transfer_line1);
+            lv_canvas_draw_rect(canvas, x+1, STATION_Y + 10+28,19,24,&rect_dsc_line);
 
-        lv_draw_label_dsc_t label_dsc_transfer;
-        lv_draw_label_dsc_init(&label_dsc_transfer);
+            char line_str[2][3];
+            snprintf(line_str[0], sizeof(line_str[0]), "%d",transfer_line1);
+            snprintf(line_str[1], sizeof(line_str[1]), "%d",transfer_line2);
 
-        label_dsc_transfer.color = lv_color_white();
-        label_dsc_transfer.font = &heiti_16;
-        label_dsc_transfer.align = LV_TEXT_ALIGN_CENTER;
-        label_dsc_transfer.flag = LV_TEXT_FLAG_FIT;
-        
-        lv_canvas_draw_text(canvas, x + 2, STATION_Y + 10+1, 18, &label_dsc_transfer, line_str);
-        lv_canvas_draw_text(canvas, x + 2, STATION_Y + 10+17, 18, &label_dsc_transfer, "号");
-        lv_canvas_draw_text(canvas, x + 2, STATION_Y + 10+34, 18, &label_dsc_transfer, "线");
+            lv_draw_label_dsc_t label_dsc_transfer;
+            lv_draw_label_dsc_init(&label_dsc_transfer);
+
+            label_dsc_transfer.color = lv_color_white();
+            label_dsc_transfer.font = &heiti_16;
+            label_dsc_transfer.align = LV_TEXT_ALIGN_CENTER;
+            label_dsc_transfer.flag = LV_TEXT_FLAG_FIT;
+            
+            lv_canvas_draw_text(canvas, x + 2, STATION_Y + 10+3, 18, &label_dsc_transfer, line_str[0]);
+            lv_canvas_draw_text(canvas, x + 2, STATION_Y + 10+3+28, 18, &label_dsc_transfer, line_str[1]);
+
+        }
+        else
+        {
+            lv_canvas_draw_rect(canvas, x+1, STATION_Y + 10,19,54,&rect_dsc_line);
+
+            char line_str[3];
+            snprintf(line_str, sizeof(line_str), "%d",transfer_line1);
+
+            lv_draw_label_dsc_t label_dsc_transfer;
+            lv_draw_label_dsc_init(&label_dsc_transfer);
+
+            label_dsc_transfer.color = lv_color_white();
+            label_dsc_transfer.font = &heiti_16;
+            label_dsc_transfer.align = LV_TEXT_ALIGN_CENTER;
+            label_dsc_transfer.flag = LV_TEXT_FLAG_FIT;
+            
+            lv_canvas_draw_text(canvas, x + 2, STATION_Y + 10+1, 18, &label_dsc_transfer, line_str);
+            lv_canvas_draw_text(canvas, x + 2, STATION_Y + 10+17, 18, &label_dsc_transfer, "号");
+            lv_canvas_draw_text(canvas, x + 2, STATION_Y + 10+34, 18, &label_dsc_transfer, "线");
+        }
+
 
         while (*ptr) 
         {
@@ -698,7 +725,7 @@ void sta_click_canvas(lv_indev_t *indev, const MetroLine *line)
                 if (line->stations[i].id == showing_station->id && line->stations[i].transfer_line[0])
                 {
                     const Station * transfer_sta;
-                    get_transfer_station(&line->stations[i], &transfer_sta);
+                    get_transfer_station(showing_station, &transfer_sta);
 
                     station_info_show(transfer_sta ,true);
                     return;
@@ -720,7 +747,7 @@ void sta_click_canvas(lv_indev_t *indev, const MetroLine *line)
                 if (line->stations[i].id == showing_station->id && line->stations[i].transfer_line[0])
                 {
                     const Station * transfer_sta;
-                    get_transfer_station(&line->stations[i], &transfer_sta);
+                    get_transfer_station(showing_station, &transfer_sta);
 
                     station_info_show(transfer_sta ,true);
                     return;
@@ -1101,7 +1128,7 @@ void time_label_update(const MetroLine *line, const Station * sta)
             if ((!direction_state && showing_station->id == 1)||
                 (direction_state && showing_station->id == line->count))
             {
-                lv_label_set_text(time_labels[i].remain_sta_label, "首发站");
+                lv_label_set_text(time_labels[i].remain_sta_label, "始发站");
 
                 
                 timeAdd(&depart_time, &depart_time_interval, &depart_time);

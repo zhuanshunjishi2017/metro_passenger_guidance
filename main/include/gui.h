@@ -34,6 +34,7 @@
 
 #define POP_WINDOW_W        290
 #define POP_WINDOW_H_TRANS  375
+#define POP_WINDOW_H_TRANS2 500
 #define POP_WINDOW_H_NORM   246
 #define LINE_BTN_W          267
 #define LINE_BTN_H          121
@@ -44,6 +45,7 @@
 #define TOP_BAR_H           46
 #define BOTTOM_BTN_Y_NORM   190
 #define BOTTOM_BTN_Y_TRANS  322
+#define BOTTOM_BTN_Y_TRANS2 449
 #define BOTTOM_BTN_X        149
 
 #define SEARCH_LIST_LEN     10

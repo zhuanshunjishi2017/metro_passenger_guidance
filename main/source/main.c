@@ -44,6 +44,8 @@ int main(void)
     canvas_init(canvas);
     lv_scr_load(display0);
 
+    lv_obj_clear_flag(lv_layer_top(), LV_OBJ_FLAG_SCROLLABLE);
+
     //display0_gui
     kb = lv_keyboard_create(lv_layer_top());
     lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
@@ -68,10 +70,6 @@ int main(void)
     lv_obj_move_foreground(display11);
 
     display2_init();
-
-
-    //display2_gui
-    // display2_ui_init();
 
     timetable_init();
 

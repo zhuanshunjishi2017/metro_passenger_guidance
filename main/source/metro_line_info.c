@@ -64,7 +64,7 @@ const Station line_2[38] = {
     { 50,  19,  25,  19,  { 7, 0 } ,   1,   0,   0,   2, "螃蟹岬"          , "pangxiejia"       },
     { 51,  20,  26,  20,  { 0, 0 } ,   1,  -1,   0,   2, "小龟山"          , "xiaoguishan"      },
     { 52,  21,  27,  21,  { 4, 0 } ,   1,   1,   1,   2, "洪山广场"        , "hongshanguangchang"},
-    { 53,  22,  26,  22,  { 4, 0 } ,  -1,   1,   1,   2, "中南路"          , "zhongnanlu"       },
+    { 53,  22,  26,  22,  { 4, 0 } ,  -1,  -1,   1,   2, "中南路"          , "zhongnanlu"       },
     { 54,  23,  27,  23,  { 0, 0 } ,  -1,   1,   0,   2, "宝通寺"          , "baotongsi"        },
     { 55,  24,  28,  24,  { 8, 0 } ,   1,   0,   0,   2, "街道口"          , "jiedaokou"        },
     { 56,  25,  29,  25,  { 0, 0 } ,   1,   0,   0,   2, "广埠屯"          , "guangbutun"       },
@@ -97,7 +97,7 @@ const Station line_3[24] = {
     { 77,   8,  12,  20,  { 0, 0 } ,   1,   1,   0,   3, "龙阳村"        , "longyangcun"     },
     { 78,   9,  13,  19,  { 4, 0 } ,   1,   0,   0,   3, "王家湾"        , "wangjiawan"      },
     { 13,  10,  15,  17,  {-1, 0 } ,  -1,   0,   1,   3, "宗关"          , "zongguan"        },
-    { 80,  11,  15,  14,  { 0, 0 } ,  -1,  -1,   1,   3, "双墩"          , "shuangdun"       },
+    { 80,  11,  15,  14,  { 0, 0 } ,  -1,   0,   1,   3, "双墩"          , "shuangdun"       },
     { 81,  12,  16,  13,  { 7, 0 } ,  -1,   0,   0,   3, "武汉商务区"    , "wuhanshangwuqu"  },
     { 82,  13,  17,  12,  { 0, 0 } ,  -1,  -1,   1,   3, "云飞路"        , "yunfeilu"        },
     { 43,  14,  18,  12,  {-2, 0 } ,  -1,  -1,   0,   3, "范湖"          , "fanhu"           },
@@ -110,7 +110,7 @@ const Station line_3[24] = {
     { 89,  21,  24,   7,  { 0, 0 } ,   1,   0,   0,   3, "兴业路"        , "xingyelu"        },
     { 90,  22,  24,   6,  { 0, 0 } ,   1,   0,   1,   3, "后湖大道"      , "houhudadao"      },
     { 91,  23,  23,   6,  { 0, 0 } ,   0,  -1,   0,   3, "市民之家"      , "shiminzijia"     },
-    { 37,  24,  21,   6,  {-2, 0 } ,  -1,   1,   1,   3, "宏图大道"      , "hongtudadao"     }
+    { 37,  24,  21,   6,  {-8,-2 } ,  -1,   1,   1,   3, "宏图大道"      , "hongtudadao"     }
 };
 
 
@@ -141,7 +141,7 @@ const Station line_4[37] = {
     {112,  22,  22,  22,  { 0, 0 } ,   0,  -1,   0,   4, "首义路"        , "shouyilu"           },
     {113,  23,  23,  22,  { 7, 0 } ,   1,   1,   0,   4, "武昌火车站"    , "wuchanghuochezhan"  },
     {114,  24,  24,  22,  { 0, 0 } ,   0,  -1,   0,   4, "梅苑小区"      , "meiyuanxiaoqu"      },
-    { 53,  25,  26,  22,  {-2, 0 } ,  -1,   1,   1,   4, "中南路"        , "zhongnanlu"         },
+    { 53,  25,  26,  22,  {-2, 0 } ,  -1,  -1,   1,   4, "中南路"        , "zhongnanlu"         },
     { 52,  26,  27,  21,  {-2, 0 } ,   1,   1,   1,   4, "洪山广场"      , "hongshanguangchang" },
     {115,  27,  28,  20,  { 0, 0 } ,   1,   1,   0,   4, "楚河汉街"      , "chuhehanjie"        },
     {116,  28,  29,  19,  { 0, 0 } ,   1,   1,   0,   4, "青鱼嘴"        , "qingyuzui"          },
@@ -198,13 +198,13 @@ const Station line_6[32] = {
     {158,   6,  13,   6, { 0, 0 },  -1,   1,   1,   6, "金银湖公园"     , "jinyinhugongyuan"     },
     {159,   7,  14,   7, { 0, 0 },  -1,   1,   0,   6, "金银湖"         , "jinyinhu"             },
     {160,   8,  15,   8, { 7, 0 },  -1,   1,   1,   6, "园博园北"       , "yuanboyuanbei"        },
-    {161,   9,  17,   8, { 0, 0 },   0,  -1,   0,   6, "轻工大学"       , "qinggongdaxue"        },
+    {161,   9,  16,   8, { 0, 0 },   0,  -1,   0,   6, "轻工大学"       , "qinggongdaxue"        },
     { 40,  10,  18,   8, {-2, 0 },  -1,   1,   0,   6, "常青花园"       , "changqinghuayuan"     },
     {163,  11,  19,   8, { 0, 0 },   0,  -1,   1,   6, "杨汊湖"         , "yangchahu"            },
     {164,  12,  20,   9, { 0, 0 },  -1,   0,   1,   6, "石桥"           , "shiqiao"              },
     {165,  13,  20,  10, { 0, 0 },  -1,   0,   0,   6, "唐家墩"         , "tangjiadun"           },
     {166,  14,  20,  11, { 0, 0 },  -1,   0,   0,   6, "三眼桥"         , "sanyanqiao"           },
-    { 84,  15,  20,  12, {-3, 7 },  -1,  -1,   1,   6, "香港路"         , "xiangganglu"          },
+    { 84,  15,  20,  12, {-7,-3 },  -1,  -1,   1,   6, "香港路"         , "xiangganglu"          },
     {168,  16,  21,  13, { 0, 0 },   1,   0,   0,   6, "苗栗路"         , "miaolilu"             },
     { 20,  17,  22,  14, {-1, 0 },   1,   1,   1,   6, "大智路"         , "dazhilu"              },
     { 48,  18,  22,  16, {-2, 0 },   1,  -1,   1,   6, "江汉路"         , "jianghanlu"           },
@@ -243,7 +243,7 @@ const Station line_7[36] = {
     {200,  16,  19,  13, { 0, 0 },   1,   0,   1,   7, "取水楼"       , "qushuilou"              },
     { 84,  17,  20,  12, {-3,-6 },  -1,  -1,   1,   7, "香港路"       , "xiangganglu"            },
     { 21,  18,  23,  13, {-1, 0 },   1,   0,   0,   7, "三阳路"       , "sanyanglu"              },
-    {141,  19,  28,  14, {-5, 8 },   1,   0,   1,   7, "徐家棚"       , "xujiapeng"              },
+    {141,  19,  28,  14, {-8,-5 },   1,   0,   1,   7, "徐家棚"       , "xujiapeng"              },
     {204,  20,  28,  16, { 0, 0 },   1,   1,   1,   7, "湖北大学"     , "hubeidaxue"             },
     {205,  21,  27,  17, { 0, 0 },   1,   1,   0,   7, "新河街"       , "xinhejie"               },
     { 50,  22,  25,  19, {-2, 0 },   1,   0,   0,   7, "螃蟹岬"       , "pangxiejia"             },
@@ -296,11 +296,11 @@ const Station line_11[23] = {
     {247,   1,   20,   23, { 0, 0 },  -1,   0,   1,  11, "江安路"      , "jianganlu"                 },
     {248,   2,   22,   23, { 0, 0 },   0,   1,   0,  11, "紫阳湖"      , "ziyanghu"                  },
     {249,   3,   24,   23, { 0, 0 },   1,   0,   1,  11, "武昌站东广场", "wuchangzhandongguangchang" },
-    {250,   4,   26,   25, { 0, 0 },   -1,   0,   1,  11, "丁字桥"      , "dingziqiao"                },
-    {239,   5,   28,   26, {-8, 0 },   -1,   1,   0,  11, "马房山"      , "mafangshan"                },
-    { 57,   6,   30,   26, {-2, 0 },   -1,   1,   0,  11, "虎泉"        , "huquan"                    },
-    {253,   7,   31,   26, { 0, 0 },   0,   -1,   1,  11, "武汉体育学院", "wuhantiyuxueyuan"          },
-    { 59,   8,   32,   27, {-2, 0 },   -1,   1,   0,  11, "光谷广场"    , "guangguguangchang"         },
+    {250,   4,   26,   25, { 0, 0 },   1,   0,   1,  11, "丁字桥"      , "dingziqiao"                },
+    {239,   5,   28,   26, {-8, 0 },  -1,   1,   0,  11, "马房山"      , "mafangshan"                },
+    { 57,   6,   30,   26, {-2, 0 },  -1,   1,   0,  11, "虎泉"        , "huquan"                    },
+    {253,   7,   31,   26, { 0, 0 },   1,  -1,   1,  11, "武汉体育学院", "wuhantiyuxueyuan"          },
+    { 59,   8,   32,   27, {-2, 0 },  -1,   1,   0,  11, "光谷广场"    , "guangguguangchang"         },
     {255,   9,   34,   29, { 0, 0 },  -1,   1,   1,  11, "关山大道"    , "guanshandadao"             },
     { 64,  10,   36,   29, {-2, 0 },  -1,   1,   0,  11, "武汉东站"    , "wuhandongzhan"             },
     {257,  11,   37,   29, { 0, 0 },   0,   -1,   0,  11, "湖口"        , "hukou"                     },
@@ -371,7 +371,7 @@ const uint16_t time_line_5[26] = {
     100, 95, 120, 135, 125, 130, 115, 120, 130, 
     140, 125, 135, 120, 130, 140, 150, 160};
 
-Timetable timetable_line_5 = {{6, 0 ,0}, {23, 0, 0}, 361};
+Timetable timetable_line_5 = {{6, 0 ,0}, {23, 0, 0}, 367};
 
 const uint16_t time_line_6[31] = {
     130, 120, 115, 120, 140, 130, 150, 125, 130, 120,
@@ -379,7 +379,7 @@ const uint16_t time_line_6[31] = {
     140, 110, 120, 130, 125, 130, 120, 135, 140, 150, 130
 };
 
-Timetable timetable_line_6 = {{6, 0, 0}, {23, 0, 0}, 602};
+Timetable timetable_line_6 = {{6, 0, 0}, {23, 0, 0}, 613};
 
 const uint16_t time_line_7[35] = {
     140, 220, 210, 200, 130, 125, 130, 120, 125, 135,
@@ -388,7 +388,7 @@ const uint16_t time_line_7[35] = {
     150, 135, 125, 120, 115
 };
 
-Timetable timetable_line_7 = {{6, 0, 0}, {23, 0, 0}, 241};
+Timetable timetable_line_7 = {{6, 0, 0}, {23, 0, 0}, 252};
 
 const uint16_t time_line_8[25] = {
     120, 125, 115, 120, 125, 130, 140, 125, 120, 115,
@@ -396,7 +396,7 @@ const uint16_t time_line_8[25] = {
     120, 115, 125, 150, 140
 };
 
-Timetable timetable_line_8 = {{6, 0, 0}, {23, 0, 0}, 421};
+Timetable timetable_line_8 = {{6, 0, 0}, {23, 0, 0}, 435};
 
 const uint16_t time_line_11[22] = {
     120, 130, 125, 135, 120, 115, 130, 125, 135, 120,
@@ -404,13 +404,13 @@ const uint16_t time_line_11[22] = {
     120, 135
 };
 
-Timetable timetable_line_11 = {{6, 0, 0}, {23, 0, 0}, 481};
+Timetable timetable_line_11 = {{6, 0, 0}, {23, 0, 0}, 497};
 
 const uint16_t time_line_19[6] = {
     240, 210, 230, 150, 300, 90
 };
 
-Timetable timetable_line_19 = {{6, 0, 0}, {22, 30, 0}, 901};
+Timetable timetable_line_19 = {{6, 0, 0}, {22, 30, 0}, 553};
 
 const MetroLine metro_lines[LINE_COUNT] = {
     {line_1, 32, COLOR_LINE1, 1, time_line_1, &timetable_line_1},
@@ -460,33 +460,32 @@ const Station * get_station(const Station * sta)
 
 const Station * get_transfer_station(const Station * src, const Station ** first_dist)
 {
-    if(!src->transfer_line)
+    if(!src->transfer_line[0])
     {
         *first_dist = NULL;
         return NULL;
     }
 
-    int8_t is_find_first = 0;
-    for (int8_t i = 0; i < LINE_COUNT; i++)
+    const MetroLine * line = get_metro_line(abs(src->transfer_line[0]));
+    for (int j = 0; j < line->count; j++)
     {
-        for (int j = 0; j < metro_lines[i].count; j++)
+        if(line->stations[j].only_id == src->only_id)
         {
-            if( !is_find_first 
-                && metro_lines[i].stations[j].only_id == src->only_id
-                && metro_lines[i].stations[j].line_belonged != src->line_belonged)
+            *first_dist = &line->stations[j];
+        }
+    }
+    if (src->transfer_line[1])
+    {
+        line = get_metro_line(abs(src->transfer_line[1]));
+        for (int j = 0; j < line->count; j++)
+        {
+            if(line->stations[j].only_id == src->only_id)
             {
-                *first_dist = &metro_lines[i].stations[j];
-                is_find_first = 1;
-            }
-            else if (is_find_first
-                && metro_lines[i].stations[j].only_id == src->only_id
-                && metro_lines[i].stations[j].line_belonged != src->line_belonged
-                && metro_lines[i].stations[j].line_belonged != (*first_dist)->line_belonged)
-            {
-                return &metro_lines[i].stations[j];
+                return &line->stations[j];
             }
         }
     }
+    
     return NULL;
 
 }
