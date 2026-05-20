@@ -154,9 +154,9 @@ void rtc_setup(void)
     rtc_initpara.factor_asyn = prescaler_a;
     rtc_initpara.factor_syn = prescaler_s;
     rtc_initpara.year = DEC2BCD(26);
-    rtc_initpara.day_of_week = RTC_THURSDAY;
-    rtc_initpara.month = RTC_APR;
-    rtc_initpara.date = DEC2BCD(2);
+    rtc_initpara.day_of_week = RTC_WEDNESDAY;
+    rtc_initpara.month = RTC_MAY;
+    rtc_initpara.date = DEC2BCD(20);
     rtc_initpara.display_format = RTC_24HOUR;
     rtc_initpara.am_pm = RTC_AM;
     rtc_initpara.hour = DEC2BCD(8);

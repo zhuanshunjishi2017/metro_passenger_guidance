@@ -181,8 +181,8 @@ static void draw_route(lv_obj_t *canvas, const Route *route)
             else if ((now_sta->only_id == 141 && next_sta->only_id == 22)
                    ||(now_sta->only_id == 22  && next_sta->only_id == 141))
             {
-                pts[j].x = geo_to_screen(24, origin_x);
-                pts[j].y = geo_to_screen(14, origin_y);
+                pts[j].x = geo_to_screen(26, origin_x);
+                pts[j].y = geo_to_screen(12, origin_y);
                 dsc.color = get_line_color( 8 );
                 lv_canvas_draw_line(canvas, pts + j - 1, 2 , &dsc);
                 j++;

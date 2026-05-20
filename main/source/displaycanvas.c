@@ -109,8 +109,8 @@ void buttons_init(lv_obj_t *canvas)
     lv_obj_set_pos(btn_plus , BUTTON_X, BUTTON_Y);
     lv_obj_set_size(btn_plus, BUTTON_LEN, BUTTON_LEN);
 
-
     label_plus = lv_label_create(btn_plus);
+    lv_obj_set_style_text_font(label_plus, &heiti_16, 0);
     lv_label_set_text(label_plus, "+");
     lv_obj_center(label_plus);
     lv_obj_set_style_text_color(label_plus, lv_color_black(),0);
@@ -120,6 +120,7 @@ void buttons_init(lv_obj_t *canvas)
     lv_obj_set_size(btn_minus, BUTTON_LEN, BUTTON_LEN);
 
     label_minus = lv_label_create(btn_minus);
+    lv_obj_set_style_text_font(label_minus, &heiti_16, 0);
     lv_label_set_text(label_minus, "-");
     lv_obj_center(label_minus);
     lv_obj_set_style_text_color(label_minus, lv_color_black(),0);
