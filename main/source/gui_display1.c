@@ -924,7 +924,7 @@ void btn4_cb(lv_event_t *e)
     lv_event_code_t code = lv_event_get_code(e);
     if(code == LV_EVENT_CLICKED)
     {
-        if (lv_obj_has_flag(pp_window,LV_OBJ_FLAG_HIDDEN))  //判断ppwindow是否已经自动生成
+        if (!pp_window)  //判断ppwindow是否已经自动生成
         {
             start_name = lv_textarea_get_text(start_ta);
             end_name = lv_textarea_get_text(end_ta);

@@ -183,11 +183,11 @@ void reminder_set_show(const Station *sta)
     
     
     TimeStruct current_time;
-    char * hour_str, *min_str;
+    // char * hour_str, *min_str;
     get_current_time(&current_time);
 
-    sprintf(hour_str, "%d" , current_time.hour);
-    sprintf(min_str, "%d" , current_time.min);
+    // sprintf(hour_str, "%d" , current_time.hour);
+    // sprintf(min_str, "%d" , current_time.min);
 
     // lv_textarea_set_text(hour_entry,hour_str);
     // lv_textarea_set_text(min_entry,min_str);

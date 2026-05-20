@@ -345,18 +345,20 @@ void draw_transparent_rect(lv_obj_t * canvas, lv_color_t color)
 
 void start_end_pin_move(void)
 {
+    if (is_start_selected && start_img && start_station)
+    {
+        lv_coord_t start_x = geo_to_screen(start_station->geo_x, origin_x);
+        lv_coord_t start_y = geo_to_screen(start_station->geo_y, origin_y);
+        lv_obj_set_pos(start_img, start_x - 38, start_y - 75);
+    }
     
-    lv_coord_t start_x = geo_to_screen(start_station->geo_x, origin_x);
-    lv_coord_t start_y = geo_to_screen(start_station->geo_y, origin_y);
-    lv_obj_set_pos(start_img, start_x - 38, start_y - 75);
-    //lv_obj_move_foreground(start_img);
-
-
-    lv_coord_t end_x = geo_to_screen(end_station->geo_x, origin_x);
-    lv_coord_t end_y = geo_to_screen(end_station->geo_y, origin_y);
-    lv_obj_set_pos(end_img, end_x - 38, end_y - 75);
-    //lv_obj_move_foreground(end_img);
-
+    if (is_end_selected && end_img && end_station)
+    {
+        lv_coord_t end_x = geo_to_screen(end_station->geo_x, origin_x);
+        lv_coord_t end_y = geo_to_screen(end_station->geo_y, origin_y);
+        lv_obj_set_pos(end_img, end_x - 38, end_y - 75);
+    }
+    
 }
 
 
