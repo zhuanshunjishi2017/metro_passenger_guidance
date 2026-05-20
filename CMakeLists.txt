@@ -32,6 +32,16 @@ target_link_libraries(${PROJECT_NAME} SDL2)
 # 拷贝SDL2.dll 文件到 build目录
 file(COPY SDL2.dll DESTINATION ../gcc)
 
+if(WIN32)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+
+WIN32_EXECUTABLE TRUE
+
+)
+
+endif()
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
