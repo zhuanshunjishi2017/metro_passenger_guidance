@@ -30,9 +30,9 @@ extern lv_obj_t *display11;
 
 int main(void)
 {
-   /*  favorites_init();
-    favorites_route_init(); */
-    //my_rtc_setup();
+    favorites_init();
+    favorites_route_init(); 
+    my_rtc_setup();
 
     lv_porting_init();
 
