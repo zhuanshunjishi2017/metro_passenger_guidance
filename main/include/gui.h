@@ -29,7 +29,7 @@
 #define REC_X               896 - CANVAS_X
 #define REC_Y               74  - CANVAS_Y
 #define REC_W               102
-#define REC_H               346
+#define REC_H               343
 #define STEP                5 //缩放的步长
 
 #define POP_WINDOW_W        290
@@ -64,6 +64,7 @@
 #define TIMETABLE_LABEL_H   230
 
 #define STATION_DIST        45
+#define STATION_DIST19      75
 #define STATION_Y           55
 #define STATION_RADIUS_NORM 6
 #define STATION_RADIUS_NOW  7

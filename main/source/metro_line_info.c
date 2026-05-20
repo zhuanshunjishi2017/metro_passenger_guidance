@@ -7,7 +7,7 @@ const Station line_1[32] = {
 //onlyid  id   x    y     transfer    x'   y' draw  line name             pinyin
     {  0,   1,   5,   4,  { 0, 0 } ,   1,   0,   1,   1, "径河"          , "jinghe"         },
     {  1,   2,   5,   5,  { 0, 0 } ,   1,   0,   0,   1, "三店"          , "sandian"        },
-    {  2,   3,   5,   6,  { 6, 0 } ,   1,   0,   0,   1, "码头潭公园"    , "matoutangongyuan"},
+    {  2,   3,   5,   6,  { 6, 0 } ,   1,   1,   0,   1, "码头潭公园"    , "matoutangongyuan"},
     {  3,   4,   5,   7,  { 0, 0 } ,   1,   0,   1,   1, "东吴大道"      , "dongwudadao"    },
     {  4,   5,   6,   8,  { 0, 0 } ,  -1,   1,   0,   1, "五环大道"      , "wuhuandadao"    },
     {  5,   6,   7,   9,  { 0, 0 } ,  -1,   1,   0,   1, "额头湾"        , "etouwan"        },

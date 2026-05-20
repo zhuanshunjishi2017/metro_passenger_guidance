@@ -605,8 +605,8 @@ void favorite_station_show(void)
             lv_label_set_text_fmt(favorite_station_line_transfer_show_lb1[i], "%d", line_belonged);
             lv_label_set_text_fmt(favorite_station_line_transfer_show_lb2[i], "%d", transfer_line1);
 
-            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb1[i], get_line_color(transfer_line1), 0);
-            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb2[i], get_line_color(line_belonged), 0);
+            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb1[i], get_line_color(line_belonged), 0);
+            lv_obj_set_style_bg_color(favorite_station_line_transfer_show_lb2[i], get_line_color(transfer_line1), 0);
 
             lv_obj_clear_flag(favorite_station_line_transfer_show_lb1[i], LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(favorite_station_line_transfer_show_lb2[i], LV_OBJ_FLAG_HIDDEN);

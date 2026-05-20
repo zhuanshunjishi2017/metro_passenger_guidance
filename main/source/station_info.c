@@ -673,6 +673,8 @@ void sta_canvas_cb(lv_event_t * e)
 
 void sta_pressing_canvas(lv_indev_t * indev)
 {
+    if (showing_station->line_belonged == 19) return; //19号线太短了 不用拖动
+    
     int8_t line_len = get_metro_line(showing_station->line_belonged)->count;
     
     lv_point_t vect;
@@ -766,7 +768,15 @@ void sta_click_canvas(lv_indev_t *indev, const MetroLine *line)
 //应传入从1开始的站点序列
 lv_coord_t sta_coord_trans(lv_coord_t pos, lv_coord_t origin)
 {
-    lv_coord_t res = (pos-1) * STATION_DIST + origin;
+    lv_coord_t res;
+    if (showing_station->line_belonged == 19)
+    {
+        res = (pos-1) * (STATION_DIST19) + origin;
+    }
+    else
+    {
+        res = (pos-1) * STATION_DIST + origin;
+    }
     return res;
 }
 
@@ -835,6 +845,8 @@ void station_info_refresh(int8_t is_init)
         if (sta_origin_x > 30) sta_origin_x = 30;
         else if (sta_origin_x < - line_len * STATION_DIST + STATION_INFO_W - 10)
             sta_origin_x = - line_len * STATION_DIST + STATION_INFO_W - 10;
+
+        if (showing_station->line_belonged == 19) sta_origin_x = 30;       
     }
 
 
@@ -1163,6 +1175,7 @@ void draw_train_icon(const MetroLine *line, const Station * sta, int8_t remain_s
 {
     lv_coord_t x_pos;
     int8_t now_sta_id;
+    int8_t line_number = line->line_number;
 
     remain_sec -= STATION_STOP_TIME;
     if (!direction_state)
@@ -1172,7 +1185,8 @@ void draw_train_icon(const MetroLine *line, const Station * sta, int8_t remain_s
             x_pos = sta_coord_trans(now_sta_id ,sta_origin_x) - 19;
         else
             x_pos = sta_coord_trans(now_sta_id ,sta_origin_x) 
-            - (int)(((float)remain_sec/line->station_period[now_sta_id - 2]) * STATION_DIST) - 19;
+            - (int)(((float)remain_sec/line->station_period[now_sta_id - 2]) 
+            * ((line_number == 19)?STATION_DIST19:STATION_DIST)) - 19;
     }
     else
     {
@@ -1181,7 +1195,8 @@ void draw_train_icon(const MetroLine *line, const Station * sta, int8_t remain_s
             x_pos = sta_coord_trans(line->count - now_sta_id + 1 ,sta_origin_x) - 19;
         else
             x_pos = sta_coord_trans(line->count - now_sta_id + 1 ,sta_origin_x)
-            - (int)(((float)remain_sec/line->station_period[now_sta_id - 1]) * STATION_DIST) - 19;
+            - (int)(((float)remain_sec/line->station_period[now_sta_id - 1]) 
+            * ((line_number == 19)?STATION_DIST19:STATION_DIST)) - 19;
     }
             
     lv_obj_set_pos(train_icon[count], x_pos, STATION_Y - 45);
@@ -1260,6 +1275,5 @@ int get_station_interval(const MetroLine *line, int8_t id_1, int8_t id_2)
         interval_sec += line->station_period[i];
     }
     return interval_sec;
-
 
 }
