@@ -335,6 +335,25 @@ void timetable_label_init(lv_obj_t * obj,TimeLabel * tl)
     }
 }
 
+
+/**
+ * @brief 坐标变换函数 将从1开始的站点序列转变为屏幕坐标
+**/
+lv_coord_t sta_coord_trans(lv_coord_t pos, lv_coord_t origin)
+{
+    lv_coord_t res;
+    if (showing_station->line_belonged == 19)
+    {
+        res = (pos-1) * (STATION_DIST19) + origin;
+    }
+    else
+    {
+        res = (pos-1) * STATION_DIST + origin;
+    }
+    return res;
+}
+
+
 /**
  * @brief 初始化显示线路图的画板
 **/
@@ -366,7 +385,6 @@ void sta_canvas_init(lv_obj_t * canvas)
 /**
  * @brief 显示画布上的线路和车站
 **/
-
 void sta_create_metro_line(lv_obj_t * canvas,const MetroLine *line ,const Station *sta)
 {
     lv_draw_line_dsc_t dsc_before, dsc_after;
@@ -551,7 +569,6 @@ void sta_create_metro_line(lv_obj_t * canvas,const MetroLine *line ,const Statio
 /**
  * @brief 显示画布上的车站的站名（竖直方向显示）
 **/
-
 void station_name_text_show(lv_obj_t * canvas, lv_coord_t x, lv_draw_label_dsc_t* dsc, const Station *sta)
 {
     lv_coord_t line_height = 18; /* 行高 */ 
@@ -649,7 +666,6 @@ void station_name_text_show(lv_obj_t * canvas, lv_coord_t x, lv_draw_label_dsc_t
 /**
  * @brief 画布被点击或拖动时的回调函数
 **/
-
 void sta_canvas_cb(lv_event_t * e)
 {
     lv_obj_t * canvas = lv_event_get_target(e);//获取产生这个事件的对象
@@ -765,22 +781,6 @@ void sta_click_canvas(lv_indev_t *indev, const MetroLine *line)
 
 }
 
-//应传入从1开始的站点序列
-lv_coord_t sta_coord_trans(lv_coord_t pos, lv_coord_t origin)
-{
-    lv_coord_t res;
-    if (showing_station->line_belonged == 19)
-    {
-        res = (pos-1) * (STATION_DIST19) + origin;
-    }
-    else
-    {
-        res = (pos-1) * STATION_DIST + origin;
-    }
-    return res;
-}
-
-
 
 void station_info_show(const Station *sta, int8_t is_init)
 {
@@ -802,16 +802,6 @@ void station_info_show(const Station *sta, int8_t is_init)
 
     lv_obj_set_style_bg_color(sta_line_number_label, color, 0);
 
-    station_info_refresh(is_init);
-
-}
-
-
-void station_info_refresh(int8_t is_init)
-{
-    int8_t line_number = showing_station->line_belonged;
-
-
     lv_label_set_text_fmt(sta_line_number_label, "%d号线", line_number);
     lv_label_set_text_fmt(sta_direction_label, "%s 方向", get_first_station(line_number,!direction_state)->name);
 
@@ -819,7 +809,7 @@ void station_info_refresh(int8_t is_init)
 
     char first_last_time[2][7], first_last_time_str[2][20];
 
-    get_first_last_train(showing_station, first_last_time, direction_state);
+    get_first_last_train_time(showing_station, first_last_time, direction_state);
     
     sprintf(first_last_time_str[0], "首班 %s", first_last_time[0]);
     sprintf(first_last_time_str[1], "末班 %s", first_last_time[1]);
@@ -881,6 +871,7 @@ void station_info_refresh(int8_t is_init)
 
 }
 
+
 void change_btn_cb(lv_event_t * e)
 {
     if (direction_state) direction_state = 0;
@@ -900,7 +891,7 @@ void change_btn_cb(lv_event_t * e)
         lv_label_set_text(sta_name_label, showing_station->name);
 
     }
-    station_info_refresh(true);
+    station_info_show(showing_station, true);
 }
 
 
@@ -1220,60 +1211,4 @@ void draw_train_icon(const MetroLine *line, const Station * sta, int8_t remain_s
     }
 }
 
-//获取某个站点某个方向的首末班车时间
-void get_first_last_train(const Station *sta, char (*result)[7], int8_t direction)
-{
-    TimeStruct origin_time[2],interval_time = {0,0,0}, zero = {0,0,0};
 
-    if (!direction)
-    {
-        for (int i = 0 ; i < sta->id - 1; i++)
-        {
-            TimeStruct temp_time;
-            secondsToTimeStruct(get_metro_line(sta->line_belonged)->station_period[i],&temp_time);
-            timeAdd(&interval_time ,&temp_time, &interval_time);
-        }
-    }
-    else
-    {
-        for (int i = get_metro_line(sta->line_belonged)->count - 2; i > sta->id - 2; i--)
-        {
-            TimeStruct temp_time;
-            secondsToTimeStruct(get_metro_line(sta->line_belonged)->station_period[i],&temp_time);
-            timeAdd(&interval_time ,&temp_time, &interval_time);
-        }
-    }
-
-    timeAdd(&(get_metro_line(sta->line_belonged)->timetable->first_train_time),
-        &zero, origin_time);
-    timeAdd(&(get_metro_line(sta->line_belonged)->timetable->last_train_time),
-        &interval_time, origin_time + 1);
-
-    //首班车不顺延
-    timeToString(origin_time, result[0], HOUR_MIN_MODE);
-    
-    //末班车顺延
-    timeToString(origin_time + 1, result[1], HOUR_MIN_MODE);
-}
-
-//获取两站之间的时间
-int get_station_interval(const MetroLine *line, int8_t id_1, int8_t id_2)
-{
-    int interval_sec = 0;//定义间隔的秒数
-
-    if (id_1 == id_2) return interval_sec;
-
-    else if (id_1 > id_2)
-    {
-        int temp = id_1;
-        id_1 = id_2;
-        id_2 = temp;
-    }
-    
-    for (int i = id_1 - 1; i < id_2 - 1; i++)
-    {
-        interval_sec += line->station_period[i];
-    }
-    return interval_sec;
-
-}

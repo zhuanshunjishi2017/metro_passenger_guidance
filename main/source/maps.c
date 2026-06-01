@@ -13,8 +13,9 @@ extern void *canvas_buf;
 extern lv_obj_t * canvas;
 extern lv_obj_t * location_image;
 extern MetroLine metro_lines[LINE_COUNT];
-
 extern const Station* start_station, *end_station;
+
+//放大倍率
 uint16_t magnify_size = 30;
 
 //原点

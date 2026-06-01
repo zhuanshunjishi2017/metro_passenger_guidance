@@ -426,6 +426,7 @@ const MetroLine metro_lines[LINE_COUNT] = {
 };
 
 
+
  /**
   * 
   */
@@ -490,7 +491,6 @@ const Station * get_transfer_station(const Station * src, const Station ** first
 
 }
 
-
 const Station * get_first_station(int8_t line_number, int8_t direction)
 {
     if (direction == DIRECTION_UP)
@@ -515,4 +515,61 @@ lv_color_t get_line_color(int8_t line_number)
 }
 
 
+//获取某个站点某个方向的首末班车时间
+void get_first_last_train_time(const Station *sta, char (*result)[7], int8_t direction)
+{
+    TimeStruct origin_time[2],interval_time = {0,0,0}, zero = {0,0,0};
+
+    if (!direction)
+    {
+        for (int i = 0 ; i < sta->id - 1; i++)
+        {
+            TimeStruct temp_time;
+            secondsToTimeStruct(get_metro_line(sta->line_belonged)->station_period[i],&temp_time);
+            timeAdd(&interval_time ,&temp_time, &interval_time);
+        }
+    }
+    else
+    {
+        for (int i = get_metro_line(sta->line_belonged)->count - 2; i > sta->id - 2; i--)
+        {
+            TimeStruct temp_time;
+            secondsToTimeStruct(get_metro_line(sta->line_belonged)->station_period[i],&temp_time);
+            timeAdd(&interval_time ,&temp_time, &interval_time);
+        }
+    }
+
+    timeAdd(&(get_metro_line(sta->line_belonged)->timetable->first_train_time),
+        &zero, origin_time);
+    timeAdd(&(get_metro_line(sta->line_belonged)->timetable->last_train_time),
+        &interval_time, origin_time + 1);
+
+    //首班车不顺延
+    timeToString(origin_time, result[0], HOUR_MIN_MODE);
+    
+    //末班车顺延
+    timeToString(origin_time + 1, result[1], HOUR_MIN_MODE);
+}
+
+//获取两站之间的时间
+int get_station_interval(const MetroLine *line, int8_t id_1, int8_t id_2)
+{
+    int interval_sec = 0;//定义间隔的秒数
+
+    if (id_1 == id_2) return interval_sec;
+
+    else if (id_1 > id_2)
+    {
+        int temp = id_1;
+        id_1 = id_2;
+        id_2 = temp;
+    }
+    
+    for (int i = id_1 - 1; i < id_2 - 1; i++)
+    {
+        interval_sec += line->station_period[i];
+    }
+    return interval_sec;
+
+}
 

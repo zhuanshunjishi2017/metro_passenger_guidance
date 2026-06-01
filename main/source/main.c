@@ -3,6 +3,7 @@
 #include "lv_port_indev_template.h"
 #include "gui.h"
 #include "favorites.h"
+
 void gpio_init(void);
 void my_rtc_setup(void);
 void keyBoard_event_cb(lv_event_t *e);

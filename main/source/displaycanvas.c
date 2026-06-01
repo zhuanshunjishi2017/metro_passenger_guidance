@@ -12,7 +12,7 @@
 
 void *canvas_buf;//缓冲区
 
-int8_t para_numbers[LINE_COUNT+1] = {0,1,2,3,4,5,6,7,8,11,19};  //妥协之举，传参只能传地址
+int8_t para_numbers[LINE_COUNT+1] = {0,1,2,3,4,5,6,7,8,11,19};
 
 
 lv_obj_t *btn_plus , *btn_minus;
@@ -613,8 +613,8 @@ void pop_window_show(const Station **sta, LineinfoBtn * btn)
 
         char first_last_time[2][2][7], first_last_time_str[2][40];
 
-        get_first_last_train(station_clicked[i], first_last_time[0], 0);
-        get_first_last_train(station_clicked[i], first_last_time[1], 1);
+        get_first_last_train_time(station_clicked[i], first_last_time[0], 0);
+        get_first_last_train_time(station_clicked[i], first_last_time[1], 1);
         
         sprintf(first_last_time_str[0], "首班 %s  末班 %s", first_last_time[0][0], first_last_time[0][1]);
         sprintf(first_last_time_str[1], "首班 %s  末班 %s", first_last_time[1][0], first_last_time[1][1]);

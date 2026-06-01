@@ -72,6 +72,20 @@ typedef struct {
 
 
 
+//声明一些有关地图绘制的函数
+
+lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin);
+
+static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t state);
+static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color, int8_t state);
+
+void create_metro_map(void);
+void draw_line_container(lv_obj_t * canvas);
+void draw_transparent_rect(lv_obj_t * canvas, lv_color_t color);
+
+void start_end_pin_move(void);
+
+
 /*
 下面是有关画布的函数声明
 */
@@ -125,7 +139,6 @@ void sta_click_canvas(lv_indev_t *indev, const MetroLine *line);
 
 void station_info_show(const Station *sta, int8_t);
 
-void station_info_refresh(int8_t);
 
 void change_btn_cb(lv_event_t * e);
 void timetable_btn_cb(lv_event_t * e);
@@ -144,10 +157,7 @@ void draw_train_icon(const MetroLine *line, const Station * sta, int8_t remain_s
 
 void del_time_label_text(TimeLabel *tl);
 
-//获取某个站点某个方向的首末班车时间
-void get_first_last_train(const Station *sta, char (*result)[7], int8_t direction);
 
-int get_station_interval(const MetroLine *line, int8_t id_1, int8_t id_2);
 
 /*
 提醒添加里面的函数声明

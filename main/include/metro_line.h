@@ -95,20 +95,12 @@ const Station * get_first_station(int8_t line_number, int8_t direction);
 
 lv_color_t get_line_color(int8_t line_number);
 
+//获取某个站点某个方向的首末班车时间
+void get_first_last_train_time(const Station *sta, char (*result)[7], int8_t direction);
+
+int get_station_interval(const MetroLine *line, int8_t id_1, int8_t id_2);
 
 
-//声明一些有关地图绘制的函数
-
-lv_coord_t geo_to_screen(lv_coord_t pos, lv_coord_t origin);
-
-static void draw_metro_line(lv_obj_t* canvas, const MetroLine* line, int8_t state);
-static void draw_station(lv_obj_t* canvas, const Station* s, lv_color_t color, int8_t state);
-
-void create_metro_map(void);
-void draw_line_container(lv_obj_t * canvas);
-void draw_transparent_rect(lv_obj_t * canvas, lv_color_t color);
-
-void start_end_pin_move(void);
 
 
 #endif
