@@ -9,7 +9,7 @@ const Station* find_station_by_id(int station_id);
 
 // 简化的图节点结构
 typedef struct {
-    int station_id;
+    int station_id;  //站点的唯一id
     int line_id;
     int distance;
     int transfers; //累计换乘次数
@@ -22,7 +22,7 @@ static int path_node_count = 0; // 当前节点数量
 static int path_parent[MAX_STATIONS * LINE_COUNT]; // 用于回溯路径
 static int path_line[MAX_STATIONS * LINE_COUNT];   // 线路信息
 static int path_distance[MAX_STATIONS * LINE_COUNT]; // 距离信息
-static bool visited[MAX_STATIONS][LINE_COUNT]; // 访问标记：visited[station_id][line_id]
+static int best_dist[MAX_STATIONS][LINE_COUNT]; // 到达(站点,线路)的最短距离，初始为极大值
 
 /**
  * @brief 清空路径搜索状态
@@ -33,7 +33,7 @@ static void clear_search_state(void)
     memset(path_parent, -1, sizeof(path_parent));
     memset(path_line, -1, sizeof(path_line));
     memset(path_distance, -1, sizeof(path_distance));
-    memset(visited, false, sizeof(visited));
+    memset(best_dist, 0x7F, sizeof(best_dist)); // 初始化为极大值
 }
 
 /**
@@ -79,7 +79,7 @@ const Station* find_station_by_id(int station_id)
 
 /**
  * @brief 获取站点包含的所有线路
- * @param station_id 站点ID
+ * @param station_id 站点onlyID
  * @param lines 输出线路数组
  * @return 线路数量
  */
@@ -119,9 +119,11 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
         return; // 无效的站点
     }
 
-    // 使用队列进行BFS搜索
-    int queue[MAX_STATIONS * LINE_COUNT];
-    int front = 0, rear = 0;
+    // 0-1 BFS双端队列：换乘(代价0)塞队头，同线走站(代价1)塞队尾
+    // 保证节点始终按distance递增顺序出队
+    #define DEQUE_SIZE (MAX_STATIONS * LINE_COUNT)
+    int deque[DEQUE_SIZE];
+    int head = 0, tail = 0, dq_count = 0;  
 
     // 将起点的所有线路加入队列
     for (int i = 0; i < start_line_count; i++) {
@@ -131,7 +133,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
             return;
         }
 
-        visited[start_id][line] = true;
+        best_dist[start_id][line] = 0;
         int node_index = path_node_count++;
 
         path_nodes[node_index].station_id = start_id; //only_id
@@ -140,16 +142,17 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
         path_nodes[node_index].transfers = 0;
         path_nodes[node_index].parent_index = -1;
 
-        queue[rear++] = node_index; //path_node_count = 1;node_index = 0;rear = 1;front = 0;
+        // 起点节点，塞队尾
+        deque[tail] = node_index;
+        tail = (tail + 1) % DEQUE_SIZE;
+        dq_count++;
     }
 
-    // BFS搜索，设置最大搜索次数防止死循环
-    // int max_searches = 500;
-    // int search_count = 0;
-
-    while (front < rear /*&& search_count < max_searches*/) {
-        // search_count++;
-        int current_index = queue[front++]; //cureent_index = 0;front = 1;
+    while (dq_count > 0) {
+        // 从队头出队
+        int current_index = deque[head];
+        head = (head + 1) % DEQUE_SIZE;
+        dq_count--;
         PathNode* current = &path_nodes[current_index];
 
         // 检查是否到达终点
@@ -221,7 +224,7 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
         const MetroLine* metro_line = get_metro_line(current->line_id);
 
         // 查找当前站点位置
-        int current_pos = -1;
+        int current_pos = -1; //记录在第metro_line号线上的位置(id)
         for (int i = 0; i < metro_line->count; i++) {
             if (metro_line->stations[i].only_id == current->station_id) {
                 current_pos = i;
@@ -235,26 +238,31 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
                 int next_pos = current_pos + direction;
 
                 if (next_pos >= 0 && next_pos < metro_line->count) {
-                    int next_station_id = metro_line->stations[next_pos].only_id;
+                    int next_station_id = metro_line->stations[next_pos].only_id; //记录下一个站点的only_id
 
-                    if (visited[next_station_id][current->line_id]) {
-                        continue;
+                    int new_dist = current->distance + 1; // 同线路走一站
+
+                    if (new_dist >= best_dist[next_station_id][current->line_id]) {
+                        continue; // 已有更短或等长路径到达此状态
                     }
 
                     if (path_node_count >= MAX_STATIONS * LINE_COUNT - 1) {
                         return;
                     }
 
-                    visited[next_station_id][current->line_id] = true;
+                    best_dist[next_station_id][current->line_id] = new_dist;
                     int new_node_index = path_node_count++;
 
-                    path_nodes[new_node_index].station_id = next_station_id;
-                    path_nodes[new_node_index].line_id = current->line_id;
-                    path_nodes[new_node_index].distance = current->distance + 1;
-                    path_nodes[new_node_index].transfers = current->transfers;
-                    path_nodes[new_node_index].parent_index = current_index;
+                    path_nodes[new_node_index].station_id = next_station_id; //更新为下一个站点的only_id
+                    path_nodes[new_node_index].line_id = current->line_id; //线路不变
+                    path_nodes[new_node_index].distance = new_dist;
+                    path_nodes[new_node_index].transfers = current->transfers;  //因为是同线路，所以换乘次数不变
+                    path_nodes[new_node_index].parent_index = current_index;  //记录父节点索引
 
-                    queue[rear++] = new_node_index;
+                    // 同线走站: 代价1, 塞队尾
+                    deque[tail] = new_node_index;
+                    tail = (tail + 1) % DEQUE_SIZE;
+                    dq_count++;
                 }
             }
         }
@@ -266,28 +274,33 @@ static void bfs_find_path(int start_id, int end_id, Route* output_route)
         for (int i = 0; i < line_count; i++) {
             int transfer_line = station_lines[i];
 
-            if (transfer_line == current->line_id) {
+            if (transfer_line == current->line_id) {  //跳过当前线路
                 continue;
             }
 
-            if (visited[current->station_id][transfer_line]) {
-                continue;
+            int new_dist = current->distance; // 换乘距离不变
+
+            if (new_dist >= best_dist[current->station_id][transfer_line]) {
+                continue; // 已有更短或等长路径到达此状态
             }
 
             if (path_node_count >= MAX_STATIONS * LINE_COUNT - 1) {
                 return;
             }
 
-            visited[current->station_id][transfer_line] = true;
+            best_dist[current->station_id][transfer_line] = new_dist;
             int new_node_index = path_node_count++;
 
             path_nodes[new_node_index].station_id = current->station_id;
             path_nodes[new_node_index].line_id = transfer_line;
-            path_nodes[new_node_index].distance = current->distance;
+            path_nodes[new_node_index].distance = new_dist;
             path_nodes[new_node_index].transfers = current->transfers + 1;
             path_nodes[new_node_index].parent_index = current_index;
 
-            queue[rear++] = new_node_index;
+            // 换乘: 代价0, 塞队头
+            head = (head - 1 + DEQUE_SIZE) % DEQUE_SIZE;
+            deque[head] = new_node_index;
+            dq_count++;
         }
     }
 }

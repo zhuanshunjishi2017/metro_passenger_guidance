@@ -723,6 +723,8 @@ void tab_search_btn_cb(lv_event_t *e)
 				station_clicked[0] = &metro_lines[i].stations[j];
                 station_clicked[2] = get_transfer_station(&metro_lines[i].stations[j], &station_clicked[1]);
 
+				search_record_refresh(station_name);
+				
 				if (lv_scr_act() != display0)
 				{
 					lv_scr_load(display0);
@@ -754,7 +756,6 @@ void tab_search_btn_cb(lv_event_t *e)
 		return; // 如果输入框为空，直接返回
 	}
 	
-	search_record_refresh(station_name);
 	lv_textarea_set_text(ta, ""); // 清空输入框
 }
 void top_ta_reset(void)
