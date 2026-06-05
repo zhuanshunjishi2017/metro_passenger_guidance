@@ -41,7 +41,9 @@ extern lv_obj_t* display11,*start_ta,*end_ta;
 extern lv_obj_t* favorite_station_show_lb[30];
 extern int is_both_ta_filled;
 
-
+/**
+ * @brief 画布初始化函数
+**/
 void canvas_init(lv_obj_t *canvas)
 {
     lv_obj_clear_flag(canvas, LV_OBJ_FLAG_SCROLLABLE);
@@ -74,7 +76,9 @@ void canvas_init(lv_obj_t *canvas)
     create_metro_map();
 }
 
-
+/**
+ * @brief 位置图片的初始化
+**/
 void location_pic_init(lv_obj_t *canvas)
 {
     location_image = lv_img_create(canvas);
@@ -92,6 +96,10 @@ void location_pic_init(lv_obj_t *canvas)
 
 }
 
+
+/**
+ * @brief 放大缩小按钮的初始化
+**/
 void buttons_init(lv_obj_t *canvas)
 {
 
@@ -132,6 +140,10 @@ void buttons_init(lv_obj_t *canvas)
     lv_obj_add_event_cb(btn_minus, magnify_button_cb, LV_EVENT_PRESSED, &minus);
 }
 
+
+/**
+ * @brief 线路选择容器的初始化
+**/
 void lines_selector_init(lv_obj_t *canvas, MetroLine *lines)
 {
 
@@ -153,7 +165,9 @@ void lines_selector_init(lv_obj_t *canvas, MetroLine *lines)
 
 }
 
-//绘制按钮
+/**
+ * @brief 绘制线路选择按钮
+**/
 void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas ,  int8_t count)
 {
     
@@ -195,7 +209,9 @@ void lines_btn_init(lv_obj_t * btn ,lv_obj_t * labels, lv_obj_t *canvas ,  int8_
 
 }
 
-
+/**
+ * @brief 线路选择按钮的回调函数
+**/
 void lines_selector_cb(lv_event_t * e)
 {
     int8_t *para_number = lv_event_get_user_data(e);
@@ -206,6 +222,9 @@ void lines_selector_cb(lv_event_t * e)
     create_metro_map();
 }
 
+/**
+ * @brief 画布事件的回调函数
+**/
 void canvas_cb(lv_event_t * e)
 {
     lv_obj_t * canvas = lv_event_get_target(e);//获取产生这个事件的对象
@@ -230,6 +249,9 @@ void canvas_cb(lv_event_t * e)
 
 }
 
+/**
+ * @brief 拖动画布的函数
+**/
 void pressing_canvas(lv_indev_t * indev)
 {
     lv_point_t vect;
@@ -255,6 +277,9 @@ void pressing_canvas(lv_indev_t * indev)
 
 }
 
+/**
+ * @brief 放大缩小按钮的回调函数
+**/
 void magnify_button_cb(lv_event_t * e)
 {
     int8_t *state = lv_event_get_user_data(e);
@@ -288,7 +313,9 @@ void magnify_button_cb(lv_event_t * e)
 }
 
 
-//按下画布显示车站
+/**
+ * @brief 单击画布时的回调函数
+**/
 void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
 {
     lv_point_t pos;
@@ -329,6 +356,9 @@ void clicked_canvas(lv_indev_t *indev, MetroLine *lines)
     }
 }
 
+/**
+ * @brief 弹出窗口的函数
+**/
 void pop_window_init(lv_obj_t * obj)
 {
     //设置样式
@@ -464,7 +494,9 @@ void pop_window_init(lv_obj_t * obj)
     lv_obj_add_flag(pop_window, LV_OBJ_FLAG_HIDDEN);
 }
 
-
+/**
+ * @brief 车站信息的初始化
+**/
 void line_info_btn_init(lv_obj_t * obj, LineinfoBtn * btn, int8_t count)
 {
     btn->line_info_btn = lv_btn_create(obj);
@@ -515,6 +547,9 @@ void line_info_btn_init(lv_obj_t * obj, LineinfoBtn * btn, int8_t count)
     
 }
 
+/**
+ * @brief 弹出窗口的移动
+**/
 void pop_window_move(const Station **sta)
 {
     lv_coord_t x = geo_to_screen(sta[0]->geo_x, origin_x);
@@ -555,6 +590,9 @@ void pop_window_move(const Station **sta)
     
 }
     
+/**
+ * @brief 显示弹出的窗口
+**/
 void pop_window_show(const Station **sta, LineinfoBtn * btn)
 {
 
@@ -625,6 +663,9 @@ void pop_window_show(const Station **sta, LineinfoBtn * btn)
     }
 }
 
+/**
+ * @brief 按下弹出窗口的回调函数
+**/
 void line_info_btn_cb(lv_event_t * e)
 {
     int8_t * count = (int8_t *)lv_event_get_user_data(e);
@@ -643,7 +684,9 @@ void line_info_btn_cb(lv_event_t * e)
     
 }
 
-
+/**
+ * @brief 设为起点与设为终点的函数的回调
+**/
 void start_end_btn_cb(lv_event_t *e)
 {
     int8_t* mode = (int8_t *)lv_event_get_user_data(e);
@@ -702,7 +745,9 @@ void start_end_btn_cb(lv_event_t *e)
     create_metro_map();
 }
 
-
+/**
+ * @brief 隐藏弹出的窗口
+**/
 void hide_pop_window(void)
 {
     lv_obj_add_flag(location_image, LV_OBJ_FLAG_HIDDEN);
@@ -712,6 +757,9 @@ void hide_pop_window(void)
     create_metro_map();
 }
 
+/**
+ * @brief 隐藏车站详细信息
+**/
 void hide_station_info(void)
 {
     if (is_reminder_set_showing)

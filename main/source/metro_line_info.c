@@ -427,11 +427,11 @@ const MetroLine metro_lines[LINE_COUNT] = {
 
 
 
- /**
-  * 
-  */
-
-
+/**
+ * @brief 获取线路指针
+ * @param line_number 线路号码
+ * @return 线路指针
+**/
 const MetroLine * get_metro_line(int8_t line_number)
 {
     for (int8_t i = 0; i < LINE_COUNT; i++)
@@ -444,6 +444,12 @@ const MetroLine * get_metro_line(int8_t line_number)
     return NULL;
 }
 
+
+/**
+ * @brief 获取静态车站结构指针
+ * @param sta 车站结构指针（可能是临时的）
+ * @return 车站结构指针
+**/
 const Station * get_station(const Station * sta)
 {
     for (int8_t i = 0; i < LINE_COUNT; i++)
@@ -458,7 +464,10 @@ const Station * get_station(const Station * sta)
     return NULL;
 
 }
-
+/**
+ * @brief 获取换乘车站
+ * @return 换乘站点指针
+**/
 const Station * get_transfer_station(const Station * src, const Station ** first_dist)
 {
     if(!src->transfer_line[0])
@@ -491,6 +500,9 @@ const Station * get_transfer_station(const Station * src, const Station ** first
 
 }
 
+/**
+ * @brief 获取线路始发站
+**/
 const Station * get_first_station(int8_t line_number, int8_t direction)
 {
     if (direction == DIRECTION_UP)
@@ -514,8 +526,9 @@ lv_color_t get_line_color(int8_t line_number)
     return lv_color_hex(get_metro_line(line_number)->line_color);
 }
 
-
-//获取某个站点某个方向的首末班车时间
+/**
+ * @brief 获取某个站点某个方向的首末班车时间
+**/
 void get_first_last_train_time(const Station *sta, char (*result)[7], int8_t direction)
 {
     TimeStruct origin_time[2],interval_time = {0,0,0}, zero = {0,0,0};
@@ -551,7 +564,10 @@ void get_first_last_train_time(const Station *sta, char (*result)[7], int8_t dir
     timeToString(origin_time + 1, result[1], HOUR_MIN_MODE);
 }
 
-//获取两站之间的时间
+
+/**
+ * @brief 获取两站之间的时间
+**/
 int get_station_interval(const MetroLine *line, int8_t id_1, int8_t id_2)
 {
     int interval_sec = 0;//定义间隔的秒数

@@ -296,7 +296,6 @@ void time_label_init(lv_obj_t * obj ,TimeLabel *tl, int8_t count)
 /**
  * @brief 初始化显示时间表的标签
 **/
-
 void timetable_label_init(lv_obj_t * obj,TimeLabel * tl)
 {
     tl[0].train_direction_label = lv_label_create(obj);
