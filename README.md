@@ -2,7 +2,7 @@
 
 此项目为华中科技大学人工智能与自动化学院嵌入式 C 语言课程设计项目。
 
-基于 GD32H759IM 微控制器的嵌入式地铁乘客导视系统，提供武汉地铁线路图的交互式浏览、站点信息查询、最短路径规划、收藏与到站提醒等功能。
+项目基于 GD32H759IM 微控制器的嵌入式地铁乘客导视系统，提供武汉地铁线路图的交互式浏览、站点信息查询、最短路径规划、收藏与到站提醒等功能。
 
 ## 功能特性
 
@@ -102,26 +102,65 @@ metro_passenger_guidance/
 
 ## 构建与运行
 
-### 环境要求
+### 嵌入式目标（GD32H759IM 开发板）
+
+**环境要求**
 
 - **IDE**: Keil MDK-ARM v5
 - **编译器**: ARMCC V5.06
 - **硬件**: GD32H759IM 开发板 + ATK 7 寸 RGBLCD 模块（含 SD 卡、GT9xx 触摸）
 
-### 编译与烧录
+**编译与烧录**
 
 1. 用 Keil µVision 打开 `metro_passenger_guidance.uvprojx`
 2. 确保 SD 卡已插入，根目录包含图标 `.bin` 文件（`imagesource/` 目录下有素材）
 3. 编译并下载到目标板
 
+### Windows 模拟器（win-simulator）
+
+无需硬件，在 Windows PC 上即可运行完整的地铁导引系统。模拟器使用 SDL2 代替嵌入式显示与触摸驱动，其余应用代码与嵌入式版本完全一致。
+
+**环境要求**
+
+- [MSYS2](https://www.msys2.org/) 或独立安装的 MinGW-w64（GCC 13+）
+- [CMake](https://cmake.org/) 3.10+
+- SDL2 开发库（MinGW 版本）
+
+**编译步骤**
+
+```bash
+# 切换到 win-simulator 分支
+git checkout win-simulator
+
+# 安装 SDL2（如使用 MSYS2）
+# pacman -S mingw-w64-x86_64-SDL2
+
+# 使用 CMake 预设配置
+cmake --preset gcc
+
+# 编译
+cmake --build out/build/gcc
+
+# 运行
+out/build/gcc/metro_guidance_win_simulator.exe
+```
+
+> 编译产物默认在 `out/build/gcc/` 目录下。`SDL2.dll` 已包含在仓库中，运行时需与可执行文件在同一目录。
+
+**预编译版本**
+
+可以从 [Releases](https://github.com/zhuanshunjishi2017/metro_passenger_guidance/releases) 页面下载预编译的 Windows 可执行文件，解压后直接运行。
+
 ### 首次运行
 
-首次运行时 SD 卡上不存在持久化文件（`favorites.txt`、`favorite_routes.txt`、`search_record.txt`），程序会自动处理，无需手动创建。
+首次运行时不存在持久化文件（`favorites.txt`、`favorite_routes.txt`、`search_record.txt`），程序会自动处理，无需手动创建。
 
-## 数据说明
+## 数据说明与已知限制
 
 武汉地铁线路数据（站点名称、坐标、站间行驶时间、首末班时刻）均硬编码在 `main/source/metro_line_info.c` 中，包含以下线路：
 
 - 1 号线、2 号线、3 号线、4 号线、5 号线
 - 6 号线、7 号线、8 号线、11 号线、19 号线
+
+当前程序中的数据并不包含**全部**正在运营的武汉地铁线路。同时，具有大小交路的线路在计算到发时间时也没有考虑。
 
