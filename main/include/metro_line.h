@@ -59,7 +59,7 @@ typedef struct {
     int8_t       horizon_offset;   //标签水平偏移量，右为正
     int8_t       vertical_offset;  //标签垂直偏移量，下为正
     int8_t       is_draw_point;      //是否为端点
-    int8_t       line_belonged; //所属的线路
+    int8_t       line_belonged;    //所属的线路
     char*        name;
     char*        name_pinyin;
 } Station;// 站点结构体
